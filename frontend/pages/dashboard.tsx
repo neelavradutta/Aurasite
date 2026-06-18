@@ -18,6 +18,7 @@ import VehicleSpeedPanel, {
 import ConfidenceHeatmap from '@/components/CenterPanel/ConfidenceHeatmap';
 import SuspiciousVehiclesSection from '@/components/CenterPanel/SuspiciousVehiclesSection';
 import SelectedPlatePanel from '@/components/RightPanel/SelectedPlatePanel';
+import LiveFeedLaunchCard from '@/components/RightPanel/LiveFeedLaunchCard';
 import VideoInputPanel from '@/components/RightPanel/VideoInputPanel';
 import PlateCardsGrid from '@/components/PlateCardsGrid';
 import { useRouter } from 'next/router';
@@ -360,8 +361,9 @@ export default function DashboardPage() {
             <PlateCardsGrid detections={dashboardPlates} fillHeight selectToPreview className="h-full min-h-0 max-h-full" />
           </div>
 
-          <div className="h-[44rem] min-h-[44rem] max-h-[44rem] shrink-0 overflow-hidden xl:col-span-4">
+          <div className="flex h-[44rem] min-h-[44rem] max-h-[44rem] shrink-0 flex-col gap-3 overflow-hidden xl:col-span-4">
             <SelectedPlatePanel />
+            <LiveFeedLaunchCard />
           </div>
         </div>
       </main>

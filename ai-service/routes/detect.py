@@ -5,10 +5,13 @@ import os
 import shutil
 import tempfile
 import threading
+import time
 import uuid
 
+import cv2
 from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
 from config.settings import settings
 from services import job_progress
@@ -21,6 +24,12 @@ processor = VideoProcessor()
 _job_lock = threading.Lock()
 
 VIDEO_EXTENSIONS = {".mp4", ".avi", ".mov", ".mkv", ".webm", ".wmv", ".flv", ".m4v"}
+
+
+class LiveSourceFrameRequest(BaseModel):
+    source: str
+    frame_number: int = 0
+    timestamp: float | None = None
 
 
 def _is_video_upload(upload: UploadFile) -> bool:
@@ -37,6 +46,122 @@ def _is_image_upload(upload: UploadFile) -> bool:
         return True
     filename = (upload.filename or "").lower()
     return any(filename.endswith(ext) for ext in IMAGE_EXTENSIONS)
+
+
+def _resolve_capture_source(source: str) -> str | int:
+    value = source.strip()
+    if value.isdigit():
+        return int(value)
+    return value
+
+
+def _process_live_frame_bytes(frame_bytes: bytes, frame_number: int, timestamp: float | None) -> dict:
+    return processor.process_frame(
+        frame_bytes,
+        frame_number,
+        timestamp if timestamp is not None else time.time(),
+    )
+
+
+@router.post("/live/frame")
+async def detect_live_frame(
+    frame: UploadFile = File(...),
+    frame_number: int = Form(0),
+    timestamp: float | None = Form(None),
+):
+    if not (frame.content_type or "").startswith("image/"):
+        return JSONResponse(
+            status_code=400,
+            content={
+                "success": False,
+                "error": "invalid_frame_format",
+                "message": "Live frame must be an image",
+                "status_code": 400,
+            },
+        )
+
+    try:
+        data = _process_live_frame_bytes(await frame.read(), frame_number, timestamp)
+        return {"success": True, "data": data, "message": "Live frame processed"}
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "success": False,
+                "error": str(exc),
+                "message": "Live frame processing failed",
+                "status_code": 400,
+            },
+        )
+    except Exception:
+        logger.exception("Live frame detection failed")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "error": "live_frame_failed",
+                "message": "Live frame processing failed",
+                "status_code": 500,
+            },
+        )
+
+
+@router.post("/live/source/frame")
+async def detect_live_source_frame(payload: LiveSourceFrameRequest):
+    cap = cv2.VideoCapture(_resolve_capture_source(payload.source))
+    try:
+        if not cap.isOpened():
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "error": "source_unavailable",
+                    "message": "Unable to open live source",
+                    "status_code": 400,
+                },
+            )
+
+        ok, frame = cap.read()
+        if not ok or frame is None:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "success": False,
+                    "error": "frame_unavailable",
+                    "message": "Unable to read frame from live source",
+                    "status_code": 400,
+                },
+            )
+
+        encoded, buffer = cv2.imencode(".jpg", frame)
+        if not encoded:
+            raise ValueError("invalid_frame")
+
+        data = _process_live_frame_bytes(buffer.tobytes(), payload.frame_number, payload.timestamp)
+        return {"success": True, "data": data, "message": "Live source frame processed"}
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "success": False,
+                "error": str(exc),
+                "message": "Live source frame processing failed",
+                "status_code": 400,
+            },
+        )
+    except Exception:
+        logger.exception("Live source detection failed")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "error": "live_source_failed",
+                "message": "Live source frame processing failed",
+                "status_code": 500,
+            },
+        )
+    finally:
+        cap.release()
 
 
 def _resolve_media_kind(

@@ -133,6 +133,61 @@ export async function uploadVideo(
   return data;
 }
 
+export interface LiveDetectionFrame {
+  frame_id?: number;
+  timestamp?: number;
+  plate_number?: string;
+  detection_quality?: string;
+  plate_confidence?: number;
+  vehicle_confidence?: number;
+  processing_time_ms?: number;
+  plate_bbox?: { bbox?: number[] } | number[] | null;
+  plate?: {
+    raw_text?: string;
+    cleaned_text?: string;
+    confidence?: number;
+    detection_quality?: string;
+  } | null;
+  vehicle?: Record<string, unknown> | null;
+  vehicle_type?: string;
+  vehicle_color?: string | null;
+}
+
+export interface LiveDetectionResponse {
+  success: boolean;
+  data: LiveDetectionFrame;
+  message?: string;
+}
+
+export async function detectLiveFrame(
+  frame: Blob,
+  frameNumber: number,
+  timestamp: number,
+  signal?: AbortSignal
+): Promise<LiveDetectionResponse> {
+  const form = new FormData();
+  form.append('frame', frame, `live-frame-${frameNumber}.jpg`);
+  form.append('frame_number', String(frameNumber));
+  form.append('timestamp', String(timestamp));
+
+  const { data } = await api.post('/live/frame', form, { signal });
+  return data;
+}
+
+export async function detectLiveSourceFrame(
+  source: string,
+  frameNumber: number,
+  timestamp: number,
+  signal?: AbortSignal
+): Promise<LiveDetectionResponse> {
+  const { data } = await api.post(
+    '/live/source/frame',
+    { source, frame_number: frameNumber, timestamp },
+    { signal }
+  );
+  return data;
+}
+
 export class ProcessingCancelledError extends Error {
   constructor() {
     super('Processing cancelled');

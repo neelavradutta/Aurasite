@@ -11,6 +11,7 @@ const navItems = [
   { href: '/detections', label: 'Detections' },
   { href: '/vehicles', label: 'Vehicles' },
   { href: '/analytics', label: 'Analytics' },
+  { href: '/live', label: 'Live' },
 ];
 
 export default function Header() {

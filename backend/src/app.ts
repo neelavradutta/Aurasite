@@ -18,6 +18,7 @@ import alertRoutes from './routes/alertRoutes';
 import jobRoutes from './routes/jobRoutes';
 import authRoutes from './routes/authRoutes';
 import cameraRoutes from './routes/cameraRoutes';
+import liveRoutes from './routes/liveRoutes';
 import { alertController } from './controllers/alertController';
 import { authService } from './services/authService';
 import './models';
@@ -71,6 +72,7 @@ app.use('/api/v1/alerts', alertRoutes);
 app.use('/api/v1/suspicious', alertController.suspicious);
 app.use('/api/v1/jobs', jobRoutes);
 app.use('/api/v1/cameras', cameraRoutes);
+app.use('/api/v1/live', liveRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
