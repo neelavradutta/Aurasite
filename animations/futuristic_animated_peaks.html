@@ -1,0 +1,332 @@
+<div style="background: #0a0e27; color: #fff; padding: 2rem; border-radius: 12px; font-family: 'Courier New', monospace; min-height: 600px; position: relative; overflow: hidden;">
+
+  <style>
+    @keyframes drawLine {
+      from {
+        stroke-dashoffset: 1000;
+      }
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+    
+    @keyframes fillFromBottom {
+      from {
+        opacity: 0;
+        transform: scaleY(0);
+      }
+      to {
+        opacity: 1;
+        transform: scaleY(1);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.6;
+      }
+    }
+
+    @keyframes fadeInLabel {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 350px;
+      margin-bottom: 2rem;
+      background: linear-gradient(to bottom, rgba(139, 0, 139, 0.05), rgba(25, 0, 51, 0.1));
+      border: 1px solid rgba(255, 0, 128, 0.2);
+      border-radius: 8px;
+      overflow: visible;
+    }
+
+    .peak-line {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+    }
+
+    .peak-line.animate {
+      animation: drawLine 2.5s ease-out forwards !important;
+    }
+
+    .peak-fill {
+      transform-origin: bottom;
+      transform: scaleY(0);
+    }
+
+    .peak-fill.animate {
+      animation: fillFromBottom 2s ease-out 2.5s forwards !important;
+    }
+
+    .data-point {
+    }
+
+    .data-point.animate {
+      animation: pulse 2s ease-in-out 2.5s infinite !important;
+    }
+
+    .data-label {
+      font-size: 10px;
+      font-weight: bold;
+      fill: #ff0080;
+      opacity: 0;
+    }
+
+    .label-box {
+      fill: rgba(10, 14, 39, 0.95);
+      stroke: rgba(255, 0, 128, 0.5);
+      stroke-width: 0.5;
+      rx: 2;
+      opacity: 0;
+    }
+
+    /* Individual delays for each point label (0-2.5s across 16 points) */
+    .label-1 { animation: fadeInLabel 0.2s ease-out 0.156s forwards !important; }
+    .label-2 { animation: fadeInLabel 0.2s ease-out 0.312s forwards !important; }
+    .label-3 { animation: fadeInLabel 0.2s ease-out 0.468s forwards !important; }
+    .label-4 { animation: fadeInLabel 0.2s ease-out 0.625s forwards !important; }
+    .label-5 { animation: fadeInLabel 0.2s ease-out 0.781s forwards !important; }
+    .label-6 { animation: fadeInLabel 0.2s ease-out 0.937s forwards !important; }
+    .label-7 { animation: fadeInLabel 0.2s ease-out 1.093s forwards !important; }
+    .label-8 { animation: fadeInLabel 0.2s ease-out 1.25s forwards !important; }
+    .label-9 { animation: fadeInLabel 0.2s ease-out 1.406s forwards !important; }
+    .label-10 { animation: fadeInLabel 0.2s ease-out 1.562s forwards !important; }
+    .label-11 { animation: fadeInLabel 0.2s ease-out 1.718s forwards !important; }
+    .label-12 { animation: fadeInLabel 0.2s ease-out 1.875s forwards !important; }
+    .label-13 { animation: fadeInLabel 0.2s ease-out 2.031s forwards !important; }
+    .label-14 { animation: fadeInLabel 0.2s ease-out 2.187s forwards !important; }
+    .label-15 { animation: fadeInLabel 0.2s ease-out 2.343s forwards !important; }
+    .label-16 { animation: fadeInLabel 0.2s ease-out 2.5s forwards !important; }
+
+    .control-panel {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: transparent;
+      border: 1px solid rgba(255, 0, 128, 0.5);
+      color: #ff0080;
+      padding: 8px 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: rgba(255, 0, 128, 0.15);
+      border-color: #ff0080;
+      box-shadow: 0 0 8px rgba(255, 0, 128, 0.2);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #ff0080;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: rgba(255, 0, 128, 0.5);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+
+  <div class="title">● DRAMATIC PEAKS EVOLVED</div>
+  <div class="subtitle">Real-time cybernetic data stream</div>
+
+  <div class="chart-container">
+    <svg viewBox="0 0 800 350" preserveAspectRatio="xMidYMid slice">
+      <!-- Grid background -->
+      <defs>
+        <pattern id="grid" width="100" height="50" patternUnits="userSpaceOnUse">
+          <path d="M 100 0 L 0 0 0 50" fill="none" stroke="rgba(255, 0, 128, 0.08)" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      
+      <rect width="800" height="350" fill="url(#grid)"/>
+      
+      <!-- Peak area fill -->
+      <path id="peakFill" class="peak-fill animate" d="M 50,300 L 100,180 L 150,220 L 200,140 L 250,240 L 300,130 L 350,200 L 400,120 L 450,210 L 500,160 L 550,250 L 600,140 L 650,190 L 700,170 L 750,220 L 800,150 L 800,350 L 50,350 Z" 
+        fill="rgba(255, 0, 128, 0.4)" stroke="none"/>
+      
+      <!-- Peak outline -->
+      <polyline id="peakLine" class="peak-line animate" points="50,300 100,180 150,220 200,140 250,240 300,130 350,200 400,120 450,210 500,160 550,250 600,140 650,190 700,170 750,220 800,150" 
+        fill="none" stroke="#ff0080" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <!-- Data points with labels -->
+      <g id="dataPoints" class="data-point animate">
+        <!-- Point 1 -->
+        <circle cx="50" cy="300" r="5" fill="#ff0080"/>
+        <rect class="label-box label-1" x="25" y="315" width="50" height="24" />
+        <text class="data-label label-1" x="30" y="325">DL-01/A5</text>
+        <text class="data-label label-1" x="30" y="335">45 km/h</text>
+
+        <!-- Point 2 -->
+        <circle cx="100" cy="180" r="5" fill="#ff0080"/>
+        <rect class="label-box label-2" x="75" y="160" width="50" height="24" />
+        <text class="data-label label-2" x="80" y="170">MR-02/B2</text>
+        <text class="data-label label-2" x="80" y="180">62 km/h</text>
+
+        <!-- Point 3 -->
+        <circle cx="150" cy="220" r="5" fill="#ff0080"/>
+        <rect class="label-box label-3" x="125" y="200" width="50" height="24" />
+        <text class="data-label label-3" x="130" y="210">KA-03/C8</text>
+        <text class="data-label label-3" x="130" y="220">58 km/h</text>
+
+        <!-- Point 4 -->
+        <circle cx="200" cy="140" r="5" fill="#ff0080"/>
+        <rect class="label-box label-4" x="175" y="120" width="50" height="24" />
+        <text class="data-label label-4" x="180" y="130">TN-04/D9</text>
+        <text class="data-label label-4" x="180" y="140">71 km/h</text>
+
+        <!-- Point 5 -->
+        <circle cx="250" cy="240" r="5" fill="#ff0080"/>
+        <rect class="label-box label-5" x="225" y="260" width="50" height="24" />
+        <text class="data-label label-5" x="230" y="270">GJ-05/E2</text>
+        <text class="data-label label-5" x="230" y="280">52 km/h</text>
+
+        <!-- Point 6 -->
+        <circle cx="300" cy="130" r="5" fill="#ff0080"/>
+        <rect class="label-box label-6" x="275" y="110" width="50" height="24" />
+        <text class="data-label label-6" x="280" y="120">RJ-06/F8</text>
+        <text class="data-label label-6" x="280" y="130">75 km/h</text>
+
+        <!-- Point 7 -->
+        <circle cx="350" cy="200" r="5" fill="#ff0080"/>
+        <rect class="label-box label-7" x="325" y="180" width="50" height="24" />
+        <text class="data-label label-7" x="330" y="190">BR-07/G3</text>
+        <text class="data-label label-7" x="330" y="200">68 km/h</text>
+
+        <!-- Point 8 -->
+        <circle cx="400" cy="120" r="5" fill="#ff0080"/>
+        <rect class="label-box label-8" x="375" y="100" width="50" height="24" />
+        <text class="data-label label-8" x="380" y="110">HR-07/B8</text>
+        <text class="data-label label-8" x="380" y="120">82 km/h</text>
+
+        <!-- Point 9 -->
+        <circle cx="450" cy="210" r="5" fill="#ff0080"/>
+        <rect class="label-box label-9" x="425" y="230" width="50" height="24" />
+        <text class="data-label label-9" x="430" y="240">UP-09/B9</text>
+        <text class="data-label label-9" x="430" y="250">55 km/h</text>
+
+        <!-- Point 10 -->
+        <circle cx="500" cy="160" r="5" fill="#ff0080"/>
+        <rect class="label-box label-10" x="475" y="140" width="50" height="24" />
+        <text class="data-label label-10" x="480" y="150">MH-10/A2</text>
+        <text class="data-label label-10" x="480" y="160">67 km/h</text>
+
+        <!-- Point 11 -->
+        <circle cx="550" cy="250" r="5" fill="#ff0080"/>
+        <rect class="label-box label-11" x="525" y="270" width="50" height="24" />
+        <text class="data-label label-11" x="530" y="280">TG-07/B8</text>
+        <text class="data-label label-11" x="530" y="290">48 km/h</text>
+
+        <!-- Point 12 -->
+        <circle cx="600" cy="140" r="5" fill="#ff0080"/>
+        <rect class="label-box label-12" x="575" y="120" width="50" height="24" />
+        <text class="data-label label-12" x="580" y="130">HR-08/C5</text>
+        <text class="data-label label-12" x="580" y="140">73 km/h</text>
+
+        <!-- Point 13 -->
+        <circle cx="650" cy="190" r="5" fill="#ff0080"/>
+        <rect class="label-box label-13" x="625" y="170" width="50" height="24" />
+        <text class="data-label label-13" x="630" y="180">DL-09/F6</text>
+        <text class="data-label label-13" x="630" y="190">61 km/h</text>
+
+        <!-- Point 14 -->
+        <circle cx="700" cy="170" r="5" fill="#ff0080"/>
+        <rect class="label-box label-14" x="675" y="150" width="50" height="24" />
+        <text class="data-label label-14" x="680" y="160">MR-10/A7</text>
+        <text class="data-label label-14" x="680" y="170">69 km/h</text>
+
+        <!-- Point 15 -->
+        <circle cx="750" cy="220" r="5" fill="#ff0080"/>
+        <rect class="label-box label-15" x="725" y="240" width="50" height="24" />
+        <text class="data-label label-15" x="730" y="250">BR-07/B8</text>
+        <text class="data-label label-15" x="730" y="260">59 km/h</text>
+
+        <!-- Point 16 -->
+        <circle cx="800" cy="150" r="5" fill="#ff0080"/>
+        <rect class="label-box label-16" x="775" y="130" width="50" height="24" />
+        <text class="data-label label-16" x="780" y="140">HR-08/D5</text>
+        <text class="data-label label-16" x="780" y="150">76 km/h</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="control-panel">
+    <button onclick="restartAnimation()">▶ Restart Animation</button>
+    <button onclick="alert('Data export feature - coming soon')">⬇ Export Data</button>
+    <button onclick="alert('Analysis mode enabled')">⚙ Analyze</button>
+  </div>
+
+  <script>
+    function restartAnimation() {
+      const peakLine = document.getElementById('peakLine');
+      const peakFill = document.getElementById('peakFill');
+      const dataPoints = document.getElementById('dataPoints');
+      
+      // Cancel all running animations
+      peakLine.getAnimations().forEach(anim => anim.cancel());
+      peakFill.getAnimations().forEach(anim => anim.cancel());
+      dataPoints.getAnimations().forEach(anim => anim.cancel());
+      
+      // Reset styles
+      peakLine.style.animation = 'none';
+      peakFill.style.animation = 'none';
+      dataPoints.style.animation = 'none';
+      
+      peakLine.classList.remove('animate');
+      peakFill.classList.remove('animate');
+      dataPoints.classList.remove('animate');
+      
+      // Force reflow
+      void peakLine.offsetWidth;
+      void peakFill.offsetWidth;
+      void dataPoints.offsetWidth;
+      
+      // Restart animations
+      setTimeout(() => {
+        peakLine.classList.add('animate');
+        peakFill.classList.add('animate');
+        dataPoints.classList.add('animate');
+      }, 50);
+    }
+    
+    // Start animation on load
+    window.addEventListener('load', () => {
+      restartAnimation();
+    });
+  </script>
+</div>

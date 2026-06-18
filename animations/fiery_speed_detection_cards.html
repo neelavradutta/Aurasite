@@ -1,0 +1,120 @@
+<div style="background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%); padding: 2rem 1.5rem; border-radius: 12px; min-height: 400px;">
+  <style>
+    @keyframes fireFlicker {
+      0%, 100% { opacity: 0.7; transform: scale(1) skewY(-2deg); }
+      50% { opacity: 1; transform: scale(1.05) skewY(2deg); }
+    }
+    @keyframes fireGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 100, 20, 0.4), 0 0 40px rgba(255, 60, 10, 0.2); }
+      50% { box-shadow: 0 0 30px rgba(255, 120, 40, 0.6), 0 0 60px rgba(255, 80, 20, 0.3); }
+    }
+    @keyframes floatingEmber {
+      0% { transform: translateY(0) translateX(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-80px) translateX(var(--tx, 0)); opacity: 0; }
+    }
+    .speed-card {
+      background: linear-gradient(135deg, #0f1a35 0%, #1a0f2e 100%);
+      border: 1.5px solid #00ffff;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+      animation: fireGlow 2s ease-in-out infinite;
+    }
+    .fire-border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, rgba(255, 100, 20, 0) 0%, rgba(255, 100, 20, 0.15) 50%, rgba(255, 100, 20, 0) 100%);
+      pointer-events: none;
+      animation: fireFlicker 0.6s ease-in-out infinite;
+      border-radius: 8px;
+    }
+    .speed-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .plate {
+      font-family: 'Courier New', monospace;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #00ffff;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    }
+    .speed-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-align: center;
+      color: #ff6600;
+      text-shadow: 0 0 15px rgba(255, 100, 20, 0.8);
+    }
+    .speed-unit {
+      font-size: 0.7rem;
+      color: #ff6600;
+      margin-top: -4px;
+    }
+    .speed-indicator {
+      position: relative;
+    }
+    .ember {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: radial-gradient(circle, #ffff00, #ff6600, #ff0000);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .ember1 { animation: floatingEmber 2s ease-out infinite; --tx: -20px; left: 20%; }
+    .ember2 { animation: floatingEmber 2.5s ease-out 0.3s infinite; --tx: 25px; left: 50%; }
+    .ember3 { animation: floatingEmber 2.2s ease-out 0.6s infinite; --tx: -15px; left: 75%; }
+    .title {
+      color: #00ffff;
+      font-size: 0.9rem;
+      letter-spacing: 3px;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      text-transform: uppercase;
+    }
+  </style>
+  
+  <div class="title">⚡ Vehicle Speed Detection</div>
+  
+  <div class="speed-card" style="animation-duration: 1.8s;">
+    <div class="fire-border"></div>
+    <div class="speed-content">
+      <div class="plate">66HH07</div>
+      <div class="speed-indicator">
+        <div class="speed-value">3.25</div>
+        <div class="speed-unit">KM/H</div>
+        <div class="ember ember1"></div>
+        <div class="ember ember2"></div>
+        <div class="ember ember3"></div>
+      </div>
+      <div class="plate">K884RS</div>
+    </div>
+  </div>
+
+  <div class="speed-card" style="animation-duration: 1.2s;">
+    <div class="fire-border"></div>
+    <div class="speed-content">
+      <div class="plate">L605HZ</div>
+      <div class="speed-indicator">
+        <div class="speed-value">1525</div>
+        <div class="speed-unit">KM/H</div>
+        <div class="ember ember1"></div>
+        <div class="ember ember2"></div>
+        <div class="ember ember3"></div>
+      </div>
+      <div class="plate">N594JV</div>
+    </div>
+  </div>
+</div>

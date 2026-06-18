@@ -1,0 +1,131 @@
+<style>
+  .demo {
+    padding: 0.5rem 0;
+  }
+
+  .bar {
+    background: var(--color-background-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+  }
+
+  .text {
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  .row {
+    margin-bottom: 20px;
+  }
+
+  .label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  /* Short pause - 2s in, 3s pause, 2s out = 7s total */
+  .short-pause {
+    animation: scrollShort 7s ease-in-out infinite;
+  }
+
+  @keyframes scrollShort {
+    0% { transform: translateX(100%); }
+    28% { transform: translateX(0%); }
+    72% { transform: translateX(0%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Medium pause - 2s in, 6s pause, 2s out = 10s total */
+  .medium-pause {
+    animation: scrollMedium 10s ease-in-out infinite;
+  }
+
+  @keyframes scrollMedium {
+    0% { transform: translateX(100%); }
+    20% { transform: translateX(0%); }
+    80% { transform: translateX(0%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Long pause - 2s in, 10s pause, 2s out = 14s total */
+  .long-pause {
+    animation: scrollLong 14s ease-in-out infinite;
+  }
+
+  @keyframes scrollLong {
+    0% { transform: translateX(100%); }
+    14% { transform: translateX(0%); }
+    86% { transform: translateX(0%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Very long pause - 2s in, 15s pause, 2s out = 19s total */
+  .very-long-pause {
+    animation: scrollVeryLong 19s ease-in-out infinite;
+  }
+
+  @keyframes scrollVeryLong {
+    0% { transform: translateX(100%); }
+    10% { transform: translateX(0%); }
+    90% { transform: translateX(0%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Extra long pause - 2s in, 20s pause, 2s out = 24s total */
+  .extra-long-pause {
+    animation: scrollExtraLong 24s ease-in-out infinite;
+  }
+
+  @keyframes scrollExtraLong {
+    0% { transform: translateX(100%); }
+    8% { transform: translateX(0%); }
+    92% { transform: translateX(0%); }
+    100% { transform: translateX(100%); }
+  }
+</style>
+
+<div class="demo">
+  <div class="row">
+    <div class="label">Short pause (7s total: 2s in + 3s pause + 2s out)</div>
+    <div class="bar">
+      <span class="text short-pause">✅ Build complete — All tests passed</span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">Medium pause (10s total: 2s in + 6s pause + 2s out)</div>
+    <div class="bar">
+      <span class="text medium-pause">📥 Download: file_v2.3.zip — 523 MB</span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">Long pause (14s total: 2s in + 10s pause + 2s out)</div>
+    <div class="bar">
+      <span class="text long-pause">⚠️ System maintenance tonight at 2 AM — Services offline 30 minutes</span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">Very long pause (19s total: 2s in + 15s pause + 2s out)</div>
+    <div class="bar">
+      <span class="text very-long-pause">🚀 Version 3.2.0 deployed to production — 47 changes, rollback ready</span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">Extra long pause (24s total: 2s in + 20s pause + 2s out)</div>
+    <div class="bar">
+      <span class="text extra-long-pause">📊 Dashboard updated: 2.3K visitors, +18% conversion, $4,521 revenue</span>
+    </div>
+  </div>
+</div>

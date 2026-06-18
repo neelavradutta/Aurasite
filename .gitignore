@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Uploads & models
+uploads/
+ai-service/uploads/
+backend/data/
+data/mysql/
+backend/uploads/
+*.pt
+*.onnx
+ai-service/models/*.pt
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Docker
+mysql_data/
+redis_data/
+
+# Coverage
+coverage/
+.coverage
+htmlcov/
+
+# Misc
+*.pem
+.cache/

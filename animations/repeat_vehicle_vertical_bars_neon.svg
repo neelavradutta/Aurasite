@@ -1,0 +1,97 @@
+<svg width="100%" viewBox="0 0 690 510" role="img" xmlns="http://www.w3.org/2000/svg" style="">
+  <title style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Repeat Vehicle Analysis - Vertical Bars</title>
+  <desc style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Vertical bar chart showing unique vs repeat vehicles with neon cyberpunk styling</desc>
+
+  <defs>
+    
+  <mask id="imagine-text-gaps-ll4h25" maskUnits="userSpaceOnUse"><rect x="0" y="0" width="690" height="510" fill="white"/><rect x="36" y="23" width="408.26251220703125" height="31.200000762939453" fill="black" rx="2"/><rect x="57.78750228881836" y="298.3999938964844" width="16.21250057220459" height="17.600000381469727" fill="black" rx="2"/><rect x="49.587501525878906" y="238.40000915527344" width="24.412500381469727" height="17.600000381469727" fill="black" rx="2"/><rect x="41.38750076293945" y="178.40000915527344" width="32.61250114440918" height="17.600000381469727" fill="black" rx="2"/><rect x="41.38750076293945" y="118.4000015258789" width="32.61250114440918" height="17.600000381469727" fill="black" rx="2"/><rect x="140.3937530517578" y="344.3999938964844" width="78.4124984741211" height="22.399999618530273" fill="black" rx="2"/><rect x="147.19375610351562" y="391.6000061035156" width="65.61249923706055" height="40" fill="black" rx="2"/><rect x="122.6875" y="433.3999938964844" width="114.625" height="17.600000381469727" fill="black" rx="2"/><rect x="421.1937561035156" y="344.3999938964844" width="77.61250305175781" height="22.399999618530273" fill="black" rx="2"/><rect x="436.79376220703125" y="391.6000061035156" width="46.41250228881836" height="40" fill="black" rx="2"/><rect x="414.9937438964844" y="433.3999938964844" width="90.01250457763672" height="17.600000381469727" fill="black" rx="2"/><rect x="96" y="393.3999938964844" width="122.82500457763672" height="17.600000381469727" fill="black" rx="2"/><rect x="96" y="414.8000183105469" width="58.41250228881836" height="36" fill="black" rx="2"/><rect x="436" y="393.3999938964844" width="106.42500305175781" height="17.600000381469727" fill="black" rx="2"/><rect x="436" y="414.8000183105469" width="92.0250015258789" height="36" fill="black" rx="2"/></mask></defs>
+
+  <!-- Dark background -->
+  <rect width="680" height="500" style="fill:rgb(10, 22, 40);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Grid pattern overlay -->
+  <defs>
+    <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#00E5FF" stroke-width="0.3" opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect width="680" height="500" fill="url(#grid-pattern)" style="stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Title -->
+  <text style="font-size: 24px; fill: #00E5FF; font-family: 'Courier New', monospace; font-weight: bold; letter-spacing: 3px;;fill:rgb(0, 229, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Courier New&quot;, monospace;font-size:24px;font-weight:700;text-anchor:start;dominant-baseline:auto" x="40" y="45">REPEAT VEHICLE ANALYSIS</text>
+
+  <!-- Horizontal grid lines -->
+  <line x1="80" y1="120" x2="600" y2="120" style="fill:rgb(0, 0, 0);stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.15;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <line x1="80" y1="180" x2="600" y2="180" style="fill:rgb(0, 0, 0);stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.15;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <line x1="80" y1="240" x2="600" y2="240" style="fill:rgb(0, 0, 0);stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.15;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <line x1="80" y1="300" x2="600" y2="300" style="fill:rgb(0, 0, 0);stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:0.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.15;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Y-axis scale labels -->
+  <text x="70" y="310" text-anchor="end" style="fill:rgb(0, 168, 204);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Courier New&quot;, monospace;font-size:12px;font-weight:400;text-anchor:end;dominant-baseline:auto">0</text>
+  <text x="70" y="250" text-anchor="end" style="fill:rgb(0, 168, 204);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Courier New&quot;, monospace;font-size:12px;font-weight:400;text-anchor:end;dominant-baseline:auto">50</text>
+  <text x="70" y="190" text-anchor="end" style="fill:rgb(0, 168, 204);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Courier New&quot;, monospace;font-size:12px;font-weight:400;text-anchor:end;dominant-baseline:auto">100</text>
+  <text x="70" y="130" text-anchor="end" style="fill:rgb(0, 168, 204);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Courier New&quot;, monospace;font-size:12px;font-weight:400;text-anchor:end;dominant-baseline:auto">150</text>
+
+  <!-- Base line -->
+  <line x1="80" y1="310" x2="600" y2="310" stroke="#00E5FF" stroke-width="1" opacity="0.5" style="fill:rgb(0, 0, 0);stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.5;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- BAR 1: UNIQUE (142 vehicles) -->
+  <g style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+    <!-- Bar container with glow effect -->
+    <rect x="140" y="80" width="80" height="230" style="--h: 230px; animation-delay: 0s;fill:rgb(0, 229, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" rx="2"/>
+    
+    <!-- Border -->
+    <rect x="140" y="80" width="80" height="230" fill="none" rx="2" style="animation-delay: 0s;fill:none;stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    
+    <!-- Label below -->
+    <text x="180" y="360" text-anchor="middle" style="fill:rgb(0, 229, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Courier New&quot;, monospace;font-size:16px;font-weight:700;text-anchor:middle;dominant-baseline:auto">UNIQUE</text>
+    
+    <!-- Value count -->
+    <text x="180" y="420" text-anchor="middle" style="fill:rgb(0, 229, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Courier New&quot;, monospace;font-size:32px;font-weight:700;text-anchor:middle;dominant-baseline:auto">142</text>
+    
+    <!-- Small detail -->
+    <text x="180" y="445" text-anchor="middle" style="fill:rgb(0, 168, 204);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Courier New&quot;, monospace;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:auto">ONE-TIME ONLY</text>
+  </g>
+
+  <!-- BAR 2: REPEAT (26 detections across 5 vehicles) -->
+  <g style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+    <!-- Bar container with glow effect -->
+    <rect x="420" y="222" width="80" height="88" style="--h: 88px; animation-delay: 0.2s;fill:rgb(255, 0, 110);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto" rx="2"/>
+    
+    <!-- Border -->
+    <rect x="420" y="222" width="80" height="88" fill="none" stroke="#FF006E" stroke-width="1.5" rx="2" style="animation-delay: 0.2s;fill:none;stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    
+    <!-- Label below -->
+    <text style="font-size: 16px; fill: #FF006E; font-family: 'Courier New', monospace; font-weight: bold; letter-spacing: 2px;;fill:rgb(255, 0, 110);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Courier New&quot;, monospace;font-size:16px;font-weight:700;text-anchor:middle;dominant-baseline:auto" x="460" y="360" text-anchor="middle">REPEAT</text>
+    
+    <!-- Value count -->
+    <text style="font-size: 32px; fill: #FF006E; font-family: 'Courier New', monospace; font-weight: bold;;fill:rgb(255, 0, 110);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Courier New&quot;, monospace;font-size:32px;font-weight:700;text-anchor:middle;dominant-baseline:auto" x="460" y="420" text-anchor="middle">26</text>
+    
+    <!-- Small detail -->
+    <text style="font-size: 12px; fill: #FF1744; font-family: 'Courier New', monospace; letter-spacing: 1px; opacity: 0.8;;fill:rgb(255, 23, 68);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Courier New&quot;, monospace;font-size:12px;font-weight:400;text-anchor:middle;dominant-baseline:auto" x="460" y="445" text-anchor="middle">5 VEHICLES</text>
+  </g>
+
+  <!-- Top corner decoration -->
+  <g style="opacity: 0.6;;fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+    <line x1="50" y1="20" x2="70" y2="20" stroke="#00E5FF" stroke-width="2" style="fill:rgb(0, 0, 0);stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <line x1="50" y1="20" x2="50" y2="40" stroke="#00E5FF" stroke-width="2" mask="url(#imagine-text-gaps-ll4h25)" style="fill:rgb(0, 0, 0);stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  </g>
+
+  <g style="opacity: 0.6;;fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+    <line x1="630" y1="20" x2="610" y2="20" stroke="#00E5FF" stroke-width="2" style="fill:rgb(0, 0, 0);stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <line x1="630" y1="20" x2="630" y2="40" stroke="#00E5FF" stroke-width="2" style="fill:rgb(0, 0, 0);stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  </g>
+
+  <!-- Bottom info boxes -->
+  <g style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+    <rect x="80" y="380" width="180" height="90" rx="4" fill="none" stroke="#00E5FF" stroke-width="1" opacity="0.6" style="fill:none;stroke:rgb(0, 229, 255);color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <text x="100" y="405" style="fill:rgb(0, 168, 204);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Courier New&quot;, monospace;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto">TOTAL VEHICLES</text>
+    <text style="font-size: 28px; fill: #00E5FF; font-family: 'Courier New', monospace; font-weight: bold;;fill:rgb(0, 229, 255);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Courier New&quot;, monospace;font-size:28px;font-weight:700;text-anchor:start;dominant-baseline:auto" x="100" y="440">168</text>
+  </g>
+
+  <g style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+    <rect x="420" y="380" width="180" height="90" rx="4" fill="none" stroke="#FF006E" stroke-width="1" opacity="0.6" style="fill:none;stroke:rgb(255, 0, 110);color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+    <text style="font-size: 12px; fill: #FF1744; font-family: 'Courier New', monospace; letter-spacing: 1px; opacity: 0.8;;fill:rgb(255, 23, 68);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Courier New&quot;, monospace;font-size:12px;font-weight:400;text-anchor:start;dominant-baseline:auto" x="440" y="405">REPEAT RATIO</text>
+    <text style="font-size: 28px; fill: #FF006E; font-family: 'Courier New', monospace; font-weight: bold;;fill:rgb(255, 0, 110);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Courier New&quot;, monospace;font-size:28px;font-weight:700;text-anchor:start;dominant-baseline:auto" x="440" y="440">15.5%</text>
+  </g>
+</svg>

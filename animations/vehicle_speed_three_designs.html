@@ -1,0 +1,346 @@
+<div style="padding: 20px; background: #f5f5f5;">
+
+<!-- DESIGN 1: MOUNTAIN PEAKS -->
+<div style="background: white; border-radius: 14px; padding: 28px; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+  <div style="margin-bottom: 20px;">
+    <div style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px;">Design 1: Mountain Peaks</div>
+    <div style="font-size: 12px; color: #666;">Area chart with gradient fill - looks like mountain range</div>
+  </div>
+  
+  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 30px; margin-bottom: 20px; overflow: hidden;">
+    <svg id="design1Svg" viewBox="0 0 1000 300" style="width: 100%; height: 300px; display: block;">
+      <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#fff;stop-opacity:0.4" />
+          <stop offset="100%" style="stop-color:#fff;stop-opacity:0" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+  
+  <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+    <input id="d1Plate" type="text" placeholder="Plate (DL-01)" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; font-size: 12px;" />
+    <input id="d1Speed" type="number" placeholder="Speed" min="0" max="120" style="flex: 0.5; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px;" />
+    <button onclick="design1Add()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Add</button>
+    <button onclick="design1Plot()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Plot</button>
+    <button onclick="design1Sample()" style="padding: 10px 20px; background: transparent; border: 2px solid #667eea; color: #667eea; border-radius: 6px; font-weight: 600; cursor: pointer;">Sample</button>
+  </div>
+  
+  <div id="d1Data" style="background: #f9f9f9; border-radius: 6px; padding: 12px; display: flex; gap: 6px; flex-wrap: wrap; min-height: 32px;"></div>
+</div>
+
+<!-- DESIGN 2: SMOOTH WAVES -->
+<div style="background: white; border-radius: 14px; padding: 28px; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+  <div style="margin-bottom: 20px;">
+    <div style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px;">Design 2: Smooth Waves</div>
+    <div style="font-size: 12px; color: #666;">Gradient flowing waves - like rolling hills</div>
+  </div>
+  
+  <div style="background: linear-gradient(180deg, #00d4ff 0%, #0099ff 100%); border-radius: 12px; padding: 30px; margin-bottom: 20px; overflow: hidden;">
+    <svg id="design2Svg" viewBox="0 0 1000 300" style="width: 100%; height: 300px; display: block;">
+      <defs>
+        <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#fff;stop-opacity:0.3" />
+          <stop offset="100%" style="stop-color:#0066cc;stop-opacity:0.1" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+  
+  <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+    <input id="d2Plate" type="text" placeholder="Plate (MH-02)" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; font-size: 12px;" />
+    <input id="d2Speed" type="number" placeholder="Speed" min="0" max="120" style="flex: 0.5; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px;" />
+    <button onclick="design2Add()" style="padding: 10px 20px; background: #0099ff; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Add</button>
+    <button onclick="design2Plot()" style="padding: 10px 20px; background: #0099ff; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Plot</button>
+    <button onclick="design2Sample()" style="padding: 10px 20px; background: transparent; border: 2px solid #0099ff; color: #0099ff; border-radius: 6px; font-weight: 600; cursor: pointer;">Sample</button>
+  </div>
+  
+  <div id="d2Data" style="background: #f9f9f9; border-radius: 6px; padding: 12px; display: flex; gap: 6px; flex-wrap: wrap; min-height: 32px;"></div>
+</div>
+
+<!-- DESIGN 3: DRAMATIC PEAKS -->
+<div style="background: white; border-radius: 14px; padding: 28px; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+  <div style="margin-bottom: 20px;">
+    <div style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px;">Design 3: Dramatic Peaks</div>
+    <div style="font-size: 12px; color: #666;">Dark theme with sharp peaks - professional & bold</div>
+  </div>
+  
+  <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 12px; padding: 30px; margin-bottom: 20px; overflow: hidden;">
+    <svg id="design3Svg" viewBox="0 0 1000 300" style="width: 100%; height: 300px; display: block;">
+      <defs>
+        <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#ff006e;stop-opacity:0.4" />
+          <stop offset="100%" style="stop-color:#ff006e;stop-opacity:0" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+  
+  <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+    <input id="d3Plate" type="text" placeholder="Plate (KA-03)" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; font-size: 12px;" />
+    <input id="d3Speed" type="number" placeholder="Speed" min="0" max="120" style="flex: 0.5; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px;" />
+    <button onclick="design3Add()" style="padding: 10px 20px; background: #ff006e; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Add</button>
+    <button onclick="design3Plot()" style="padding: 10px 20px; background: #ff006e; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Plot</button>
+    <button onclick="design3Sample()" style="padding: 10px 20px; background: transparent; border: 2px solid #ff006e; color: #ff006e; border-radius: 6px; font-weight: 600; cursor: pointer;">Sample</button>
+  </div>
+  
+  <div id="d3Data" style="background: #f9f9f9; border-radius: 6px; padding: 12px; display: flex; gap: 6px; flex-wrap: wrap; min-height: 32px;"></div>
+</div>
+
+</div>
+
+<script>
+const sampleVehicles = [
+  { plate: 'DL-01', speed: 45 },
+  { plate: 'MH-02', speed: 82 },
+  { plate: 'KA-03', speed: 28 },
+  { plate: 'TN-04', speed: 95 },
+  { plate: 'GJ-05', speed: 62 },
+  { plate: 'RJ-06', speed: 38 },
+  { plate: 'PB-07', speed: 78 },
+  { plate: 'HR-08', speed: 55 },
+  { plate: 'UP-09', speed: 89 },
+  { plate: 'WB-10', speed: 42 }
+];
+
+let data1 = [], data2 = [], data3 = [];
+
+// DESIGN 1
+function design1Add() {
+  const p = document.getElementById('d1Plate').value.trim();
+  const s = parseInt(document.getElementById('d1Speed').value);
+  if (p && s >= 0 && s <= 120) {
+    data1.push({plate: p, speed: s});
+    document.getElementById('d1Plate').value = '';
+    document.getElementById('d1Speed').value = '';
+  }
+}
+
+function design1Sample() {
+  data1 = [...sampleVehicles];
+  design1Plot();
+}
+
+function design1Plot() {
+  if (data1.length < 2) return;
+  const svg = document.getElementById('design1Svg');
+  const display = document.getElementById('d1Data');
+  svg.innerHTML = '<defs><linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#fff;stop-opacity:0.4" /><stop offset="100%" style="stop-color:#fff;stop-opacity:0" /></linearGradient></defs>';
+  display.innerHTML = '';
+  
+  const points = data1.map((v, i) => ({
+    x: 50 + (i / (data1.length - 1)) * 900,
+    y: 250 - (v.speed / 120) * 200,
+    plate: v.plate,
+    speed: v.speed
+  }));
+  
+  let pathD = 'M ' + points[0].x + ' ' + points[0].y;
+  for (let i = 1; i < points.length; i++) {
+    pathD += ' L ' + points[i].x + ' ' + points[i].y;
+  }
+  pathD += ' L ' + points[points.length-1].x + ' 300 L 50 300 Z';
+  
+  const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  area.setAttribute('d', pathD);
+  area.setAttribute('fill', 'url(#grad1)');
+  area.setAttribute('stroke', 'none');
+  svg.appendChild(area);
+  
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  line.setAttribute('d', pathD.replace(' L ' + points[points.length-1].x + ' 300 L 50 300 Z', ''));
+  line.setAttribute('stroke', '#fff');
+  line.setAttribute('stroke-width', '3');
+  line.setAttribute('fill', 'none');
+  line.setAttribute('stroke-linecap', 'round');
+  line.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(line);
+  
+  let idx = 0;
+  const int = setInterval(() => {
+    if (idx >= points.length) { clearInterval(int); return; }
+    const p = points[idx];
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', p.x);
+    c.setAttribute('cy', p.y);
+    c.setAttribute('r', '5');
+    c.setAttribute('fill', '#fff');
+    c.setAttribute('stroke', 'rgba(255,255,255,0.3)');
+    c.setAttribute('stroke-width', '3');
+    svg.appendChild(c);
+    
+    const tag = document.createElement('div');
+    tag.style.background = '#fff';
+    tag.style.color = '#667eea';
+    tag.style.padding = '4px 10px';
+    tag.style.borderRadius = '4px';
+    tag.style.fontSize = '10px';
+    tag.style.fontWeight = '700';
+    tag.style.fontFamily = 'monospace';
+    tag.textContent = p.plate + '/' + p.speed;
+    display.appendChild(tag);
+    idx++;
+  }, 100);
+}
+
+// DESIGN 2
+function design2Add() {
+  const p = document.getElementById('d2Plate').value.trim();
+  const s = parseInt(document.getElementById('d2Speed').value);
+  if (p && s >= 0 && s <= 120) {
+    data2.push({plate: p, speed: s});
+    document.getElementById('d2Plate').value = '';
+    document.getElementById('d2Speed').value = '';
+  }
+}
+
+function design2Sample() {
+  data2 = [...sampleVehicles];
+  design2Plot();
+}
+
+function design2Plot() {
+  if (data2.length < 2) return;
+  const svg = document.getElementById('design2Svg');
+  const display = document.getElementById('d2Data');
+  svg.innerHTML = '<defs><linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#fff;stop-opacity:0.3" /><stop offset="100%" style="stop-color:#0066cc;stop-opacity:0.1" /></linearGradient></defs>';
+  display.innerHTML = '';
+  
+  const points = data2.map((v, i) => ({
+    x: 50 + (i / (data2.length - 1)) * 900,
+    y: 250 - (v.speed / 120) * 200,
+    plate: v.plate,
+    speed: v.speed
+  }));
+  
+  let pathD = 'M ' + points[0].x + ' ' + points[0].y;
+  for (let i = 1; i < points.length; i++) {
+    pathD += ' L ' + points[i].x + ' ' + points[i].y;
+  }
+  pathD += ' L ' + points[points.length-1].x + ' 300 L 50 300 Z';
+  
+  const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  area.setAttribute('d', pathD);
+  area.setAttribute('fill', 'url(#grad2)');
+  area.setAttribute('stroke', 'none');
+  svg.appendChild(area);
+  
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  line.setAttribute('d', pathD.replace(' L ' + points[points.length-1].x + ' 300 L 50 300 Z', ''));
+  line.setAttribute('stroke', '#fff');
+  line.setAttribute('stroke-width', '3');
+  line.setAttribute('fill', 'none');
+  line.setAttribute('stroke-linecap', 'round');
+  line.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(line);
+  
+  let idx = 0;
+  const int = setInterval(() => {
+    if (idx >= points.length) { clearInterval(int); return; }
+    const p = points[idx];
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', p.x);
+    c.setAttribute('cy', p.y);
+    c.setAttribute('r', '5');
+    c.setAttribute('fill', '#fff');
+    c.setAttribute('stroke', 'rgba(255,255,255,0.3)');
+    c.setAttribute('stroke-width', '3');
+    svg.appendChild(c);
+    
+    const tag = document.createElement('div');
+    tag.style.background = '#0099ff';
+    tag.style.color = '#fff';
+    tag.style.padding = '4px 10px';
+    tag.style.borderRadius = '4px';
+    tag.style.fontSize = '10px';
+    tag.style.fontWeight = '700';
+    tag.style.fontFamily = 'monospace';
+    tag.textContent = p.plate + '/' + p.speed;
+    display.appendChild(tag);
+    idx++;
+  }, 100);
+}
+
+// DESIGN 3
+function design3Add() {
+  const p = document.getElementById('d3Plate').value.trim();
+  const s = parseInt(document.getElementById('d3Speed').value);
+  if (p && s >= 0 && s <= 120) {
+    data3.push({plate: p, speed: s});
+    document.getElementById('d3Plate').value = '';
+    document.getElementById('d3Speed').value = '';
+  }
+}
+
+function design3Sample() {
+  data3 = [...sampleVehicles];
+  design3Plot();
+}
+
+function design3Plot() {
+  if (data3.length < 2) return;
+  const svg = document.getElementById('design3Svg');
+  const display = document.getElementById('d3Data');
+  svg.innerHTML = '<defs><linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#ff006e;stop-opacity:0.4" /><stop offset="100%" style="stop-color:#ff006e;stop-opacity:0" /></linearGradient></defs>';
+  display.innerHTML = '';
+  
+  const points = data3.map((v, i) => ({
+    x: 50 + (i / (data3.length - 1)) * 900,
+    y: 250 - (v.speed / 120) * 200,
+    plate: v.plate,
+    speed: v.speed
+  }));
+  
+  let pathD = 'M ' + points[0].x + ' ' + points[0].y;
+  for (let i = 1; i < points.length; i++) {
+    pathD += ' L ' + points[i].x + ' ' + points[i].y;
+  }
+  pathD += ' L ' + points[points.length-1].x + ' 300 L 50 300 Z';
+  
+  const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  area.setAttribute('d', pathD);
+  area.setAttribute('fill', 'url(#grad3)');
+  area.setAttribute('stroke', 'none');
+  svg.appendChild(area);
+  
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  line.setAttribute('d', pathD.replace(' L ' + points[points.length-1].x + ' 300 L 50 300 Z', ''));
+  line.setAttribute('stroke', '#ff006e');
+  line.setAttribute('stroke-width', '3');
+  line.setAttribute('fill', 'none');
+  line.setAttribute('stroke-linecap', 'round');
+  line.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(line);
+  
+  let idx = 0;
+  const int = setInterval(() => {
+    if (idx >= points.length) { clearInterval(int); return; }
+    const p = points[idx];
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', p.x);
+    c.setAttribute('cy', p.y);
+    c.setAttribute('r', '5');
+    c.setAttribute('fill', '#ff006e');
+    c.setAttribute('stroke', 'rgba(255,255,255,0.3)');
+    c.setAttribute('stroke-width', '3');
+    svg.appendChild(c);
+    
+    const tag = document.createElement('div');
+    tag.style.background = '#ff006e';
+    tag.style.color = '#fff';
+    tag.style.padding = '4px 10px';
+    tag.style.borderRadius = '4px';
+    tag.style.fontSize = '10px';
+    tag.style.fontWeight = '700';
+    tag.style.fontFamily = 'monospace';
+    tag.textContent = p.plate + '/' + p.speed;
+    display.appendChild(tag);
+    idx++;
+  }, 100);
+}
+
+// Load samples on init
+design1Sample();
+design2Sample();
+design3Sample();
+</script>
