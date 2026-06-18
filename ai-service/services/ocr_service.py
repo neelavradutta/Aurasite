@@ -214,6 +214,40 @@ def _select_ocr_text(texts: list[str], confidences: list[float]) -> tuple[str, f
     return best_text, best_conf
 
 
+def _image_ocr_text_candidates(texts: list[str], confidences: list[float]) -> list[tuple[str, float]]:
+    """Image OCR often reads dealer/watermark text too; score each line before joining."""
+    pairs = [
+        (str(text), float(confidences[idx]) if idx < len(confidences) else 0.5)
+        for idx, text in enumerate(texts)
+        if str(text).strip()
+    ]
+    if not pairs:
+        return []
+
+    candidates: list[tuple[str, float]] = pairs[:]
+    if len(pairs) > 1:
+        joined = " ".join(text for text, _ in pairs)
+        avg_conf = sum(conf for _, conf in pairs) / len(pairs)
+        candidates.append((joined, avg_conf))
+
+        for start in range(len(pairs)):
+            for end in range(start + 2, min(len(pairs), start + 3) + 1):
+                chunk = pairs[start:end]
+                text = " ".join(item[0] for item in chunk)
+                conf = sum(item[1] for item in chunk) / len(chunk)
+                candidates.append((text, conf))
+
+    seen: set[str] = set()
+    unique: list[tuple[str, float]] = []
+    for text, confidence in candidates:
+        key = plate_key(text)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        unique.append((text, confidence))
+    return unique
+
+
 def _video_candidate_rank(candidate: dict[str, Any]) -> tuple[float, int]:
     text = plate_key(str(candidate.get("cleaned_text", "")))
     confidence = float(candidate.get("confidence", 0))
@@ -256,15 +290,9 @@ def recognize_plate_crop(plate_crop: np.ndarray, frame_id: int = 0) -> dict[str,
 
         if is_video_mode():
             raw_text, confidence = _select_ocr_text(texts, confidences)
-        else:
-            raw_text = " ".join(texts)
-            confidence = sum(confidences) / len(confidences) if confidences else 0.5
-
-        candidate = _normalize_ocr_text(raw_text, confidence=confidence)
-        if candidate["cleaned_text"] in {"UNKNOWN", "UNREADABLE", "REJECTED"}:
-            continue
-
-        if is_video_mode():
+            candidate = _normalize_ocr_text(raw_text, confidence=confidence)
+            if candidate["cleaned_text"] in {"UNKNOWN", "UNREADABLE", "REJECTED"}:
+                continue
             rank = _video_candidate_rank(candidate)
             if confidence >= min_conf and (best_video_rank is None or rank < best_video_rank):
                 best = candidate
@@ -274,13 +302,24 @@ def recognize_plate_crop(plate_crop: np.ndarray, frame_id: int = 0) -> dict[str,
                 fallback_video_rank = rank
             continue
 
-        score = candidate["confidence"] + (1.5 if candidate["is_valid"] else 0.0) + 0.5
-        if confidence >= min_conf and score > best_score:
-            best = candidate
-            best_score = score
-        elif confidence >= floor_conf and score > fallback_score:
-            fallback = candidate
-            fallback_score = score
+        for raw_text, confidence in _image_ocr_text_candidates(texts, confidences):
+            candidate = _normalize_ocr_text(raw_text, confidence=confidence)
+            if candidate["cleaned_text"] in {"UNKNOWN", "UNREADABLE", "REJECTED"}:
+                continue
+
+            text = plate_key(str(candidate.get("cleaned_text", "")))
+            score = candidate["confidence"] + (1.5 if candidate["is_valid"] else 0.0) + 0.5
+            if is_indian_plate(text):
+                score += 1.2
+            elif is_indian_plate_partial(text):
+                score += 0.8
+
+            if confidence >= min_conf and score > best_score:
+                best = candidate
+                best_score = score
+            elif confidence >= floor_conf and score > fallback_score:
+                fallback = candidate
+                fallback_score = score
 
     chosen = best or fallback
     if chosen is None:

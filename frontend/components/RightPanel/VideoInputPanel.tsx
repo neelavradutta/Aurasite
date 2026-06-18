@@ -484,6 +484,8 @@ export default function VideoInputPanel({
       <div
         className={`video-panel__actions${
           isResults ? ' video-panel__actions--results' : ' video-panel__actions--input'
+        }${
+          !isResults && uploadError && !uploading ? ' video-panel__actions--input-error' : ''
         }`}
       >
 

@@ -11,8 +11,13 @@ import numpy as np
 from services import batch_context
 from services.detection_service import detect_vehicles
 from services.plate_detection_service import detect_plates
-from services.plate_extractor import encode_full_frame_snapshot, extract_plate_record
-from services.ocr_service import recognize_plate
+from services.plate_extractor import (
+    encode_dashboard_snapshot,
+    encode_full_frame_snapshot,
+    encode_plate_snapshot,
+    extract_plate_record,
+)
+from services.ocr_service import recognize_plate, recognize_plate_crop
 from services.plate_format import is_indian_plate, is_indian_plate_partial
 from services.plate_quality import (
     is_plate_bbox_valid,
@@ -637,6 +642,7 @@ def _collect_vehicle_plate_candidates(
         if crop.size == 0:
             continue
 
+        vehicle_candidate_count = len(candidates)
         plate_detections = detect_plates(crop, plate_confidence)
         for plate_det in plate_detections:
             px1, py1, px2, py2 = plate_det["bbox"]
@@ -661,7 +667,78 @@ def _collect_vehicle_plate_candidates(
             if record:
                 candidates.append(record)
 
+        if len(candidates) == vehicle_candidate_count:
+            fallback = _ocr_vehicle_plate_zone(
+                frame,
+                vehicle,
+                f"image_vehicle_zone_{index}",
+                min_confidence,
+            )
+            if fallback:
+                candidates.append(fallback)
+
     return candidates
+
+
+def _vehicle_plate_zone_bbox(vehicle: dict[str, Any], frame_shape: tuple[int, ...]) -> list[int]:
+    x1, y1, x2, y2 = vehicle["bbox"]
+    frame_h, frame_w = frame_shape[:2]
+    vehicle_w = max(x2 - x1, 1)
+    vehicle_h = max(y2 - y1, 1)
+    box_w = max(int(vehicle_w * 0.52), 120)
+    box_h = max(int(vehicle_h * 0.22), 34)
+    center_x = (x1 + x2) // 2
+    center_y = y1 + int(vehicle_h * 0.56)
+
+    return [
+        max(0, center_x - box_w // 2),
+        max(0, center_y - box_h // 2),
+        min(frame_w, center_x + box_w // 2),
+        min(frame_h, center_y + box_h // 2),
+    ]
+
+
+def _ocr_vehicle_plate_zone(
+    frame: np.ndarray,
+    vehicle: dict[str, Any],
+    track_id: str,
+    min_confidence: float,
+) -> dict[str, Any] | None:
+    bbox = _vehicle_plate_zone_bbox(vehicle, frame.shape)
+    if not is_plate_bbox_valid(bbox, frame.shape):
+        return None
+
+    x1, y1, x2, y2 = bbox
+    crop = frame[y1:y2, x1:x2]
+    if crop.size == 0:
+        return None
+
+    ocr = recognize_plate_crop(crop, 0)
+    text = _refine_image_plate_text(str(ocr.get("cleaned_text", "")))
+    if not text or not _is_valid_image_plate_read(text):
+        return None
+
+    confidence = float(ocr.get("confidence", 0))
+    plate_info = {**ocr, "cleaned_text": text, "confidence": confidence}
+    quality = "accepted" if should_accept_detection(plate_info, bbox, frame.shape, min_confidence) else "partial"
+    plate_snapshot = encode_plate_snapshot(frame, bbox)
+    dashboard_snapshot = encode_dashboard_snapshot(frame, vehicle, bbox) or plate_snapshot
+
+    return {
+        "frame_id": 0,
+        "timestamp": 0.0,
+        "vehicle": vehicle,
+        "plate_detection": {"bbox": bbox, "confidence": confidence, "source": "vehicle_zone_ocr"},
+        "plate": {**plate_info, "detection_quality": quality, "plate_bbox": bbox},
+        "plate_number": text,
+        "detection_quality": quality,
+        "plate_bbox": bbox,
+        "track_id": track_id,
+        "pipeline_mode": "image_vehicle_ocr_fallback",
+        "plate_image_base64": plate_snapshot,
+        "dashboard_image_base64": dashboard_snapshot,
+        "_score": confidence * 1000 + len(text) * 12,
+    }
 
 
 def run_image_detection_pipeline(

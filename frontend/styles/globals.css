@@ -2028,14 +2028,19 @@ body {
   overflow: visible;
 }
 
+.video-panel__actions--input-error {
+  transform: translateY(-0.5rem);
+}
+
 .video-panel__error-slot {
   position: absolute;
   right: 1.25rem;
-  bottom: 0.35rem;
+  bottom: 0.2rem;
   left: 1.25rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1rem;
 }
 
 .video-panel__error-slot:empty {
