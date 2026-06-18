@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config.settings import settings
-from routes import detect, health, stream
+from routes import detect, health
 from services.video_service import initialize_models
 
 logging.basicConfig(level=getattr(logging, settings.log_level.upper(), logging.INFO))
@@ -29,7 +29,6 @@ os.makedirs("uploads", exist_ok=True)
 
 app.include_router(health.router)
 app.include_router(detect.router)
-app.include_router(stream.router)
 
 
 @app.on_event("startup")

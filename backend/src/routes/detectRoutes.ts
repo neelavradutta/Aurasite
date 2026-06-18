@@ -5,7 +5,6 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { env } from '../config/env';
 import { detectionController } from '../controllers/detectionController';
-import { streamController } from '../controllers/streamController';
 import { requireAuth } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
 
@@ -54,18 +53,6 @@ const upload = multer({
   },
 });
 
-const frameUpload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 8 * 1024 * 1024 },
-  fileFilter: (_req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only image frames are allowed'));
-    }
-  },
-});
-
 const router = Router();
 
 function handleUpload(req: Request, res: Response, next: NextFunction) {
@@ -78,20 +65,6 @@ function handleUpload(req: Request, res: Response, next: NextFunction) {
   });
 }
 
-function handleFrameUpload(req: Request, res: Response, next: NextFunction) {
-  frameUpload.single('frame')(req, res, (err) => {
-    if (err) {
-      next(new AppError(err.message, 400, 'upload_error'));
-      return;
-    }
-    next();
-  });
-}
-
 router.post('/', requireAuth, handleUpload, detectionController.processVideo);
-router.post('/stream', requireAuth, streamController.startStream);
-router.post('/stop', requireAuth, streamController.stopStream);
-router.post('/live-frame', requireAuth, handleFrameUpload, streamController.detectLiveFrame);
-router.post('/live-stop', requireAuth, streamController.stopLiveFrameSession);
 
 export default router;

@@ -17,8 +17,6 @@ import VehicleSpeedPanel, {
 } from '@/components/Analytics/VehicleSpeedPanel';
 import ConfidenceHeatmap from '@/components/CenterPanel/ConfidenceHeatmap';
 import SuspiciousVehiclesSection from '@/components/CenterPanel/SuspiciousVehiclesSection';
-import LiveFeedPlayer, { LIVE_FEED_ANCHOR } from '@/components/RightPanel/LiveFeedPlayer';
-import { useLiveFeedStore } from '@/store/liveFeedStore';
 import SelectedPlatePanel from '@/components/RightPanel/SelectedPlatePanel';
 import VideoInputPanel from '@/components/RightPanel/VideoInputPanel';
 import PlateCardsGrid from '@/components/PlateCardsGrid';
@@ -88,10 +86,6 @@ export default function DashboardPage() {
   const uploadAbortRef = useRef<AbortController | null>(null);
   const lastProcessingFileRef = useRef<File | null>(null);
   const dashboardPlates = useMemo(() => getDashboardPlates(detections), [detections]);
-  const cameraStream = useLiveFeedStore((s) => s.cameraStream);
-  const playbackUrl = useLiveFeedStore((s) => s.playbackUrl);
-  const streamId = useLiveFeedStore((s) => s.streamId);
-  const stopCameraFeed = useLiveFeedStore((s) => s.stopCameraFeed);
 
   useEffect(() => {
     hydrate();
@@ -366,17 +360,8 @@ export default function DashboardPage() {
             <PlateCardsGrid detections={dashboardPlates} fillHeight selectToPreview className="h-full min-h-0 max-h-full" />
           </div>
 
-          <div className="grid h-[44rem] min-h-[44rem] max-h-[44rem] shrink-0 grid-rows-[auto_minmax(0,1fr)] gap-6 overflow-hidden xl:col-span-4">
+          <div className="h-[44rem] min-h-[44rem] max-h-[44rem] shrink-0 overflow-hidden xl:col-span-4">
             <SelectedPlatePanel />
-            <LiveFeedPlayer
-              fillHeight
-              className="h-full min-h-0"
-              href={`/live-monitor#${LIVE_FEED_ANCHOR}`}
-              mediaStream={cameraStream}
-              playbackUrl={playbackUrl || undefined}
-              streamId={streamId}
-              onStopCameraFeed={stopCameraFeed}
-            />
           </div>
         </div>
       </main>

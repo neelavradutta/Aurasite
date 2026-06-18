@@ -177,51 +177,6 @@ export async function waitForJob(
   }
 }
 
-export async function startStreamDetection(streamUrl: string, options?: Record<string, unknown>) {
-  const { data } = await api.post('/detect/stream', { stream_url: streamUrl, options });
-  return data.data;
-}
-
-export async function stopStreamDetection(streamId?: string) {
-  const { data } = await api.post('/detect/stop', { stream_id: streamId });
-  return data.data;
-}
-
-export async function detectLiveFrame(
-  frame: Blob,
-  params: {
-    sessionId: string;
-    videoSource: string;
-    frameNumber: number;
-    timestamp?: number;
-  }
-) {
-  const form = new FormData();
-  form.append('frame', frame, 'frame.jpg');
-  form.append('session_id', params.sessionId);
-  form.append('video_source', params.videoSource);
-  form.append('frame_number', String(params.frameNumber));
-  form.append('timestamp', String(params.timestamp ?? Date.now() / 1000));
-
-  const { data } = await api.post('/detect/live-frame', form, { timeout: 180_000 });
-  return data.data as {
-    session_id: string;
-    processed: number;
-    saved: number;
-    detections?: Detection[];
-  };
-}
-
-export async function stopLiveFrameDetection(sessionId: string) {
-  const { data } = await api.post('/detect/live-stop', { session_id: sessionId });
-  return data.data;
-}
-
-export async function fetchStreamStatus() {
-  const { data } = await api.get('/stream/status');
-  return data.data;
-}
-
 export async function fetchJobStatus(jobId: string) {
   const { data } = await api.get(`/jobs/${jobId}/status`);
   return data.data;

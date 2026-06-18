@@ -3,7 +3,6 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import '@/styles/globals.css';
-import LiveFeedSessionManager from '@/components/LiveFeedSessionManager';
 import { bumpChartAnimationEpoch } from '@/hooks/useChartAnimationKey';
 import { usePeakTrafficBootstrap } from '@/hooks/usePeakTrafficBootstrap';
 
@@ -17,12 +16,7 @@ function AppShell({ Component, pageProps }: AppProps) {
     router.events.on('routeChangeComplete', onRouteComplete);
     return () => router.events.off('routeChangeComplete', onRouteComplete);
   }, [router.events]);
-  return (
-    <>
-      <LiveFeedSessionManager />
-      <Component {...pageProps} />
-    </>
-  );
+  return <Component {...pageProps} />;
 }
 
 export default function App(props: AppProps) {

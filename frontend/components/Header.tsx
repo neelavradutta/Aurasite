@@ -11,18 +11,17 @@ const navItems = [
   { href: '/detections', label: 'Detections' },
   { href: '/vehicles', label: 'Vehicles' },
   { href: '/analytics', label: 'Analytics' },
-  { href: '/live-monitor', label: 'Live Monitor' },
 ];
 
 export default function Header() {
   const router = useRouter();
-  const { isStreaming, clearDashboard } = useDashboardStore();
+  const { clearDashboard } = useDashboardStore();
   const { connected } = useSocket();
   const { user, token, logout, hydrate } = useAuthStore();
   const [clearing, setClearing] = useState(false);
 
-  const statusLabel = isStreaming ? 'LIVE' : connected ? 'ONLINE' : 'OFFLINE';
-  const statusActive = isStreaming || connected;
+  const statusLabel = connected ? 'ONLINE' : 'OFFLINE';
+  const statusActive = connected;
 
   useEffect(() => {
     hydrate();

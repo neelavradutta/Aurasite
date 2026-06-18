@@ -201,61 +201,6 @@ class AiService {
     }
   }
 
-  async detectFrame(
-    frameBuffer: Buffer,
-    frameNumber: number,
-    timestamp: number,
-    sessionId: string
-  ): Promise<Record<string, unknown>> {
-    const form = new FormData();
-    form.append('frame', frameBuffer, { filename: 'frame.jpg', contentType: 'image/jpeg' });
-    form.append('frame_number', String(frameNumber));
-    form.append('timestamp', String(timestamp));
-    form.append('session_id', sessionId);
-
-    const { data } = await this.client.post('/api/v1/stream/detect', form, {
-      headers: form.getHeaders(),
-      timeout: 120000,
-    });
-
-    return data;
-  }
-
-  async stopLiveDetectSession(sessionId: string): Promise<void> {
-    try {
-      await this.client.post('/api/v1/stream/detect/stop', { session_id: sessionId });
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
-        return;
-      }
-      throw error;
-    }
-  }
-
-  async startStream(streamUrl: string, streamId: string, options?: Record<string, unknown>) {
-    const { data } = await this.client.post('/api/v1/stream/start', {
-      stream_url: streamUrl,
-      stream_id: streamId,
-      options,
-    });
-    return data.data as Record<string, unknown>;
-  }
-
-  async stopStream(streamId: string) {
-    const { data } = await this.client.post('/api/v1/stream/stop', {
-      stream_id: streamId,
-    });
-    return data;
-  }
-
-  async getStreamStatus() {
-    const { data } = await this.client.get('/api/v1/stream/status');
-    return data.data as Record<string, unknown>;
-  }
-
-  getFramePreviewUrl(streamId: string): string {
-    return `${env.pythonServiceUrl}/api/v1/stream/${streamId}/frame`;
-  }
 }
 
 export const aiService = new AiService();

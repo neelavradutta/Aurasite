@@ -41,8 +41,6 @@ interface DashboardState {
 
   selectedPlate: Detection | null;
 
-  isStreaming: boolean;
-
   sessionVersion: number;
 
   sessionVideoSource: string | null;
@@ -62,8 +60,6 @@ interface DashboardState {
   setAlerts: (alerts: Alert[]) => void;
 
   setSelectedPlate: (detection: Detection | null) => void;
-
-  setIsStreaming: (streaming: boolean) => void;
 
   setSessionVideoSource: (videoSource: string | null) => void;
 
@@ -90,8 +86,6 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   alerts: [],
 
   selectedPlate: null,
-
-  isStreaming: false,
 
   sessionVersion: 1,
 
@@ -141,8 +135,6 @@ export const useDashboardStore = create<DashboardState>((set) => ({
 
   setSelectedPlate: (selectedPlate) => set({ selectedPlate }),
 
-  setIsStreaming: (isStreaming) => set({ isStreaming }),
-
   setSessionVideoSource: (sessionVideoSource) => set({ sessionVideoSource }),
 
   startNewAnalysisSession: (videoSource) =>
@@ -187,8 +179,6 @@ export const useDashboardStore = create<DashboardState>((set) => ({
       selectedPlate: null,
 
       sessionVideoSource: null,
-
-      isStreaming: false,
 
       sessionVersion: state.sessionVersion + 1,
 

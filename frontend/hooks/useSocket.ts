@@ -12,12 +12,10 @@ export function useSocket() {
 
     if (socket.connected) {
       setConnected(true);
-      socket.emit('join-stream');
     }
 
     socket.on('connect', () => {
       setConnected(true);
-      socket.emit('join-stream');
     });
 
     socket.on('disconnect', () => {

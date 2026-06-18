@@ -587,11 +587,19 @@ body {
 }
 
 .vehicle-speed-peaks__tooltip-meta,
+.vehicle-speed-peaks__tooltip-source,
 .vehicle-speed-peaks__tooltip-time {
   margin: 0.2rem 0 0;
   font-size: 0.68rem;
   color: rgba(255, 255, 255, 0.72);
   line-height: 1.35;
+}
+
+.vehicle-speed-peaks__tooltip-source {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vehicle-speed-peaks__label,

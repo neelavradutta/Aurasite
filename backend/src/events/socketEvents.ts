@@ -6,15 +6,6 @@ export function registerSocketEvents(io: Server): void {
   io.on('connection', (socket: Socket) => {
     logger.info('Client connected', { socketId: socket.id });
 
-    socket.on('join-stream', () => {
-      socket.join('live-stream');
-      socket.emit('stream:status', { status: 'connected', room: 'live-stream' });
-    });
-
-    socket.on('leave-stream', () => {
-      socket.leave('live-stream');
-    });
-
     socket.on('request:stats', async () => {
       try {
         const stats = await analyticsService.getSummary();

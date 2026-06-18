@@ -10,13 +10,11 @@ import { logger } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { registerSocketEvents } from './events/socketEvents';
 import { setSocketServer, initJobQueue } from './services/jobQueue';
-import { setStreamSocket } from './controllers/streamController';
 import detectRoutes from './routes/detectRoutes';
 import detectionRoutes from './routes/detectionRoutes';
 import vehicleRoutes from './routes/vehicleRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
 import alertRoutes from './routes/alertRoutes';
-import streamRoutes from './routes/streamRoutes';
 import jobRoutes from './routes/jobRoutes';
 import authRoutes from './routes/authRoutes';
 import cameraRoutes from './routes/cameraRoutes';
@@ -38,7 +36,6 @@ const io = new Server(server, {
 });
 
 setSocketServer(io);
-setStreamSocket(io);
 registerSocketEvents(io);
 
 app.use(cors({ origin: env.corsOrigin }));
@@ -72,7 +69,6 @@ app.use('/api/v1/vehicles', vehicleRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/alerts', alertRoutes);
 app.use('/api/v1/suspicious', alertController.suspicious);
-app.use('/api/v1/stream', streamRoutes);
 app.use('/api/v1/jobs', jobRoutes);
 app.use('/api/v1/cameras', cameraRoutes);
 

@@ -22,6 +22,9 @@ interface ChartPoint {
 
 const LABEL_BOX_H = 60;
 const LABEL_DOT_GAP = 18;
+const LABEL_BOX_MIN_W = 104;
+const LABEL_BOX_MAX_W = 190;
+const LABEL_CHAR_W = 11;
 const TOOLTIP_GAP = 8;
 const TOOLTIP_PAD = 8;
 
@@ -368,14 +371,21 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
             className={`vehicle-speed-peaks__points${hoveredIndex !== null ? ' vehicle-speed-peaks__points--interacting' : ''}`}
           >
             {points.map((point, index) => {
-              const labelW = Math.min(148, Math.max(90, point.reading.plate_number.length * 9));
+              const plateLabel =
+                point.reading.plate_number.length > 15
+                  ? `${point.reading.plate_number.slice(0, 15)}...`
+                  : point.reading.plate_number;
+              const labelW = Math.min(
+                LABEL_BOX_MAX_W,
+                Math.max(LABEL_BOX_MIN_W, plateLabel.length * LABEL_CHAR_W + 22)
+              );
               const halfW = labelW / 2;
+              const labelCenterX = Math.min(
+                VIEW_W - VIEW_PAD_SIDE - halfW,
+                Math.max(VIEW_PAD_SIDE + halfW, point.x)
+              );
               const labelTop = point.y - LABEL_BOX_H - LABEL_DOT_GAP;
               const delay = labelStagger * (index + 1);
-              const plateLabel =
-                point.reading.plate_number.length > 14
-                  ? `${point.reading.plate_number.slice(0, 14)}…`
-                  : point.reading.plate_number;
               const isHovered = hoveredIndex === index;
 
               return (
@@ -387,7 +397,7 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
                 >
                   <rect
                     className="vehicle-speed-peaks__hit"
-                    x={point.x - halfW - 6}
+                    x={labelCenterX - halfW - 6}
                     y={labelTop - 6}
                     width={labelW + 12}
                     height={LABEL_BOX_H + LABEL_DOT_GAP + 18}
@@ -395,7 +405,7 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
                   />
                   <rect
                     className="vehicle-speed-peaks__label-box"
-                    x={point.x - halfW}
+                    x={labelCenterX - halfW}
                     y={labelTop}
                     width={labelW}
                     height={LABEL_BOX_H}
@@ -403,7 +413,7 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
                   />
                   <text
                     className="vehicle-speed-peaks__label"
-                    x={point.x}
+                    x={labelCenterX}
                     y={labelTop + 22}
                     textAnchor="middle"
                     style={{ animationDelay: `${delay}s` }}
@@ -413,7 +423,7 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
                   </text>
                   <text
                     className="vehicle-speed-peaks__label"
-                    x={point.x}
+                    x={labelCenterX}
                     y={labelTop + 44}
                     textAnchor="middle"
                     style={{ animationDelay: `${delay}s` }}
@@ -450,9 +460,8 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
             <p className="vehicle-speed-peaks__tooltip-speed">
               {formatSpeed(hoveredPoint.reading.speed_kmh)} km/h
             </p>
-            <p className="vehicle-speed-peaks__tooltip-meta">
-              {hoveredPoint.reading.confidence.charAt(0).toUpperCase()}
-              {hoveredPoint.reading.confidence.slice(1)} confidence · {hoveredPoint.reading.source_label}
+            <p className="vehicle-speed-peaks__tooltip-source" title={hoveredPoint.reading.source_label}>
+              {hoveredPoint.reading.source_label}
             </p>
             <p className="vehicle-speed-peaks__tooltip-time">
               {formatMeasuredAt(hoveredPoint.reading.measured_at)}

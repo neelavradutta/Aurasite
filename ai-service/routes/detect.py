@@ -252,24 +252,3 @@ async def detect_image(
     result = await _handle_media_upload(video_file, opts, force_image=True)
     return result
 
-
-@router.post("/stream/detect")
-async def stream_detect(
-    frame: UploadFile = File(...),
-    frame_number: int = Form(0),
-    timestamp: float = Form(0.0),
-):
-    try:
-        frame_bytes = await frame.read()
-        result = processor.process_frame(frame_bytes, frame_number, timestamp)
-        return {"success": True, "data": result}
-    except ValueError as exc:
-        return JSONResponse(
-            status_code=400,
-            content={
-                "success": False,
-                "error": str(exc),
-                "message": "Frame processing failed",
-                "status_code": 400,
-            },
-        )
