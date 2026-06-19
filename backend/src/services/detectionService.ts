@@ -10,7 +10,8 @@ import { logger } from '../utils/logger';
 import { env } from '../config/env';
 import { sequelize } from '../utils/database';
 import { cameraService } from './cameraService';
-import { generateVehicleProfile, getMissingProfileFields, shouldGenerateVehicleProfile } from '../utils/vehicleProfileGenerator';
+import { generateVehicleProfile, getMissingProfileFields, randomRegistrationDate, shouldGenerateVehicleProfile } from '../utils/vehicleProfileGenerator';
+import { resolveViolationCount } from '../utils/vehicleViolations';
 
 const SNAPSHOT_DIR = path.resolve(env.uploadDir, 'snapshots');
 
@@ -216,6 +217,7 @@ export const detectionService = {
           ...profilePatch,
           last_detected_timestamp: new Date(),
           detection_count: vehicle.detection_count + 1,
+          violation_count: resolveViolationCount(vehicle),
           vehicle_type: item.vehicle?.class_name || vehicle.vehicle_type || profilePatch.vehicle_type,
         });
       } else {
@@ -225,9 +227,13 @@ export const detectionService = {
           vehicle_type: item.vehicle?.class_name || profile?.vehicle_type || 'unknown',
           first_detected_timestamp: new Date(),
           last_detected_timestamp: new Date(),
+          violation_count: 0,
           ...(profile || {}),
+          ...(generateProfile ? { registration_date: randomRegistrationDate() } : {}),
         });
       }
+
+      await vehicle.reload();
 
       const detection = await Detection.create({
         vehicle_id: vehicle.id,

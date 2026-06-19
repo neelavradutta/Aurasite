@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
   is_suspicious BOOLEAN DEFAULT 0,
   status VARCHAR(20) DEFAULT 'active',
   flagged_reason TEXT,
+  violation_count INT DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_plate (plate_number),

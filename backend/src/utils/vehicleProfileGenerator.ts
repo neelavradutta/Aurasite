@@ -15,7 +15,6 @@ type VehicleProfile = {
   chassis_number: string;
   fuel_type: string;
   insurance_status: string;
-  registration_date: Date;
   registration_number: string;
   vehicle_type: string;
 };
@@ -103,6 +102,23 @@ function platePrefix(plate: string): string {
   return match?.[1] || 'KA';
 }
 
+/** Random date assigned once when a plate is first detected. */
+export function randomRegistrationDate(): Date {
+  const minTs = new Date(2005, 0, 1).getTime();
+  const maxTs = Date.now() - 90 * 24 * 60 * 60 * 1000;
+  const span = Math.max(maxTs - minTs, 1);
+  return new Date(minTs + crypto.randomInt(span));
+}
+
+/** Stable fallback when backfilling vehicles that predate registration_date storage. */
+export function seededRegistrationDate(plateNumber: string): Date {
+  const seed = seedFromPlate(plateNumber);
+  const year = 2005 + (seed % 17);
+  const month = 1 + (seed % 12);
+  const day = 1 + (seed % 28);
+  return new Date(year, month - 1, day);
+}
+
 export function generateVehicleProfile(plateNumber: string): VehicleProfile {
   const seed = seedFromPlate(plateNumber);
   const prefix = platePrefix(plateNumber);
@@ -111,8 +127,6 @@ export function generateVehicleProfile(plateNumber: string): VehicleProfile {
   const ownerName = `${first} ${last}`;
   const emailSlug = `${first}.${last}`.toLowerCase().replace(/[^a-z.]/g, '');
   const year = 2008 + (seed % 14);
-  const month = 1 + (seed % 12);
-  const day = 1 + (seed % 28);
 
   return {
     owner_name: ownerName,
@@ -129,7 +143,6 @@ export function generateVehicleProfile(plateNumber: string): VehicleProfile {
     chassis_number: `CH${prefix}${digits(seed, 14, 10)}`,
     fuel_type: pick(FUEL_TYPES, seed, 15),
     insurance_status: pick(INSURANCE_STATUSES, seed, 16),
-    registration_date: new Date(year, month - 1, day),
     registration_number: plateNumber.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20) || `${prefix}${digits(seed, 17, 6)}`,
     vehicle_type: pick(VEHICLE_TYPES, seed, 18),
   };
@@ -150,7 +163,6 @@ const PROFILE_KEYS = [
   'chassis_number',
   'fuel_type',
   'insurance_status',
-  'registration_date',
   'registration_number',
 ] as const;
 
@@ -163,13 +175,17 @@ export function getMissingProfileFields(
   if (isUnreadablePlate(plateNumber)) return {};
 
   const generated = generateVehicleProfile(plateNumber);
-  const patch: Partial<VehicleProfile> = {};
+  const patch: Partial<VehicleProfile> & { registration_date?: Date; vehicle_type?: string } = {};
 
   for (const key of PROFILE_KEYS) {
     const current = vehicle[key];
     if (current === null || current === undefined || current === '') {
       patch[key as ProfileKey] = generated[key as ProfileKey] as never;
     }
+  }
+
+  if (!vehicle.registration_date) {
+    patch.registration_date = seededRegistrationDate(plateNumber);
   }
 
   if (!vehicle.vehicle_type || vehicle.vehicle_type === 'unknown') {

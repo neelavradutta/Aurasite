@@ -103,6 +103,11 @@ async function ensureSqliteColumns(): Promise<void> {
     await sequelize.query("UPDATE vehicles SET status = 'suspicious' WHERE is_suspicious = 1 AND (status IS NULL OR status = 'active')");
     logger.info('Added vehicles.status column');
   }
+
+  if (!names.has('violation_count')) {
+    await sequelize.query('ALTER TABLE vehicles ADD COLUMN violation_count INTEGER DEFAULT 0');
+    logger.info('Added vehicles.violation_count column');
+  }
 }
 
 async function ensureMysqlColumns(): Promise<void> {
@@ -115,6 +120,11 @@ async function ensureMysqlColumns(): Promise<void> {
       "UPDATE vehicles SET status = 'suspicious' WHERE is_suspicious = 1 AND (status IS NULL OR status = 'active')"
     );
     logger.info('Added vehicles.status column (mysql)');
+  }
+
+  if (!names.has('violation_count')) {
+    await sequelize.query('ALTER TABLE vehicles ADD COLUMN violation_count INT DEFAULT 0');
+    logger.info('Added vehicles.violation_count column (mysql)');
   }
 }
 

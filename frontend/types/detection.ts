@@ -5,7 +5,11 @@ export interface DetectionVehicle {
   owner_contact?: string | null;
   owner_address?: string | null;
   color?: string | null;
+  registration_date?: string | null;
   registration_number?: string | null;
+  is_suspicious?: boolean;
+  status?: string | null;
+  violation_count?: number | null;
   first_detected_timestamp?: string | null;
   created_at?: string | null;
   vehicle_type?: string | null;

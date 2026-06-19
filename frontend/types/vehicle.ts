@@ -42,6 +42,7 @@ export interface Vehicle {
   is_suspicious?: boolean;
   status?: VehicleStatus | string | null;
   flagged_reason?: string | null;
+  violation_count?: number;
   first_detected_timestamp?: string | null;
   last_detected_timestamp?: string | null;
   recent_location?: VehicleRecentLocation | null;

@@ -26,10 +26,7 @@ export function formatTimestamp(timestamp?: string | null): string {
 }
 
 export function formatRegistrationDate(detection: Detection): string {
-  const source =
-    detection.vehicle?.first_detected_timestamp ||
-    detection.vehicle?.created_at ||
-    detection.detection_timestamp;
+  const source = detection.vehicle?.registration_date;
   if (!source) return '--';
   const date = new Date(source);
   if (Number.isNaN(date.getTime())) return '--';
@@ -54,6 +51,12 @@ export function getOwnerName(detection: Detection): string {
 
 export function getAddress(detection: Detection): string {
   return displayValue(detection.vehicle?.owner_address);
+}
+
+export function getViolations(detection: Detection): string {
+  const count = detection.vehicle?.violation_count;
+  if (count === undefined || count === null) return '0';
+  return String(Math.max(0, count));
 }
 
 export function getChallanPaid(detection: Detection): string {

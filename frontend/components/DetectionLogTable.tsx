@@ -28,7 +28,7 @@ function tableScrollHeight(visibleRowCount: number): number {
 
 function cellClassFor(key: string): string {
   if (key === 'plate') return `${cellClass} font-orbitron font-semibold tracking-wide`;
-  if (key === 'frame') return `${cellClass} font-mono`;
+  if (key === 'violations') return `${cellClass} font-mono text-cyber-pink`;
   if (key === 'vehicleType' || key === 'colour') return `${cellClass} capitalize`;
   if (key === 'address') return `${cellClass} max-w-[180px] truncate`;
   return cellClass;

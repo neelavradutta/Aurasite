@@ -27,11 +27,12 @@ interface VehicleAttributes {
   is_suspicious: boolean;
   status?: string | null;
   flagged_reason?: string | null;
+  violation_count: number;
   created_at?: Date;
   updated_at?: Date;
 }
 
-type VehicleCreation = Optional<VehicleAttributes, 'id' | 'detection_count' | 'is_suspicious'>;
+type VehicleCreation = Optional<VehicleAttributes, 'id' | 'detection_count' | 'is_suspicious' | 'violation_count'>;
 
 export class Vehicle extends Model<VehicleAttributes, VehicleCreation> implements VehicleAttributes {
   declare id: number;
@@ -59,6 +60,7 @@ export class Vehicle extends Model<VehicleAttributes, VehicleCreation> implement
   declare is_suspicious: boolean;
   declare status: string | null;
   declare flagged_reason: string | null;
+  declare violation_count: number;
   declare readonly created_at: Date;
   declare readonly updated_at: Date;
 }
@@ -90,6 +92,7 @@ Vehicle.init(
     is_suspicious: { type: DataTypes.BOOLEAN, defaultValue: false },
     status: { type: DataTypes.STRING(20), defaultValue: 'active' },
     flagged_reason: { type: DataTypes.TEXT, allowNull: true },
+    violation_count: { type: DataTypes.INTEGER, defaultValue: 0, allowNull: false },
   },
   { sequelize, tableName: 'vehicles', underscored: true }
 );
