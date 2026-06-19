@@ -17,10 +17,13 @@ import { markDetectionsPageEnter } from '@/utils/pageTransitions';
 import { getStatusReason } from '@/utils/vehicleStatus';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { normalizePlateKey } from '@/utils/dashboardDetections';
+import { getSocket } from '@/services/socket';
+import { VehicleRealtimeUpdate } from '@/utils/violationUpdates';
 
 export default function VehiclesPage() {
   const router = useRouter();
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);
+  const syncVehicleUpdate = useDashboardStore((state) => state.patchVehicleUpdates);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [modalVehicle, setModalVehicle] = useState<Vehicle | null>(null);
@@ -37,6 +40,47 @@ export default function VehiclesPage() {
   useEffect(() => {
     loadVehicles();
   }, [sessionVersion]);
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    const handleVehicleUpdated = (update: VehicleRealtimeUpdate) => {
+      if (!update?.vehicle_id) return;
+
+      setVehicles((prev) =>
+        prev.map((item) =>
+          item.id === update.vehicle_id
+            ? {
+                ...item,
+                ...(update.status !== undefined ? { status: update.status } : {}),
+                ...(update.is_suspicious !== undefined ? { is_suspicious: update.is_suspicious } : {}),
+                ...(update.flagged_reason !== undefined ? { flagged_reason: update.flagged_reason } : {}),
+                ...(update.violation_count !== undefined ? { violation_count: update.violation_count } : {}),
+              }
+            : item
+        )
+      );
+
+      setModalVehicle((prev) =>
+        prev?.id === update.vehicle_id
+          ? {
+              ...prev,
+              ...(update.status !== undefined ? { status: update.status } : {}),
+              ...(update.is_suspicious !== undefined ? { is_suspicious: update.is_suspicious } : {}),
+              ...(update.flagged_reason !== undefined ? { flagged_reason: update.flagged_reason } : {}),
+              ...(update.violation_count !== undefined ? { violation_count: update.violation_count } : {}),
+            }
+          : prev
+      );
+
+      syncVehicleUpdate(update);
+    };
+
+    socket.on('vehicle:updated', handleVehicleUpdated);
+    return () => {
+      socket.off('vehicle:updated', handleVehicleUpdated);
+    };
+  }, [syncVehicleUpdate]);
 
   async function openVehicle(vehicle: Vehicle, highlight = true) {
     setSelectedVehicle(vehicle);

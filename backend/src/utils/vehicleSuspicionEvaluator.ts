@@ -1,40 +1,41 @@
-import { Detection } from '@/types/detection';
-import { Vehicle } from '@/types/vehicle';
-import { isUnreadablePlate, normalizePlateKey } from './dashboardDetections';
-import { buildCameraLocationMap, haversineDistanceKm, type CameraLocation } from './speedEstimation';
+import { Op } from 'sequelize';
+import Detection from '../models/Detection';
+import Vehicle from '../models/Vehicle';
+import { isUnreadablePlate } from './vehicleProfileGenerator';
+import { vehicleQualifiesForViolation, violationCountAfterAutoFlag } from './vehicleViolations';
 
 const EXCESSIVE_VISIT_THRESHOLD = 20;
 const SHORT_REENTRY_MINUTES = 10;
 const HIGH_SPEED_THRESHOLD_KMH = 120;
 const DEFAULT_CAMERA_DISTANCE_KM = 0.8;
-
-const DEFAULT_CAMERA_LOCATIONS: CameraLocation[] = [
-  {
-    video_source: 'carLicence4.mp4',
-    latitude: 12.9716,
-    longitude: 77.5946,
-  },
-  {
-    video_source: 'live-camera',
-    latitude: 12.9851,
-    longitude: 77.6102,
-  },
-];
 const MAX_CROSS_CAMERA_GAP_MINUTES = 60;
 
-type TravelDirection = 'left' | 'right';
+type DetectionRow = {
+  plate_number?: string | null;
+  detection_timestamp: Date;
+  frame_number?: number | null;
+  video_source?: string | null;
+  plate_bbox?: unknown;
+  bounding_box?: unknown;
+};
 
-function extractBboxCenter(detection: Detection): { x: number; y: number } | null {
-  const raw = detection.plate_bbox ?? detection.bounding_box;
+function normalizePlateKey(plate: string): string {
+  return plate.toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function extractBboxCenter(row: DetectionRow): { x: number; y: number } | null {
+  const raw = row.plate_bbox ?? row.bounding_box;
   if (!raw) return null;
 
-  const bbox = Array.isArray(raw) ? raw : raw.bbox;
+  const bbox = Array.isArray(raw) ? raw : (raw as { bbox?: number[] }).bbox;
   if (!bbox || bbox.length < 4) return null;
 
   return { x: (bbox[0] + bbox[2]) / 2, y: (bbox[1] + bbox[3]) / 2 };
 }
 
-function inferPassDirection(passDetections: Detection[]): TravelDirection | null {
+type TravelDirection = 'left' | 'right';
+
+function inferPassDirection(passDetections: DetectionRow[]): TravelDirection | null {
   if (passDetections.length < 2) return null;
 
   const sorted = [...passDetections].sort((a, b) => {
@@ -53,15 +54,15 @@ function inferPassDirection(passDetections: Detection[]): TravelDirection | null
   return deltaX > 0 ? 'right' : 'left';
 }
 
-function clusterIntoPasses(detections: Detection[], frameGap = 12): Detection[][] {
+function clusterIntoPasses(detections: DetectionRow[], frameGap = 12): DetectionRow[][] {
   const sorted = [...detections].sort((a, b) => {
     const frameDiff = (a.frame_number ?? 0) - (b.frame_number ?? 0);
     if (frameDiff !== 0) return frameDiff;
     return new Date(a.detection_timestamp).getTime() - new Date(b.detection_timestamp).getTime();
   });
 
-  const passes: Detection[][] = [];
-  let current: Detection[] = [];
+  const passes: DetectionRow[][] = [];
+  let current: DetectionRow[] = [];
 
   for (const detection of sorted) {
     if (current.length === 0) {
@@ -83,36 +84,20 @@ function clusterIntoPasses(detections: Detection[], frameGap = 12): Detection[][
   return passes;
 }
 
-function passStartMs(pass: Detection[]): number {
+function passStartMs(pass: DetectionRow[]): number {
   return Math.min(...pass.map((d) => new Date(d.detection_timestamp).getTime()));
 }
 
-function passEndMs(pass: Detection[]): number {
+function passEndMs(pass: DetectionRow[]): number {
   return Math.max(...pass.map((d) => new Date(d.detection_timestamp).getTime()));
 }
 
-const cameraMap = buildCameraLocationMap(DEFAULT_CAMERA_LOCATIONS);
-
-/** Multi-camera distance (km) via GPS when available. */
-function cameraDistanceKm(sourceA: string, sourceB: string): number {
-  const camA = cameraMap.get(sourceA.trim());
-  const camB = cameraMap.get(sourceB.trim());
-
-  if (
-    camA?.latitude != null &&
-    camA?.longitude != null &&
-    camB?.latitude != null &&
-    camB?.longitude != null
-  ) {
-    return haversineDistanceKm(camA.latitude, camA.longitude, camB.latitude, camB.longitude);
-  }
-
+function cameraDistanceKm(_sourceA: string, _sourceB: string): number {
   return DEFAULT_CAMERA_DISTANCE_KM;
 }
 
-function evaluatePlateSuspicion(key: string, items: Detection[]): Vehicle | null {
+function evaluateSuspicionReasons(items: DetectionRow[]): string[] {
   const reasons = new Set<string>();
-  const displayPlate = items.find((item) => item.plate_number)?.plate_number || key;
 
   if (items.length > EXCESSIVE_VISIT_THRESHOLD) {
     reasons.add('Excessive Visits');
@@ -164,40 +149,75 @@ function evaluatePlateSuspicion(key: string, items: Detection[]): Vehicle | null
     }
   }
 
-  if (reasons.size === 0) return null;
-
-  return {
-    id: 0,
-    plate_number: displayPlate,
-    detection_count: items.length,
-    vehicle_type: items.find((item) => item.vehicle_type)?.vehicle_type || 'unknown',
-    is_suspicious: true,
-    flagged_reason: Array.from(reasons).join(' · '),
-  };
+  return Array.from(reasons);
 }
 
-export function computeSuspiciousVehicles(detections: Detection[]): Vehicle[] {
-  const plateDetections = new Map<string, Detection[]>();
+async function loadPlateDetections(plateNumber: string): Promise<DetectionRow[]> {
+  const normalized = normalizePlateKey(plateNumber);
+  if (!normalized || isUnreadablePlate(plateNumber)) return [];
 
-  for (const detection of detections) {
-    if (isUnreadablePlate(detection.plate_number)) continue;
+  const rows = await Detection.findAll({
+    where: {
+      plate_number: {
+        [Op.or]: [
+          { [Op.eq]: plateNumber },
+          { [Op.eq]: normalized },
+          { [Op.like]: `${normalized}%` },
+        ],
+      },
+    },
+    order: [['detection_timestamp', 'ASC']],
+    limit: 500,
+    attributes: ['plate_number', 'detection_timestamp', 'frame_number', 'video_source', 'plate_bbox', 'bounding_box'],
+  });
 
-    const key = normalizePlateKey(detection.plate_number);
-    if (!key) continue;
+  return rows
+    .map((row) => row.toJSON() as DetectionRow)
+    .filter((row) => normalizePlateKey(row.plate_number || '') === normalized);
+}
 
-    const bucket = plateDetections.get(key) ?? [];
-    bucket.push(detection);
-    plateDetections.set(key, bucket);
-  }
+export async function applyAutoSuspicionIfNeeded(
+  vehicle: Vehicle,
+  plateNumber: string,
+  quality: string
+): Promise<boolean> {
+  if (quality !== 'accepted') return false;
+  if (vehicleQualifiesForViolation(vehicle)) return false;
 
-  return Array.from(plateDetections.entries())
-    .map(([key, items]) => evaluatePlateSuspicion(key, items))
-    .filter((vehicle): vehicle is Vehicle => vehicle !== null)
-    .sort((a, b) => {
-      const reasonDiff =
-        (b.flagged_reason?.split(' · ').length ?? 0) - (a.flagged_reason?.split(' · ').length ?? 0);
-      if (reasonDiff !== 0) return reasonDiff;
-      return b.detection_count - a.detection_count;
-    })
-    .map((vehicle, index) => ({ ...vehicle, id: index + 1 }));
+  const items = await loadPlateDetections(plateNumber);
+  const reasons = evaluateSuspicionReasons(items);
+  if (reasons.length === 0) return false;
+
+  await vehicle.update({
+    is_suspicious: true,
+    status: 'suspicious',
+    flagged_reason: reasons.join(' · '),
+    violation_count: violationCountAfterAutoFlag(vehicle),
+  });
+
+  return true;
+}
+
+export type ViolationUpdate = {
+  vehicle_id: number;
+  plate_number: string;
+  violation_count: number;
+};
+
+export async function incrementViolationIfNeeded(vehicle: Vehicle): Promise<ViolationUpdate | null> {
+  await vehicle.reload();
+  if (!vehicleQualifiesForViolation(vehicle)) return null;
+
+  const previous = Math.max(0, Number(vehicle.violation_count) || 0);
+  const next = previous + 1;
+  if (next === previous) return null;
+
+  await vehicle.update({ violation_count: next });
+  await vehicle.reload();
+
+  return {
+    vehicle_id: vehicle.id,
+    plate_number: vehicle.plate_number,
+    violation_count: next,
+  };
 }

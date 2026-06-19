@@ -193,6 +193,7 @@ export default function DashboardPage() {
       }
       setDetections(rows);
       appendPeakTrafficDetections(rows);
+      useDashboardStore.getState().bumpDetectionsVersion();
       const platesDetected = getDashboardPlates(rows).length;
 
       setProcessingOverlay((current) =>

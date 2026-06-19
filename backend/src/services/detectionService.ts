@@ -11,7 +11,12 @@ import { env } from '../config/env';
 import { sequelize } from '../utils/database';
 import { cameraService } from './cameraService';
 import { generateVehicleProfile, getMissingProfileFields, randomRegistrationDate, shouldGenerateVehicleProfile } from '../utils/vehicleProfileGenerator';
-import { resolveViolationCount } from '../utils/vehicleViolations';
+import {
+  applyAutoSuspicionIfNeeded,
+  incrementViolationIfNeeded,
+  ViolationUpdate,
+} from '../utils/vehicleSuspicionEvaluator';
+import { emitVehicleUpdated } from '../utils/realtimeEvents';
 
 const SNAPSHOT_DIR = path.resolve(env.uploadDir, 'snapshots');
 
@@ -116,6 +121,7 @@ interface AiDetectionItem {
     class_name?: string;
     confidence?: number;
     bbox?: number[];
+    color?: string;
   };
   plate?: {
     cleaned_text?: string;
@@ -126,6 +132,7 @@ interface AiDetectionItem {
   };
   track_id?: string;
   is_repeat_detection?: boolean;
+  vehicle_color?: string | null;
 }
 
 export const detectionService = {
@@ -188,8 +195,13 @@ export const detectionService = {
     return result;
   },
 
-  async saveAiDetections(items: Array<Record<string, unknown>>, videoSource: string) {
+  async saveAiDetections(
+    items: Array<Record<string, unknown>>,
+    videoSource: string,
+    onViolationUpdate?: (update: ViolationUpdate) => void
+  ) {
     const saved: Detection[] = [];
+    const violationUpdates: ViolationUpdate[] = [];
 
     await cameraService.ensureCameraForVideoSource(videoSource);
 
@@ -217,7 +229,6 @@ export const detectionService = {
           ...profilePatch,
           last_detected_timestamp: new Date(),
           detection_count: vehicle.detection_count + 1,
-          violation_count: resolveViolationCount(vehicle),
           vehicle_type: item.vehicle?.class_name || vehicle.vehicle_type || profilePatch.vehicle_type,
         });
       } else {
@@ -233,8 +244,6 @@ export const detectionService = {
         });
       }
 
-      await vehicle.reload();
-
       const detection = await Detection.create({
         vehicle_id: vehicle.id,
         detection_timestamp: new Date(),
@@ -249,12 +258,34 @@ export const detectionService = {
             ? { bbox: item.plate.plate_bbox }
             : null,
         vehicle_type: item.vehicle?.class_name ?? null,
+        vehicle_color: item.vehicle_color ?? item.vehicle?.color ?? null,
         video_source: videoSource,
         frame_image_path: snapshotFile,
         is_repeat_detection: isRepeat || item.is_repeat_detection || false,
         detection_quality: quality,
         track_id: item.track_id ?? null,
       });
+
+      const flagged = await applyAutoSuspicionIfNeeded(vehicle, plateNumber, quality);
+      if (flagged) {
+        await vehicle.reload();
+        emitVehicleUpdated({
+          vehicle_id: vehicle.id,
+          plate_number: vehicle.plate_number,
+          status: vehicle.status,
+          is_suspicious: vehicle.is_suspicious,
+          flagged_reason: vehicle.flagged_reason,
+          violation_count: Math.max(0, Number(vehicle.violation_count) || 0),
+        });
+      }
+
+      const violationUpdate = await incrementViolationIfNeeded(vehicle);
+      if (violationUpdate) {
+        violationUpdates.push(violationUpdate);
+        onViolationUpdate?.(violationUpdate);
+      }
+
+      await vehicle.reload();
 
       if (quality === 'accepted' && (isRepeat || item.is_repeat_detection)) {
         await Alert.create({
@@ -282,8 +313,8 @@ export const detectionService = {
       saved.push(detection);
     }
 
-    logger.info('Saved detections', { count: saved.length });
-    return saved;
+    logger.info('Saved detections', { count: saved.length, violationUpdates: violationUpdates.length });
+    return { saved, violationUpdates };
   },
 
   async checkRepeatDetection(plateNumber: string): Promise<boolean> {

@@ -8,6 +8,7 @@ import { Alert, AnalyticsSummary } from '@/types/analytics';
 
 import { clearAllSessionData } from '@/services/api';
 import { useVideoUploadStore } from '@/store/videoUploadStore';
+import { VehicleRealtimeUpdate } from '@/utils/violationUpdates';
 
 
 
@@ -43,6 +44,8 @@ interface DashboardState {
 
   sessionVersion: number;
 
+  detectionsVersion: number;
+
   sessionVideoSource: string | null;
 
   setSummary: (summary: AnalyticsSummary) => void;
@@ -62,6 +65,12 @@ interface DashboardState {
   setSelectedPlate: (detection: Detection | null) => void;
 
   setSessionVideoSource: (videoSource: string | null) => void;
+
+  bumpDetectionsVersion: () => void;
+
+  patchVehicleViolations: (updates: Array<{ vehicle_id: number; violation_count: number }>) => void;
+
+  patchVehicleUpdates: (update: VehicleRealtimeUpdate) => void;
 
   /** Reset session widgets when a new video/live analysis starts. */
 
@@ -88,6 +97,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   selectedPlate: null,
 
   sessionVersion: 1,
+
+  detectionsVersion: 1,
 
   sessionVideoSource: null,
 
@@ -136,6 +147,83 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   setSelectedPlate: (selectedPlate) => set({ selectedPlate }),
 
   setSessionVideoSource: (sessionVideoSource) => set({ sessionVideoSource }),
+
+  bumpDetectionsVersion: () =>
+    set((state) => ({
+      detectionsVersion: state.detectionsVersion + 1,
+    })),
+
+  patchVehicleViolations: (updates) =>
+    set((state) => {
+      if (updates.length === 0) return state;
+
+      const byVehicleId = new Map(updates.map((row) => [row.vehicle_id, row.violation_count]));
+
+      const patchRows = (rows: Detection[]) =>
+        rows.map((detection) => {
+          const vehicleId = detection.vehicle_id ?? detection.vehicle?.id;
+          if (vehicleId == null) return detection;
+          const nextCount = byVehicleId.get(vehicleId);
+          if (nextCount === undefined) return detection;
+          return {
+            ...detection,
+            vehicle: {
+              ...(detection.vehicle || {}),
+              id: vehicleId,
+              violation_count: nextCount,
+            },
+          };
+        });
+
+      return {
+        detections: patchRows(state.detections),
+        peakTrafficDetections: patchRows(state.peakTrafficDetections),
+      };
+    }),
+
+  patchVehicleUpdates: (update) =>
+    set((state) => {
+      const patchRows = (rows: Detection[]) =>
+        rows.map((detection) => {
+          const vehicleId = detection.vehicle_id ?? detection.vehicle?.id;
+          const plateKey = detection.plate_number.toUpperCase().replace(/[^A-Z0-9]/g, '');
+          const updatePlateKey = update.plate_number.toUpperCase().replace(/[^A-Z0-9]/g, '');
+          const matches =
+            (vehicleId != null && vehicleId === update.vehicle_id) || plateKey === updatePlateKey;
+          if (!matches) return detection;
+
+          return {
+            ...detection,
+            vehicle: {
+              ...(detection.vehicle || {}),
+              id: vehicleId ?? update.vehicle_id,
+              plate_number: update.plate_number,
+              ...(update.status !== undefined ? { status: update.status } : {}),
+              ...(update.is_suspicious !== undefined ? { is_suspicious: update.is_suspicious } : {}),
+              ...(update.flagged_reason !== undefined ? { flagged_reason: update.flagged_reason } : {}),
+              ...(update.violation_count !== undefined ? { violation_count: update.violation_count } : {}),
+            },
+          };
+        });
+
+      const vehicles = state.vehicles.map((vehicle) =>
+        vehicle.id === update.vehicle_id
+          ? {
+              ...vehicle,
+              ...(update.status !== undefined ? { status: update.status } : {}),
+              ...(update.is_suspicious !== undefined ? { is_suspicious: update.is_suspicious } : {}),
+              ...(update.flagged_reason !== undefined ? { flagged_reason: update.flagged_reason } : {}),
+              ...(update.violation_count !== undefined ? { violation_count: update.violation_count } : {}),
+            }
+          : vehicle
+      );
+
+      return {
+        vehicles,
+        detections: patchRows(state.detections),
+        peakTrafficDetections: patchRows(state.peakTrafficDetections),
+      };
+    }),
 
   startNewAnalysisSession: (videoSource) =>
 

@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+import cv2
 import numpy as np
 
 from config.settings import settings
@@ -57,6 +58,44 @@ def _associate_vehicle(plate_bbox: list[int], vehicles: list[dict[str, Any]]) ->
     return best_match
 
 
+def _live_detect_plates(
+    frame: np.ndarray,
+    plate_conf: float,
+    min_plate_area: int,
+    frame_id: int,
+) -> list[dict[str, Any]]:
+    detections = detect_plates(frame, plate_conf, min_plate_area=min_plate_area, max_det=6)
+    if detections or frame_id % 4 != 0:
+        return detections
+
+    height, width = frame.shape[:2]
+    margin_x = int(width * 0.10)
+    margin_y = int(height * 0.08)
+    crop = frame[margin_y : height - margin_y, margin_x : width - margin_x]
+    if crop.size == 0:
+        return []
+
+    crop_up = cv2.resize(crop, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_LINEAR)
+    crop_conf = max(plate_conf * 0.85, 0.08)
+    crop_dets = detect_plates(crop_up, crop_conf, min_plate_area=80, max_det=4)
+    mapped: list[dict[str, Any]] = []
+    scale = 1.5
+    for det in crop_dets:
+        x1, y1, x2, y2 = det["bbox"]
+        mapped.append(
+            {
+                **det,
+                "bbox": [
+                    int(x1 / scale + margin_x),
+                    int(y1 / scale + margin_y),
+                    int(x2 / scale + margin_x),
+                    int(y2 / scale + margin_y),
+                ],
+            }
+        )
+    return mapped
+
+
 class AnprPipeline:
     def __init__(self):
         self.reset()
@@ -94,6 +133,7 @@ class AnprPipeline:
         min_plate_confidence: float | None = None,
         plate_confidence_threshold: float | None = None,
         force_detection: bool = False,
+        live_mode: bool = False,
     ) -> list[dict[str, Any]]:
         min_conf = min_plate_confidence if min_plate_confidence is not None else settings.min_plate_confidence
         plate_conf = (
@@ -101,6 +141,7 @@ class AnprPipeline:
             if plate_confidence_threshold is not None
             else settings.plate_confidence_threshold
         )
+        min_plate_area = 100 if live_mode else settings.min_plate_area
 
         if not is_plate_model_ready():
             raise RuntimeError("Plate YOLO is not loaded")
@@ -112,10 +153,15 @@ class AnprPipeline:
         self._processed_count += 1
 
         if run_yolo:
-            vehicles = detect_vehicles(frame, confidence_threshold)
-            plate_detections = detect_plates(frame, plate_conf)
-            tracked_vehicles = self.vehicle_tracker.update(vehicles, frame_id)
-            tracked_plates = self.plate_tracker.update(plate_detections, frame_id)
+            if live_mode:
+                tracked_vehicles: list[dict[str, Any]] = []
+                plate_detections = _live_detect_plates(frame, plate_conf, min_plate_area, frame_id)
+                tracked_plates = plate_detections
+            else:
+                vehicles = detect_vehicles(frame, confidence_threshold)
+                plate_detections = detect_plates(frame, plate_conf, min_plate_area=min_plate_area)
+                tracked_vehicles = self.vehicle_tracker.update(vehicles, frame_id)
+                tracked_plates = self.plate_tracker.update(plate_detections, frame_id)
         else:
             self.vehicle_tracker.predict(frame_id)
             self.plate_tracker.predict(frame_id)
@@ -124,8 +170,16 @@ class AnprPipeline:
         if not tracked_plates:
             return []
 
+        plates_to_process = tracked_plates
+        if live_mode and len(tracked_plates) > 2:
+            plates_to_process = sorted(
+                tracked_plates,
+                key=lambda det: float(det.get("confidence", 0)),
+                reverse=True,
+            )[:2]
+
         results: list[dict[str, Any]] = []
-        for plate_det in tracked_plates:
+        for plate_det in plates_to_process:
             bbox = plate_det["bbox"]
             vehicle = _associate_vehicle(bbox, tracked_vehicles)
             track_id = str(
@@ -151,12 +205,19 @@ class AnprPipeline:
         frame: np.ndarray,
         frame_number: int,
         timestamp: float,
+        *,
+        live_mode: bool = False,
     ) -> dict[str, Any]:
+        kwargs: dict[str, float | bool] = {"force_detection": True, "live_mode": live_mode}
+        if live_mode:
+            kwargs["min_plate_confidence"] = 0.35
+            kwargs["plate_confidence_threshold"] = 0.10
+
         detections = self.process_frame_detections(
             frame,
             frame_number,
             timestamp,
-            force_detection=True,
+            **kwargs,
         )
         payload: dict[str, Any] = {
             "frame_id": frame_number,
@@ -164,8 +225,18 @@ class AnprPipeline:
         }
         if detections:
             accepted = [d for d in detections if d.get("detection_quality") == "accepted"]
-            best = max(accepted or detections, key=lambda d: d.get("_score", 0))
-            payload.update({k: v for k, v in best.items() if k != "_score"})
+            readable = [
+                d
+                for d in detections
+                if str(d.get("plate_number", "")).upper() not in {"UNREADABLE", "UNKNOWN", "REJECTED", ""}
+            ]
+            pool = accepted or readable or detections
+            best = max(pool, key=lambda d: d.get("_score", 0))
+            slim = {k: v for k, v in best.items() if k != "_score"}
+            if live_mode:
+                slim.pop("plate_image_base64", None)
+                slim.pop("plate_detection", None)
+            payload.update(slim)
         return payload
 
 

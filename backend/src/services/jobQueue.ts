@@ -5,6 +5,7 @@ import { logger } from '../utils/logger';
 import { initRedis, isMemoryCache } from '../utils/redis';
 import { aiService } from './aiService';
 import { detectionService } from './detectionService';
+import { emitDetectionsChanged, emitViolationsUpdated, setRealtimeSocket } from '../utils/realtimeEvents';
 import { Server as SocketServer } from 'socket.io';
 
 function formatJobError(error: unknown): string {
@@ -44,6 +45,7 @@ const memoryJobs = new Map<string, MemoryJob>();
 
 export function setSocketServer(server: SocketServer): void {
   io = server;
+  setRealtimeSocket(server);
 }
 
 async function processVideoJob(data: ProcessVideoJob): Promise<unknown> {
@@ -124,7 +126,13 @@ async function runProcessVideoJob(data: ProcessVideoJob): Promise<unknown> {
         ? aiResult.detections
         : dashboardPlates;
 
-  const saved = await detectionService.saveAiDetections(detectionItems, videoSource);
+  const { saved, violationUpdates } = await detectionService.saveAiDetections(
+    detectionItems,
+    videoSource,
+    (update) => {
+      emitViolationsUpdated([update]);
+    }
+  );
   if (saved.length === 0 && Number(aiResult.total_detections) > 0) {
     logger.warn('AI returned detections but none were saved', { jobId, videoSource });
   }
@@ -147,9 +155,11 @@ async function runProcessVideoJob(data: ProcessVideoJob): Promise<unknown> {
     max_frames: finalMaxFrames,
   };
 
+  emitDetectionsChanged({ videoSource, savedCount: saved.length });
+
   io?.emit('job:complete', { jobId, summary });
 
-  return { savedCount: saved.length, summary };
+  return { savedCount: saved.length, summary, violationUpdates };
 }
 
 async function runMemoryJob(data: ProcessVideoJob): Promise<void> {

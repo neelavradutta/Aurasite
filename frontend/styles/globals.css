@@ -75,6 +75,22 @@ body {
   animation: pulse-glow 1.5s ease-in-out infinite;
 }
 
+@keyframes remote-source-fade {
+  0%,
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 14px rgba(255, 0, 110, 0.75);
+  }
+  50% {
+    opacity: 0.35;
+    text-shadow: 0 0 6px rgba(255, 0, 110, 0.2);
+  }
+}
+
+.remote-source-fade {
+  animation: remote-source-fade 2.4s ease-in-out infinite;
+}
+
 @keyframes status-badge-dot-spin {
   from {
     transform: rotate(0deg);

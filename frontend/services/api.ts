@@ -151,6 +151,10 @@ export interface LiveDetectionFrame {
   vehicle?: Record<string, unknown> | null;
   vehicle_type?: string;
   vehicle_color?: string | null;
+  dashboard_image_base64?: string | null;
+  plate_image_base64?: string | null;
+  detection_id?: number;
+  saved_to_log?: boolean;
 }
 
 export interface LiveDetectionResponse {
@@ -188,8 +192,29 @@ export async function detectLiveSourceFrame(
   return data;
 }
 
+export async function persistLiveDetectionRecord(payload: {
+  plate_number: string;
+  frame_number?: number;
+  plate_confidence?: number;
+  vehicle_confidence?: number;
+  vehicle_type?: string;
+  vehicle_color?: string | null;
+  detection_quality?: string;
+  dashboard_image_base64?: string | null;
+  plate_image_base64?: string | null;
+  mode: 'camera' | 'source';
+  source?: string;
+}): Promise<LiveDetectionResponse> {
+  const { data } = await api.post('/live/record', payload);
+  return data;
+}
+
 export async function releaseLiveSource(source: string): Promise<void> {
   await api.post('/live/source/release', { source });
+}
+
+export async function resetLiveSaveSession(mode: 'camera' | 'source', source?: string): Promise<void> {
+  await api.post('/live/session/reset', { mode, source: source?.trim() || undefined });
 }
 
 export class ProcessingCancelledError extends Error {

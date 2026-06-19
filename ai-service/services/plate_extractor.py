@@ -9,6 +9,7 @@ import cv2
 import numpy as np
 
 from services.ocr_service import crop_bbox, prepare_snapshot_crop, recognize_plate
+from services.batch_context import is_live_mode
 from services.plate_quality import (
     detection_score,
     is_likely_half_plate,
@@ -54,7 +55,8 @@ def classify_plate_detection(
     if should_accept_detection(ocr, bbox, frame_shape, min_confidence):
         return "accepted", text
 
-    if confidence < 0.45:
+    partial_floor = 0.28 if is_live_mode() else 0.45
+    if confidence < partial_floor:
         return "unreadable", "UNREADABLE"
 
     if len(text) >= 3 or is_likely_half_plate(bbox, frame_shape) or not is_plate_like(text):
@@ -127,6 +129,8 @@ def _scene_bbox(
 def _fit_dashboard_image(crop: np.ndarray, max_side: int = 960) -> np.ndarray:
     h, w = crop.shape[:2]
     longest = max(h, w)
+    if is_live_mode():
+        max_side = min(max_side, 640)
     if longest <= max_side:
         return crop
     scale = max_side / longest
@@ -157,7 +161,8 @@ def encode_dashboard_snapshot(
         return None
 
     snapshot = _fit_dashboard_image(crop)
-    ok, buffer = cv2.imencode(".jpg", snapshot, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+    quality = 78 if is_live_mode() else 90
+    ok, buffer = cv2.imencode(".jpg", snapshot, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
     if not ok:
         return None
 
@@ -180,12 +185,13 @@ def extract_plate_record(
     if quality == "invalid":
         return None
 
-    plate_snapshot = encode_plate_snapshot(frame, bbox)
+    live = is_live_mode()
+    plate_snapshot = None if live else encode_plate_snapshot(frame, bbox)
     dashboard_snapshot = None
     if quality in ("accepted", "partial") and display_plate not in {"UNREADABLE", "UNKNOWN", "REJECTED"}:
         dashboard_snapshot = encode_dashboard_snapshot(frame, vehicle, bbox)
     if quality == "accepted" and not dashboard_snapshot:
-        dashboard_snapshot = plate_snapshot
+        dashboard_snapshot = encode_plate_snapshot(frame, bbox) if live else plate_snapshot
 
     ocr = {**ocr, "cleaned_text": display_plate, "detection_quality": quality}
 

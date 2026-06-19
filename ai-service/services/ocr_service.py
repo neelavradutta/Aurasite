@@ -9,7 +9,7 @@ from config.settings import settings
 from services.plate_format import is_indian_plate, is_indian_plate_partial, normalize_plate_text
 from services.plate_quality import MIN_PLATE_CHARS, plate_key
 from services.model_registry import ModelStatus, resolve_device
-from services.batch_context import is_image_mode, is_video_mode
+from services.batch_context import is_image_mode, is_live_mode, is_video_mode
 from services.video_plate_processing import refine_video_plate_read
 
 logger = logging.getLogger(__name__)
@@ -266,13 +266,17 @@ def recognize_plate_crop(plate_crop: np.ndarray, frame_id: int = 0) -> dict[str,
     if plate_crop.size == 0:
         return normalize_plate_text("UNKNOWN", confidence=0.0)
 
-    variants = [
-        plate_crop,
-        preprocess_plate_crop(plate_crop),
-        sharpen_plate_crop(preprocess_plate_crop(plate_crop)),
-        emphasize_stroke_plate_crop(plate_crop),
-        adaptive_plate_crop(plate_crop),
-    ]
+    variants = (
+        [plate_crop, preprocess_plate_crop(plate_crop)]
+        if is_live_mode()
+        else [
+            plate_crop,
+            preprocess_plate_crop(plate_crop),
+            sharpen_plate_crop(preprocess_plate_crop(plate_crop)),
+            emphasize_stroke_plate_crop(plate_crop),
+            adaptive_plate_crop(plate_crop),
+        ]
+    )
 
     best: dict[str, Any] | None = None
     best_video_rank: tuple[float, int] | None = None
@@ -281,7 +285,12 @@ def recognize_plate_crop(plate_crop: np.ndarray, frame_id: int = 0) -> dict[str,
     fallback_video_rank: tuple[float, int] | None = None
     fallback_score = -1.0
     min_conf = settings.min_plate_confidence
-    floor_conf = max(0.58, min_conf - 0.14) if is_video_mode() else max(0.62, min_conf - 0.1)
+    if is_live_mode():
+        floor_conf = max(0.32, min_conf - 0.08)
+    elif is_video_mode():
+        floor_conf = max(0.58, min_conf - 0.14)
+    else:
+        floor_conf = max(0.62, min_conf - 0.1)
 
     for variant in variants:
         texts, confidences = _run_ocr_on_crop(ocr, variant)
@@ -317,6 +326,8 @@ def recognize_plate_crop(plate_crop: np.ndarray, frame_id: int = 0) -> dict[str,
             if confidence >= min_conf and score > best_score:
                 best = candidate
                 best_score = score
+                if is_live_mode() and candidate.get("is_valid"):
+                    break
             elif confidence >= floor_conf and score > fallback_score:
                 fallback = candidate
                 fallback_score = score
@@ -348,7 +359,9 @@ def _rank_ocr_candidate(candidate: dict[str, Any]) -> float:
 
 
 def recognize_plate(frame: np.ndarray, plate_bbox: list[int], frame_id: int = 0) -> dict[str, Any]:
-    if is_image_mode():
+    if is_live_mode():
+        crops = [crop_bbox(frame, plate_bbox, pad=0.12)]
+    elif is_image_mode():
         crops = [crop_bbox(frame, plate_bbox, pad=pad) for pad in (0.15, 0.35)]
     elif is_video_mode():
         crops = [

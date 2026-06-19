@@ -10,6 +10,7 @@ export interface DetectionVehicle {
   is_suspicious?: boolean;
   status?: string | null;
   violation_count?: number | null;
+  flagged_reason?: string | null;
   first_detected_timestamp?: string | null;
   created_at?: string | null;
   vehicle_type?: string | null;

@@ -162,6 +162,24 @@ def adapt_video_processing(
     return max_frames, False
 
 
+def _prepare_live_frame(frame: np.ndarray) -> np.ndarray:
+    height, width = frame.shape[:2]
+    longest = max(height, width)
+    target = 1280 if longest > 1280 else longest
+    if longest > target:
+        scale = target / longest
+        frame = cv2.resize(frame, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+
+    if longest < 960:
+        lab = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
+        l_channel, a_channel, b_channel = cv2.split(lab)
+        clahe = cv2.createCLAHE(clipLimit=1.6, tileGridSize=(8, 8))
+        l_channel = clahe.apply(l_channel)
+        frame = cv2.cvtColor(cv2.merge((l_channel, a_channel, b_channel)), cv2.COLOR_LAB2BGR)
+
+    return frame
+
+
 class VideoProcessor:
     def __init__(self):
         self.pipeline = AnprPipeline()
@@ -298,15 +316,22 @@ class VideoProcessor:
         }
 
     def process_frame(self, frame_bytes: bytes, frame_number: int, timestamp: float) -> dict[str, Any]:
+        from services.batch_context import clear_live_mode, set_live_mode
+
         start = time.time()
         arr = np.frombuffer(frame_bytes, dtype=np.uint8)
         frame = cv2.imdecode(arr, cv2.IMREAD_COLOR)
         if frame is None:
             raise ValueError("invalid_frame")
 
-        result = self.pipeline.process_single_frame(frame, frame_number, timestamp)
-        result["processing_time_ms"] = round((time.time() - start) * 1000, 2)
-        return result
+        set_live_mode()
+        try:
+            frame = _prepare_live_frame(frame)
+            result = self.pipeline.process_single_frame(frame, frame_number, timestamp, live_mode=True)
+            result["processing_time_ms"] = round((time.time() - start) * 1000, 2)
+            return result
+        finally:
+            clear_live_mode()
 
 
 def initialize_models():

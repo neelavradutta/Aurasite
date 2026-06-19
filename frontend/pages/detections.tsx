@@ -5,15 +5,26 @@ import PageTitle from '@/components/shared/PageTitle';
 import DetectionLogTable from '@/components/DetectionLogTable';
 import Button from '@/components/shared/Button';
 import { fetchDetections } from '@/services/api';
+import { getSocket } from '@/services/socket';
 import { Detection } from '@/types/detection';
 import { downloadDetectionsCsv } from '@/utils/detectionExport';
 import { filterDetectionsByQuery } from '@/utils/detectionDisplay';
 import { consumeDetectionsPageEnter } from '@/utils/pageTransitions';
+import {
+  patchViolationCounts,
+  patchVehicleUpdates as applyVehicleUpdatesToDetections,
+  VehicleRealtimeUpdate,
+  ViolationUpdate,
+} from '@/utils/violationUpdates';
 import { useDashboardStore } from '@/store/dashboardStore';
 
 export default function DetectionsPage() {
   const router = useRouter();
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);
+  const detectionsVersion = useDashboardStore((state) => state.detectionsVersion);
+  const bumpDetectionsVersion = useDashboardStore((state) => state.bumpDetectionsVersion);
+  const patchVehicleViolations = useDashboardStore((state) => state.patchVehicleViolations);
+  const syncVehicleUpdate = useDashboardStore((state) => state.patchVehicleUpdates);
   const [detections, setDetections] = useState<Detection[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -67,7 +78,43 @@ export default function DetectionsPage() {
     return () => {
       cancelled = true;
     };
-  }, [sessionVersion, router.isReady, plateFromQuery]);
+  }, [sessionVersion, detectionsVersion, router.isReady, plateFromQuery]);
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    const handleViolationsUpdated = (payload: { updates?: ViolationUpdate[] }) => {
+      const updates = payload?.updates || [];
+      if (updates.length === 0) return;
+      setDetections((current) => patchViolationCounts(current, updates));
+      patchVehicleViolations(
+        updates.map((update) => ({
+          vehicle_id: update.vehicle_id,
+          violation_count: update.violation_count,
+        }))
+      );
+    };
+
+    const handleVehicleUpdated = (update: VehicleRealtimeUpdate) => {
+      if (!update?.vehicle_id) return;
+      setDetections((current) => applyVehicleUpdatesToDetections(current, [update]));
+      syncVehicleUpdate(update);
+    };
+
+    const handleDetectionsChanged = () => {
+      bumpDetectionsVersion();
+    };
+
+    socket.on('violations:updated', handleViolationsUpdated);
+    socket.on('vehicle:updated', handleVehicleUpdated);
+    socket.on('detections:changed', handleDetectionsChanged);
+
+    return () => {
+      socket.off('violations:updated', handleViolationsUpdated);
+      socket.off('vehicle:updated', handleVehicleUpdated);
+      socket.off('detections:changed', handleDetectionsChanged);
+    };
+  }, [bumpDetectionsVersion, patchVehicleViolations, syncVehicleUpdate]);
 
   const filteredDetections = useMemo(
     () => filterDetectionsByQuery(detections, searchQuery),

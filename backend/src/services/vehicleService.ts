@@ -3,6 +3,8 @@ import Vehicle from '../models/Vehicle';
 import Detection from '../models/Detection';
 import Alert from '../models/Alert';
 import { cameraService } from './cameraService';
+import { emitVehicleUpdated } from '../utils/realtimeEvents';
+import { violationCountAfterStatusChange } from '../utils/vehicleViolations';
 
 const VEHICLE_STATUSES = ['active', 'suspicious', 'invalid', 'accidental'] as const;
 type VehicleStatus = (typeof VEHICLE_STATUSES)[number];
@@ -89,6 +91,7 @@ export const vehicleService = {
       status,
       is_suspicious: isSuspicious,
       flagged_reason: flaggedReason,
+      violation_count: violationCountAfterStatusChange(vehicle, status),
     });
 
     if (isSuspicious) {
@@ -99,6 +102,17 @@ export const vehicleService = {
         severity: 'high',
       });
     }
+
+    await vehicle.reload();
+
+    emitVehicleUpdated({
+      vehicle_id: vehicle.id,
+      plate_number: vehicle.plate_number,
+      status: vehicle.status,
+      is_suspicious: vehicle.is_suspicious,
+      flagged_reason: vehicle.flagged_reason,
+      violation_count: Math.max(0, Number(vehicle.violation_count) || 0),
+    });
 
     return vehicle;
   },

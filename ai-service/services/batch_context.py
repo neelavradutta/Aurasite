@@ -2,7 +2,22 @@
 
 VIDEO_BATCH = False
 IMAGE_SINGLE = False
+LIVE_MODE = False
 MEDIA_MODE = "none"  # "video" | "image" | "none"
+
+
+def set_live_mode() -> None:
+    global LIVE_MODE
+    LIVE_MODE = True
+
+
+def clear_live_mode() -> None:
+    global LIVE_MODE
+    LIVE_MODE = False
+
+
+def is_live_mode() -> bool:
+    return LIVE_MODE
 
 
 def set_video_mode() -> None:

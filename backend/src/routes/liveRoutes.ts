@@ -5,6 +5,11 @@ import multer from 'multer';
 import { env } from '../config/env';
 import { requireAuth } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
+import {
+  persistLiveDetectionIfNeeded,
+  resetLiveSaveSession,
+  resolveLiveVideoSource,
+} from '../utils/liveDetectionPersistence';
 
 const router = Router();
 const upload = multer({
@@ -94,6 +99,52 @@ router.post('/source/frame', requireAuth, async (req, res, next) => {
     res.json(data);
   } catch (error) {
     forwardAiServiceError(error, next);
+  }
+});
+
+router.post('/session/reset', requireAuth, async (req, res) => {
+  const mode = req.body.mode === 'source' ? 'source' : 'camera';
+  resetLiveSaveSession(resolveLiveVideoSource(mode, req.body.source));
+  res.json({ success: true, message: 'Live save session reset' });
+});
+
+router.post('/record', requireAuth, async (req, res, next) => {
+  try {
+    const plateNumber = String(req.body.plate_number || '').trim();
+    if (!plateNumber) {
+      throw new AppError('Plate number is required', 400, 'missing_plate');
+    }
+
+    const mode = req.body.mode === 'source' ? 'source' : 'camera';
+    const videoSource = resolveLiveVideoSource(mode, req.body.source);
+    const frameNumber = parseFrameNumber(req.body.frame_number);
+
+    const item: Record<string, unknown> = {
+      frame_id: frameNumber,
+      plate_number: plateNumber,
+      detection_quality: req.body.detection_quality || 'accepted',
+      plate_confidence: req.body.plate_confidence ?? null,
+      vehicle_confidence: req.body.vehicle_confidence ?? null,
+      vehicle_type: req.body.vehicle_type ?? null,
+      vehicle_color: req.body.vehicle_color ?? null,
+      dashboard_image_base64: req.body.dashboard_image_base64 ?? null,
+      plate_image_base64: req.body.plate_image_base64 ?? null,
+      plate: {
+        cleaned_text: plateNumber,
+        confidence: req.body.plate_confidence ?? null,
+        detection_quality: req.body.detection_quality || 'accepted',
+      },
+      vehicle: {
+        class_name: req.body.vehicle_type || 'unknown',
+        confidence: req.body.vehicle_confidence ?? null,
+        color: req.body.vehicle_color ?? null,
+      },
+    };
+
+    const payload = await persistLiveDetectionIfNeeded({ success: true, data: item }, videoSource, frameNumber);
+    res.json(payload);
+  } catch (error) {
+    next(error);
   }
 });
 

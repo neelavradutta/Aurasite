@@ -1,6 +1,6 @@
 from typing import Any
 
-from services.batch_context import is_video_mode
+from services.batch_context import is_live_mode, is_video_mode
 from services.plate_format import _strip_noise, is_indian_plate, is_indian_plate_partial, is_valid_plate
 
 MIN_PLATE_CHARS = 5
@@ -98,6 +98,13 @@ def plates_are_similar(left: str, right: str) -> bool:
 
 def _bbox_limits(frame_shape: tuple[int, ...]) -> dict[str, float]:
     frame_h, frame_w = frame_shape[:2]
+    if is_live_mode():
+        return {
+            "min_width": max(24.0, frame_w * 0.005),
+            "min_height": max(10.0, frame_h * 0.004),
+            "min_area": max(180.0, frame_w * frame_h * 0.000018),
+            "max_area_ratio": 0.35,
+        }
     return {
         "min_width": max(52.0, frame_w * 0.011),
         "min_height": max(14.0, frame_h * 0.007),
@@ -162,27 +169,31 @@ def should_accept_detection(
 ) -> bool:
     text = plate_key(str(ocr.get("cleaned_text", "")))
 
+    confidence = float(ocr.get("confidence", 0))
+    live_floor = max(0.30, min_confidence * 0.75) if is_live_mode() else min_confidence
+
     if not is_plate_like(text):
         return False
-    if float(ocr.get("confidence", 0)) < min_confidence:
+    if confidence < live_floor:
         return False
     if not is_plate_bbox_valid(bbox, frame_shape):
         return False
 
-    confidence = float(ocr.get("confidence", 0))
-
     # Valid Indian plates on low-res listing photos often have small bboxes but high OCR confidence.
-    if is_indian_plate(text) and confidence >= min_confidence:
+    if is_indian_plate(text) and confidence >= live_floor:
         return True
 
     # BH-series reads missing the last digit (e.g. MH20TC744) are still usable on clear photos.
-    if is_indian_plate_partial(text) and confidence >= max(0.68, min_confidence - 0.08):
+    if is_indian_plate_partial(text) and confidence >= max(0.68, live_floor - 0.08):
+        return True
+
+    if is_live_mode() and is_plate_like(text) and confidence >= live_floor:
         return True
 
     if is_likely_half_plate(bbox, frame_shape):
         return False
 
-    return True
+    return confidence >= min_confidence
 
 
 def detection_score(ocr: dict[str, Any], bbox: list[int]) -> float:

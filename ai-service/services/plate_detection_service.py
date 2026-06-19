@@ -49,12 +49,20 @@ def get_plate_model_status() -> ModelStatus:
     return _plate_status
 
 
-def detect_plates(frame: np.ndarray, confidence_threshold: float | None = None) -> list[dict[str, Any]]:
+def detect_plates(
+    frame: np.ndarray,
+    confidence_threshold: float | None = None,
+    *,
+    min_plate_area: int | None = None,
+    max_det: int | None = None,
+) -> list[dict[str, Any]]:
     model = load_plate_yolo()
     conf = confidence_threshold if confidence_threshold is not None else settings.plate_confidence_threshold
+    area_floor = min_plate_area if min_plate_area is not None else settings.min_plate_area
+    det_limit = max_det if max_det is not None else 40
     imgsz = yolo_imgsz(frame.shape)
 
-    results = model(frame, conf=conf, verbose=False, imgsz=imgsz, max_det=40)
+    results = model(frame, conf=conf, verbose=False, imgsz=imgsz, max_det=det_limit)
     detections: list[dict[str, Any]] = []
 
     for result in results:
@@ -63,7 +71,7 @@ def detect_plates(frame: np.ndarray, confidence_threshold: float | None = None) 
             cls_name = result.names.get(cls_id, "license_plate")
             x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
             area = (x2 - x1) * (y2 - y1)
-            if area < settings.min_plate_area:
+            if area < area_floor:
                 continue
             detections.append(
                 {
