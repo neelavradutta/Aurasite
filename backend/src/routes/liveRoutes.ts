@@ -27,6 +27,21 @@ function parseTimestamp(value: unknown): number {
   return Number.isFinite(parsed) ? parsed : Date.now() / 1000;
 }
 
+function forwardAiServiceError(error: unknown, next: NextFunction): void {
+  if (axios.isAxiosError(error) && error.response) {
+    const payload = error.response.data as { message?: string; error?: string };
+    next(
+      new AppError(
+        payload?.message || 'AI service request failed',
+        error.response.status,
+        typeof payload?.error === 'string' ? payload.error : 'ai_service_error'
+      )
+    );
+    return;
+  }
+  next(error);
+}
+
 function handleLiveUpload(req: Request, res: Response, next: NextFunction) {
   upload.single('frame')(req, res, (err) => {
     if (err) {
@@ -59,7 +74,7 @@ router.post('/frame', requireAuth, handleLiveUpload, async (req, res, next) => {
 
     res.json(data);
   } catch (error) {
-    next(error);
+    forwardAiServiceError(error, next);
   }
 });
 
@@ -78,7 +93,21 @@ router.post('/source/frame', requireAuth, async (req, res, next) => {
 
     res.json(data);
   } catch (error) {
-    next(error);
+    forwardAiServiceError(error, next);
+  }
+});
+
+router.post('/source/release', requireAuth, async (req, res, next) => {
+  try {
+    const source = String(req.body.source || '').trim();
+    if (!source) {
+      throw new AppError('Live source is required', 400, 'missing_source');
+    }
+
+    const { data } = await aiClient.post('/api/v1/live/source/release', { source });
+    res.json(data);
+  } catch (error) {
+    forwardAiServiceError(error, next);
   }
 });
 

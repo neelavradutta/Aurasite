@@ -22,6 +22,7 @@ scipy==1.15.0
 ffmpeg-python==0.2.0
 imageio==2.36.1
 imageio-ffmpeg==0.5.1
+yt-dlp>=2024.12.0
 
 # PyTorch (CPU wheels via extra-index-url above)
 torch>=2.0.0

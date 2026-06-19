@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Header from '@/components/Header';
 import PageTitle from '@/components/shared/PageTitle';
 import Button from '@/components/shared/Button';
+import TabSwitcher from '@/components/shared/TabSwitcher';
+import StatusBadge from '@/components/shared/StatusBadge';
 import {
   detectLiveFrame,
   detectLiveSourceFrame,
   formatApiError,
   LiveDetectionFrame,
+  releaseLiveSource,
 } from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
 import { createLivePlateResolver } from '@/utils/livePlateResolver';
@@ -28,12 +31,6 @@ function resolveVehicleLabel(result: LiveDetectionFrame | null): string {
   return result?.vehicle_type || 'Unknown';
 }
 
-function resolveStatus(result: LiveDetectionFrame | null, running: boolean): string {
-  if (running) return 'SCANNING';
-  if (result?.plate_number) return 'PLATE LOCKED';
-  return 'STANDBY';
-}
-
 export default function LivePage() {
   const router = useRouter();
   const { token, hydrate } = useAuthStore();
@@ -45,10 +42,12 @@ export default function LivePage() {
   const runningRef = useRef(false);
   const frameNumberRef = useRef(0);
   const plateResolverRef = useRef(createLivePlateResolver());
+  const deviceMenuRef = useRef<HTMLDivElement | null>(null);
 
   const [mode, setMode] = useState<LiveMode>('camera');
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [deviceId, setDeviceId] = useState('');
+  const [deviceMenuOpen, setDeviceMenuOpen] = useState(false);
   const [source, setSource] = useState('');
   const [running, setRunning] = useState(false);
   const [requesting, setRequesting] = useState(false);
@@ -60,13 +59,35 @@ export default function LivePage() {
     hydrate();
   }, [hydrate]);
 
-  useEffect(() => {
+  async function refreshDevices() {
     if (!navigator.mediaDevices?.enumerateDevices) return;
-    navigator.mediaDevices
-      .enumerateDevices()
-      .then((items) => setDevices(items.filter((item) => item.kind === 'videoinput')))
-      .catch(() => undefined);
-  }, []);
+
+    try {
+      const tempStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      tempStream.getTracks().forEach((track) => track.stop());
+    } catch {
+      // Labels may stay generic until permission is granted.
+    }
+
+    const items = await navigator.mediaDevices.enumerateDevices();
+    setDevices(items.filter((item) => item.kind === 'videoinput'));
+  }
+
+  useEffect(() => {
+    if (mode !== 'camera') return;
+
+    void refreshDevices();
+
+    const mediaDevices = navigator.mediaDevices;
+    if (!mediaDevices?.addEventListener) return;
+
+    const handleDeviceChange = () => {
+      void refreshDevices();
+    };
+
+    mediaDevices.addEventListener('devicechange', handleDeviceChange);
+    return () => mediaDevices.removeEventListener('devicechange', handleDeviceChange);
+  }, [mode]);
 
   useEffect(() => {
     return () => {
@@ -77,8 +98,22 @@ export default function LivePage() {
   useEffect(() => {
     if (mode === 'source') {
       stopCamera();
+      setDeviceMenuOpen(false);
     }
   }, [mode]);
+
+  useEffect(() => {
+    if (!deviceMenuOpen) return;
+
+    function handlePointerDown(event: MouseEvent) {
+      if (!deviceMenuRef.current?.contains(event.target as Node)) {
+        setDeviceMenuOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, [deviceMenuOpen]);
 
   function stopCamera() {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -106,9 +141,30 @@ export default function LivePage() {
       videoRef.current.srcObject = stream;
       await videoRef.current.play();
     }
-    const items = await navigator.mediaDevices.enumerateDevices();
-    setDevices(items.filter((item) => item.kind === 'videoinput'));
+    await refreshDevices();
   }
+
+  function deviceLabel(device: MediaDeviceInfo, index: number): string {
+    const label = device.label?.trim();
+    if (label) return label;
+    return `Camera ${index + 1}`;
+  }
+
+  function isDeviceSelected(id: string): boolean {
+    return deviceId === id;
+  }
+
+  function selectDevice(id: string) {
+    setDeviceId(id);
+    setDeviceMenuOpen(false);
+  }
+
+  const selectedDeviceLabel = useMemo(() => {
+    if (!deviceId) return 'Select Device';
+    const index = devices.findIndex((device) => device.deviceId === deviceId);
+    if (index >= 0) return deviceLabel(devices[index], index);
+    return 'Select Device';
+  }, [deviceId, devices]);
 
   async function captureFrameBlob(): Promise<Blob> {
     const video = videoRef.current;
@@ -200,7 +256,11 @@ export default function LivePage() {
       return;
     }
     if (mode === 'source' && !source.trim()) {
-      setError('Enter a live source URL, device index, or camera path.');
+      setError('Enter a public video link, RTSP URL, or stream address.');
+      return;
+    }
+    if (mode === 'camera' && !deviceId) {
+      setError('Select a camera device.');
       return;
     }
 
@@ -225,6 +285,7 @@ export default function LivePage() {
   }
 
   function stopLiveDetection() {
+    const activeSource = source.trim();
     runningRef.current = false;
     setRunning(false);
     setRequesting(false);
@@ -233,10 +294,10 @@ export default function LivePage() {
     clearTimer();
     if (mode === 'camera') {
       stopCamera();
+    } else if (activeSource) {
+      void releaseLiveSource(activeSource).catch(() => undefined);
     }
   }
-
-  const status = resolveStatus(lastResult, running);
 
   return (
     <div className="min-h-screen">
@@ -244,42 +305,77 @@ export default function LivePage() {
       <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         <div className="flex flex-wrap items-end justify-between gap-5">
           <PageTitle
-            title="Live Recognition"
-            subtitle="Preview-only plate detection from camera devices and live sources"
+            title="Live Monitoring"
+            subtitle="Detection from camera devices and live sources"
           />
-          <div className="flex items-center gap-3 rounded-full border border-cyber-cyan/30 bg-black/30 px-4 py-2 text-xs uppercase tracking-[0.25em] text-cyber-cyan">
-            <span className={`h-2.5 w-2.5 rounded-full ${running ? 'bg-cyber-green live-dot' : 'bg-slate-500'}`} />
-            {status}
-          </div>
+          <StatusBadge isScanning={running} />
         </div>
 
         <section className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
           <div className="glass-panel overflow-hidden rounded-2xl border border-cyber-cyan/20">
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-cyber-cyan/15 px-5 py-4">
-              <div>
-                <h3 className="font-orbitron text-lg font-semibold text-cyber-cyan neon-text">
-                  Live Input Matrix
-                </h3>
-                <p className="mt-1 text-xs text-slate-400">
-                  Results stay on this page and are not written to detection history.
-                </p>
-              </div>
-              <div className="flex rounded-lg border border-cyber-cyan/30 bg-black/30 p-1">
-                {(['camera', 'source'] as LiveMode[]).map((item) => (
-                  <button
-                    key={item}
-                    type="button"
+            <div className="border-b border-cyber-cyan/15 px-5 py-4">
+              <div className="grid items-center gap-5 lg:grid-cols-[1fr_18rem]">
+                {mode === 'camera' ? (
+                  <div ref={deviceMenuRef} className="relative w-[20rem] shrink-0">
+                    <button
+                      type="button"
+                      disabled={running}
+                      onClick={() => setDeviceMenuOpen((open) => !open)}
+                      title={selectedDeviceLabel}
+                      className="flex w-full min-w-0 items-center justify-between gap-3 rounded-md border border-white/40 bg-transparent px-4 py-2 text-left text-sm font-normal text-white transition hover:border-white hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                        {selectedDeviceLabel}
+                      </span>
+                      <span className="shrink-0 text-xs text-white/70">{deviceMenuOpen ? '▲' : '▼'}</span>
+                    </button>
+
+                    {deviceMenuOpen ? (
+                      <div className="absolute left-0 top-full z-20 mt-1 w-full overflow-hidden rounded-md border border-cyber-cyan/30 bg-[#0b1020] shadow-[0_12px_32px_rgba(0,0,0,0.45)]">
+                        {devices.map((device, index) => (
+                          <button
+                            key={device.deviceId || `camera-${index}`}
+                            type="button"
+                            disabled={running || !device.deviceId}
+                            onClick={() => selectDevice(device.deviceId)}
+                            className={`block w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap px-4 py-2.5 text-left text-xs tracking-[0.08em] transition hover:bg-cyber-cyan/10 disabled:cursor-not-allowed disabled:opacity-60 ${
+                              isDeviceSelected(device.deviceId)
+                                ? 'bg-cyber-cyan/15 text-cyber-cyan'
+                                : 'text-slate-300'
+                            }`}
+                            title={deviceLabel(device, index)}
+                          >
+                            {deviceLabel(device, index)}
+                          </button>
+                        ))}
+                        {devices.length === 0 ? (
+                          <p className="border-t border-cyber-cyan/15 px-4 py-2.5 text-xs text-slate-500">
+                            No cameras detected. Allow camera access to list devices.
+                          </p>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="relative min-w-0 w-full">
+                    <input
+                      value={source}
+                      disabled={running}
+                      onChange={(event) => setSource(event.target.value)}
+                      placeholder="YouTube, Facebook, RTSP, or direct URL"
+                      title={source.trim() || 'Public video link or stream URL'}
+                      className="w-full rounded-md border border-white/40 bg-transparent px-4 py-2 text-center text-sm font-normal text-white placeholder:text-white/70 outline-none transition hover:border-white focus:border-white disabled:cursor-not-allowed disabled:opacity-60"
+                    />
+                  </div>
+                )}
+                <div className="flex justify-end lg:justify-end">
+                  <TabSwitcher
+                    value={mode}
+                    onChange={setMode}
                     disabled={running}
-                    onClick={() => setMode(item)}
-                    className={`rounded-md px-4 py-2 text-xs uppercase tracking-[0.2em] transition ${
-                      mode === item
-                        ? 'bg-cyber-cyan/15 text-cyber-cyan shadow-neon'
-                        : 'text-slate-400 hover:text-cyber-cyan'
-                    } disabled:cursor-not-allowed disabled:opacity-60`}
-                  >
-                    {item === 'camera' ? 'Camera' : 'Source'}
-                  </button>
-                ))}
+                    className="shrink-0"
+                  />
+                </div>
               </div>
             </div>
 
@@ -298,7 +394,8 @@ export default function LivePage() {
                     <div>
                       <p className="font-orbitron text-lg text-cyber-pink">REMOTE SOURCE MODE</p>
                       <p className="mt-2 max-w-md text-sm text-slate-400">
-                        Frames are sampled by the backend from the configured live source.
+                        Paste a public YouTube, Facebook, Instagram, or other video link. The backend
+                        resolves and samples frames for detection.
                       </p>
                     </div>
                   </div>
@@ -309,42 +406,22 @@ export default function LivePage() {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                {mode === 'camera' ? (
-                  <label className="block">
-                    <span className="text-xs uppercase tracking-[0.2em] text-cyber-cyan">Input Device</span>
-                    <select
-                      value={deviceId}
-                      disabled={running}
-                      onChange={(event) => setDeviceId(event.target.value)}
-                      className="mt-2 w-full rounded-md border border-cyber-cyan/30 bg-black/40 px-3 py-2 text-sm text-slate-100 outline-none focus:border-cyber-cyan"
-                    >
-                      <option value="">Default camera</option>
-                      {devices.map((device, index) => (
-                        <option key={device.deviceId} value={device.deviceId}>
-                          {device.label || `Camera ${index + 1}`}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                ) : (
-                  <label className="block">
-                    <span className="text-xs uppercase tracking-[0.2em] text-cyber-cyan">Source</span>
-                    <input
-                      value={source}
-                      disabled={running}
-                      onChange={(event) => setSource(event.target.value)}
-                      placeholder="0, rtsp://..., http://..., or path"
-                      className="mt-2 w-full rounded-md border border-cyber-cyan/30 bg-black/40 px-3 py-2 text-sm text-slate-100 outline-none focus:border-cyber-cyan"
-                    />
-                  </label>
-                )}
-
+              <div className="flex flex-col gap-4">
                 <div className="grid grid-cols-2 gap-3">
-                  <Button onClick={startLiveDetection} disabled={running}>
+                  <Button
+                    variant="success"
+                    glow={!running && !requesting}
+                    onClick={startLiveDetection}
+                    disabled={running}
+                  >
                     Start
                   </Button>
-                  <Button variant="danger" onClick={stopLiveDetection} disabled={!running && !requesting}>
+                  <Button
+                    variant="danger"
+                    glow={running || requesting}
+                    onClick={stopLiveDetection}
+                    disabled={!running && !requesting}
+                  >
                     Stop
                   </Button>
                 </div>

@@ -17,6 +17,7 @@ from config.settings import settings
 from services import job_progress
 from services.image_service import IMAGE_EXTENSIONS, is_image_path, process_image_file
 from services.video_service import VideoProcessor
+from services.web_video_source import read_live_source_frame, release_live_source
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["detection"])
@@ -30,6 +31,18 @@ class LiveSourceFrameRequest(BaseModel):
     source: str
     frame_number: int = 0
     timestamp: float | None = None
+
+
+class LiveSourceReleaseRequest(BaseModel):
+    source: str
+
+
+_LIVE_SOURCE_ERRORS = {
+    "source_unavailable": "Unable to open live source",
+    "frame_unavailable": "Unable to read frame from live source",
+    "unsupported_link": "This link is unsupported or not publicly accessible",
+    "web_video_unavailable": "Internet video support is not installed on the AI service",
+}
 
 
 def _is_video_upload(upload: UploadFile) -> bool:
@@ -46,13 +59,6 @@ def _is_image_upload(upload: UploadFile) -> bool:
         return True
     filename = (upload.filename or "").lower()
     return any(filename.endswith(ext) for ext in IMAGE_EXTENSIONS)
-
-
-def _resolve_capture_source(source: str) -> str | int:
-    value = source.strip()
-    if value.isdigit():
-        return int(value)
-    return value
 
 
 def _process_live_frame_bytes(frame_bytes: bytes, frame_number: int, timestamp: float | None) -> dict:
@@ -108,27 +114,15 @@ async def detect_live_frame(
 
 @router.post("/live/source/frame")
 async def detect_live_source_frame(payload: LiveSourceFrameRequest):
-    cap = cv2.VideoCapture(_resolve_capture_source(payload.source))
     try:
-        if not cap.isOpened():
-            return JSONResponse(
-                status_code=400,
-                content={
-                    "success": False,
-                    "error": "source_unavailable",
-                    "message": "Unable to open live source",
-                    "status_code": 400,
-                },
-            )
-
-        ok, frame = cap.read()
+        ok, frame = read_live_source_frame(payload.source)
         if not ok or frame is None:
             return JSONResponse(
                 status_code=400,
                 content={
                     "success": False,
                     "error": "frame_unavailable",
-                    "message": "Unable to read frame from live source",
+                    "message": _LIVE_SOURCE_ERRORS["frame_unavailable"],
                     "status_code": 400,
                 },
             )
@@ -140,12 +134,13 @@ async def detect_live_source_frame(payload: LiveSourceFrameRequest):
         data = _process_live_frame_bytes(buffer.tobytes(), payload.frame_number, payload.timestamp)
         return {"success": True, "data": data, "message": "Live source frame processed"}
     except ValueError as exc:
+        error_code = str(exc)
         return JSONResponse(
             status_code=400,
             content={
                 "success": False,
-                "error": str(exc),
-                "message": "Live source frame processing failed",
+                "error": error_code,
+                "message": _LIVE_SOURCE_ERRORS.get(error_code, "Live source frame processing failed"),
                 "status_code": 400,
             },
         )
@@ -160,8 +155,12 @@ async def detect_live_source_frame(payload: LiveSourceFrameRequest):
                 "status_code": 500,
             },
         )
-    finally:
-        cap.release()
+
+
+@router.post("/live/source/release")
+async def release_live_source_session(payload: LiveSourceReleaseRequest):
+    release_live_source(payload.source)
+    return {"success": True, "message": "Live source released"}
 
 
 def _resolve_media_kind(

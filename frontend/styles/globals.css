@@ -75,6 +75,161 @@ body {
   animation: pulse-glow 1.5s ease-in-out infinite;
 }
 
+@keyframes status-badge-dot-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes status-badge-dot-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.45);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.85);
+  }
+}
+
+@keyframes status-badge-dot-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes status-badge-dot-standby {
+  0%,
+  100% {
+    opacity: 0.55;
+    box-shadow: 0 0 4px rgba(100, 116, 139, 0.35);
+  }
+  50% {
+    opacity: 0.9;
+    box-shadow: 0 0 8px rgba(100, 116, 139, 0.55);
+  }
+}
+
+.status-badge-dot-spin {
+  animation: status-badge-dot-spin 2.4s linear infinite;
+  transform-origin: center;
+}
+
+.status-badge-dot-pulse {
+  animation: status-badge-dot-pulse 2.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.status-badge-dot-ring {
+  animation: status-badge-dot-ring 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  transform-origin: center;
+}
+
+.status-badge-dot-ring-delayed {
+  animation-delay: 1.2s;
+}
+
+.status-badge-dot-standby {
+  animation: status-badge-dot-standby 3s ease-in-out infinite;
+}
+
+@keyframes status-badge-signal-bar-1 {
+  0%,
+  10% {
+    opacity: 0.2;
+    transform: scaleY(0.45);
+  }
+  16%,
+  72% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  82%,
+  100% {
+    opacity: 0.2;
+    transform: scaleY(0.45);
+  }
+}
+
+@keyframes status-badge-signal-bar-2 {
+  0%,
+  26% {
+    opacity: 0.2;
+    transform: scaleY(0.45);
+  }
+  32%,
+  72% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  82%,
+  100% {
+    opacity: 0.2;
+    transform: scaleY(0.45);
+  }
+}
+
+@keyframes status-badge-signal-bar-3 {
+  0%,
+  42% {
+    opacity: 0.2;
+    transform: scaleY(0.45);
+  }
+  48%,
+  72% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  82%,
+  100% {
+    opacity: 0.2;
+    transform: scaleY(0.45);
+  }
+}
+
+.status-badge-signal-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+}
+
+.status-badge-signal-bar {
+  width: 3px;
+  border-radius: 1.5px;
+  background: #22c55e;
+  transform-origin: bottom center;
+  animation-duration: 2.4s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.status-badge-signal-bar-1 {
+  height: 7px;
+  animation-name: status-badge-signal-bar-1;
+}
+
+.status-badge-signal-bar-2 {
+  height: 10px;
+  animation-name: status-badge-signal-bar-2;
+}
+
+.status-badge-signal-bar-3 {
+  height: 13px;
+  animation-name: status-badge-signal-bar-3;
+}
+
 @property --pie-sweep-angle {
   syntax: '<angle>';
   initial-value: 0deg;

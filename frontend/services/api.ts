@@ -188,6 +188,10 @@ export async function detectLiveSourceFrame(
   return data;
 }
 
+export async function releaseLiveSource(source: string): Promise<void> {
+  await api.post('/live/source/release', { source });
+}
+
 export class ProcessingCancelledError extends Error {
   constructor() {
     super('Processing cancelled');
