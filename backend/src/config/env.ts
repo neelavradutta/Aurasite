@@ -9,7 +9,7 @@ export const env = {
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
   pythonServiceUrl: process.env.PYTHON_SERVICE_URL || 'http://localhost:5000',
   jwtSecret: process.env.JWT_SECRET || 'dev-secret',
-  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3001',
   uploadDir: process.env.UPLOAD_DIR || './uploads',
   maxFileSizeMb: parseInt(process.env.MAX_FILE_SIZE_MB || '500', 10),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
