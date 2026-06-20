@@ -6,62 +6,24 @@ import PageTitle from '@/components/shared/PageTitle';
 import Button from '@/components/shared/Button';
 import TabSwitcher from '@/components/shared/TabSwitcher';
 import StatusBadge from '@/components/shared/StatusBadge';
-import {
-  detectLiveFrame,
-  detectLiveSourceFrame,
-  formatApiError,
-  LiveDetectionFrame,
-  persistLiveDetectionRecord,
-  releaseLiveSource,
-  resetLiveSaveSession,
-} from '@/services/api';
+import { LiveDetectionFrame } from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
-import { createLivePlateResolver, pickLiveDisplayPlate } from '@/utils/livePlateResolver';
+import { useLiveDetection, useLiveCameraVideo } from '@/hooks/useLiveDetection';
+import { getLiveSnapshotSrc } from '@/utils/liveVideoSource';
 
-type LiveMode = 'camera' | 'source';
-
-const LIVE_INTERVAL_MS = 800;
 const LIVE_HISTORY_VISIBLE = 5;
-const LIVE_HISTORY_MAX = 30;
 /** 5 cards (5.5rem each) + 4 gaps (space-y-3) */
 const LIVE_HISTORY_SCROLL_MAX = `calc(${LIVE_HISTORY_VISIBLE} * 5.5rem + ${LIVE_HISTORY_VISIBLE - 1} * 0.75rem)`;
-const LIVE_ERROR_PREFIX = 'Error : ';
-
-function formatLiveError(message: string): string {
-  const trimmed = message.trim();
-  if (!trimmed) return '';
-  const body = trimmed.replace(/^error\s*:\s*/i, '').trim();
-  return `${LIVE_ERROR_PREFIX}${body}`;
-}
 
 function formatConfidence(value?: number): string {
   if (typeof value !== 'number' || Number.isNaN(value)) return '--';
   return `${Math.round(value * 100)}%`;
 }
 
-function resolveVehicleLabel(result: LiveDetectionFrame | null): string {
-  const vehicle = result?.vehicle;
-  const className = vehicle?.class_name;
-  if (typeof className === 'string' && className.trim()) return className;
-  return result?.vehicle_type || 'Unknown';
-}
-
-function resolveVehicleColour(result: LiveDetectionFrame | null): string {
-  const vehicle = result?.vehicle;
-  const color = result?.vehicle_color ?? vehicle?.color;
-  if (typeof color === 'string' && color.trim()) return color;
-  return '--';
-}
-
-function getLiveSnapshotSrc(item: LiveDetectionFrame | null): string | null {
-  if (!item) return null;
-  const raw = item.dashboard_image_base64 || item.plate_image_base64;
-  if (!raw) return null;
-  if (raw.startsWith('data:')) return raw;
-  return `data:image/jpeg;base64,${raw}`;
-}
-
-function formatOverlayVehicleLine(result: LiveDetectionFrame | null): string {
+function formatOverlayVehicleLine(
+  result: LiveDetectionFrame | null,
+  resolveVehicleLabel: (result: LiveDetectionFrame | null) => string
+): string {
   const label = resolveVehicleLabel(result);
   const vehicle = label.toLowerCase() === 'unknown' ? 'unknown' : label;
   return `Vehicle - ${vehicle}`;
@@ -76,29 +38,42 @@ function downloadLiveSnapshot(item: LiveDetectionFrame, snapshotSrc: string): vo
 
 export default function LivePage() {
   const router = useRouter();
-  const { token, hydrate } = useAuthStore();
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const timeoutRef = useRef<number | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
-  const runningRef = useRef(false);
-  const frameNumberRef = useRef(0);
-  const plateResolverRef = useRef(createLivePlateResolver());
+  const { hydrate } = useAuthStore();
   const deviceMenuRef = useRef<HTMLDivElement | null>(null);
+  const {
+    running,
+    requesting,
+    mode,
+    source,
+    deviceId,
+    previewSrc,
+    lastResult,
+    plateHistory,
+    clearPlateHistory,
+    error,
+    setMode,
+    setSource,
+    setDeviceId,
+    setError,
+    startLiveDetection,
+    stopLiveDetection,
+    stopCameraOnly,
+    stopFeed,
+    previewCamera,
+    resolveVehicleLabel,
+    resolveVehicleColour,
+  } = useLiveDetection();
+  const { videoRef, getVideoElement, cameraPreviewActive } = useLiveCameraVideo();
 
-  const [mode, setMode] = useState<LiveMode>('camera');
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const [deviceId, setDeviceId] = useState('');
   const [deviceMenuOpen, setDeviceMenuOpen] = useState(false);
-  const [source, setSource] = useState('');
-  const [running, setRunning] = useState(false);
-  const [requesting, setRequesting] = useState(false);
-  const [lastResult, setLastResult] = useState<LiveDetectionFrame | null>(null);
-  const [plateHistory, setPlateHistory] = useState<LiveDetectionFrame[]>([]);
-  const [error, setError] = useState('');
   const [previewItem, setPreviewItem] = useState<LiveDetectionFrame | null>(null);
   const [portalMounted, setPortalMounted] = useState(false);
+
+  useEffect(() => {
+    if (mode !== 'camera' || !deviceId) return;
+    void previewCamera(deviceId, getVideoElement());
+  }, [mode, deviceId, previewCamera, getVideoElement]);
 
   useEffect(() => {
     hydrate();
@@ -128,15 +103,22 @@ export default function LivePage() {
   async function refreshDevices() {
     if (!navigator.mediaDevices?.enumerateDevices) return;
 
-    try {
-      const tempStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      tempStream.getTracks().forEach((track) => track.stop());
-    } catch {
-      // Labels may stay generic until permission is granted.
+    let items = await navigator.mediaDevices.enumerateDevices();
+    let videoInputs = items.filter((item) => item.kind === 'videoinput');
+    const hasLabels = videoInputs.some((item) => Boolean(item.label?.trim()));
+
+    if (!hasLabels && !cameraPreviewActive) {
+      try {
+        const tempStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        tempStream.getTracks().forEach((track) => track.stop());
+      } catch {
+        // Labels may stay generic until permission is granted.
+      }
+      items = await navigator.mediaDevices.enumerateDevices();
+      videoInputs = items.filter((item) => item.kind === 'videoinput');
     }
 
-    const items = await navigator.mediaDevices.enumerateDevices();
-    setDevices(items.filter((item) => item.kind === 'videoinput'));
+    setDevices(videoInputs);
   }
 
   useEffect(() => {
@@ -153,20 +135,14 @@ export default function LivePage() {
 
     mediaDevices.addEventListener('devicechange', handleDeviceChange);
     return () => mediaDevices.removeEventListener('devicechange', handleDeviceChange);
-  }, [mode]);
-
-  useEffect(() => {
-    return () => {
-      stopLiveDetection();
-    };
-  }, []);
+  }, [mode, cameraPreviewActive]);
 
   useEffect(() => {
     if (mode === 'source') {
-      stopCamera();
+      stopCameraOnly();
       setDeviceMenuOpen(false);
     }
-  }, [mode]);
+  }, [mode, stopCameraOnly]);
 
   useEffect(() => {
     if (!deviceMenuOpen) return;
@@ -196,40 +172,7 @@ export default function LivePage() {
       window.clearTimeout(timer);
       document.removeEventListener('mousedown', dismissError);
     };
-  }, [error]);
-
-  function stopCamera() {
-    streamRef.current?.getTracks().forEach((track) => track.stop());
-    streamRef.current = null;
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-  }
-
-  function clearTimer() {
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-  }
-
-  async function startCamera() {
-    stopCamera();
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
-      },
-      audio: false,
-    });
-    streamRef.current = stream;
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
-      await videoRef.current.play();
-    }
-    await refreshDevices();
-  }
+  }, [error, setError]);
 
   function deviceLabel(device: MediaDeviceInfo, index: number): string {
     const label = device.label?.trim();
@@ -244,6 +187,7 @@ export default function LivePage() {
   function selectDevice(id: string) {
     setDeviceId(id);
     setDeviceMenuOpen(false);
+    void previewCamera(id, getVideoElement());
   }
 
   const selectedDeviceLabel = useMemo(() => {
@@ -253,177 +197,16 @@ export default function LivePage() {
     return 'Select Device';
   }, [deviceId, devices]);
 
-  async function captureFrameBlob(): Promise<Blob> {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!video || !canvas || video.readyState < 2) {
-      throw new Error('Camera frame is not ready yet.');
-    }
-
-    canvas.width = video.videoWidth || 1280;
-    canvas.height = video.videoHeight || 720;
-    const context = canvas.getContext('2d');
-    if (!context) throw new Error('Unable to capture camera frame.');
-
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    return new Promise((resolve, reject) => {
-      canvas.toBlob(
-        (blob) => {
-          if (blob) resolve(blob);
-          else reject(new Error('Unable to encode camera frame.'));
-        },
-        'image/jpeg',
-        0.82
-      );
-    });
-  }
-
-  function openDetectionLog(plateNumber?: string) {
-    const plate = plateNumber?.trim();
+  function openDetectionLog(item: LiveDetectionFrame) {
+    const plate = item.plate_number?.trim();
     if (!plate) return;
-    void router.push({ pathname: '/detections', query: { plate } });
-  }
-
-  function recordResult(result: LiveDetectionFrame) {
-    const tracked = plateResolverRef.current.observe(result);
-    const resolved = pickLiveDisplayPlate(result, tracked);
-    if (!resolved) {
-      return;
-    }
-
-    const displayResult: LiveDetectionFrame = {
-      ...result,
-      plate_number: resolved.plate,
-      plate_confidence: resolved.confidence || result.plate_confidence,
-      detection_quality: 'accepted',
-      frame_id: resolved.frameId || result.frame_id,
-    };
-
-    setLastResult(displayResult);
-    setPlateHistory((current) => {
-      const latest = current[0];
-      if (latest?.plate_number === displayResult.plate_number) {
-        return [{ ...latest, ...displayResult }, ...current.slice(1)];
-      }
-
-      void persistLiveDetectionRecord({
-        plate_number: displayResult.plate_number || '',
-        frame_number: displayResult.frame_id,
-        plate_confidence: displayResult.plate_confidence,
-        vehicle_confidence: displayResult.vehicle_confidence,
-        vehicle_type: resolveVehicleLabel(displayResult),
-        vehicle_color:
-          resolveVehicleColour(displayResult) === '--' ? null : resolveVehicleColour(displayResult),
-        detection_quality: displayResult.detection_quality,
-        dashboard_image_base64: displayResult.dashboard_image_base64,
-        mode,
-        source: mode === 'source' ? source.trim() : undefined,
-      })
-        .then((response) => {
-          const saved = response.data;
-          if (!saved?.detection_id) return;
-          setPlateHistory((history) =>
-            history.map((entry) =>
-              entry.plate_number === displayResult.plate_number && entry.frame_id === displayResult.frame_id
-                ? { ...entry, detection_id: saved.detection_id, saved_to_log: saved.saved_to_log }
-                : entry
-            )
-          );
-          setLastResult((current) =>
-            current?.plate_number === displayResult.plate_number
-              ? { ...current, detection_id: saved.detection_id, saved_to_log: saved.saved_to_log }
-              : current
-          );
-        })
-        .catch(() => undefined);
-
-      return [displayResult, ...current].slice(0, LIVE_HISTORY_MAX);
+    void router.push({
+      pathname: '/detections',
+      query: {
+        highlight: plate,
+        ...(item.detection_id ? { id: String(item.detection_id) } : {}),
+      },
     });
-  }
-
-  async function processNextFrame() {
-    if (!runningRef.current) return;
-
-    setRequesting(true);
-    abortRef.current = new AbortController();
-
-    try {
-      const frameNumber = frameNumberRef.current + 1;
-      frameNumberRef.current = frameNumber;
-      const timestamp = Date.now() / 1000;
-      const response =
-        mode === 'camera'
-          ? await detectLiveFrame(
-              await captureFrameBlob(),
-              frameNumber,
-              timestamp,
-              abortRef.current.signal
-            )
-          : await detectLiveSourceFrame(source.trim(), frameNumber, timestamp, abortRef.current.signal);
-
-      setError('');
-      recordResult(response.data);
-    } catch (err) {
-      if (runningRef.current) {
-        setError(formatLiveError(formatApiError(err, 'Live detection failed')));
-      }
-    } finally {
-      setRequesting(false);
-      abortRef.current = null;
-      if (runningRef.current) {
-        timeoutRef.current = window.setTimeout(processNextFrame, LIVE_INTERVAL_MS);
-      }
-    }
-  }
-
-  async function startLiveDetection() {
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-    if (mode === 'source' && !source.trim()) {
-      setError(formatLiveError('Enter a link or stream URL'));
-      return;
-    }
-    if (mode === 'camera' && !deviceId) {
-      setError(formatLiveError('Select a camera device'));
-      return;
-    }
-
-    setError('');
-    frameNumberRef.current = 0;
-    plateResolverRef.current.reset();
-    setLastResult(null);
-    setPlateHistory([]);
-    void resetLiveSaveSession(mode, mode === 'source' ? source.trim() : undefined);
-
-    try {
-      if (mode === 'camera') {
-        await startCamera();
-      }
-      runningRef.current = true;
-      setRunning(true);
-      processNextFrame();
-    } catch (err) {
-      runningRef.current = false;
-      setRunning(false);
-      setError(formatLiveError(formatApiError(err, 'Unable to start live detection')));
-    }
-  }
-
-  function stopLiveDetection() {
-    const activeSource = source.trim();
-    runningRef.current = false;
-    setRunning(false);
-    setRequesting(false);
-    abortRef.current?.abort();
-    abortRef.current = null;
-    clearTimer();
-    if (mode === 'camera') {
-      stopCamera();
-    } else if (activeSource) {
-      void releaseLiveSource(activeSource).catch(() => undefined);
-    }
   }
 
   const previewSnapshotSrc = previewItem ? getLiveSnapshotSrc(previewItem) : null;
@@ -515,17 +298,18 @@ export default function LivePage() {
             </div>
 
             <div className="grid gap-5 p-5 lg:grid-cols-[1fr_18rem]">
-              <div className="relative min-h-[28rem] overflow-hidden rounded-xl border border-cyber-cyan/20 bg-black/50">
+              <div className="relative min-h-[28rem] h-[28rem] overflow-hidden rounded-xl border border-cyber-cyan/20 bg-black/50">
                 {mode === 'camera' ? (
                   <>
                     <video
                       ref={videoRef}
                       muted
+                      autoPlay
                       playsInline
-                      className="h-full min-h-[28rem] w-full object-cover"
+                      className="absolute inset-0 z-0 h-full w-full object-cover"
                     />
-                    {!running ? (
-                      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
+                    {!running && !cameraPreviewActive ? (
+                      <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 px-6 text-center">
                         <p className="font-orbitron text-xl text-cyber-pink remote-source-fade">LIVE FEED MODE</p>
                       </div>
                     ) : null}
@@ -534,10 +318,16 @@ export default function LivePage() {
                   <div className="flex h-full min-h-[28rem] flex-col items-center justify-center gap-4 px-6 text-center">
                     <p className="font-orbitron text-xl text-cyber-pink remote-source-fade">REMOTE SOURCE MODE</p>
                   </div>
+                ) : previewSrc ? (
+                  <img
+                    src={previewSrc}
+                    alt="Remote source preview"
+                    className="h-full min-h-[28rem] w-full object-cover"
+                  />
                 ) : (
                   <div className="h-full min-h-[28rem]" aria-hidden />
                 )}
-                <div className="pointer-events-none absolute inset-0" aria-hidden>
+                <div className="pointer-events-none absolute inset-0 z-10" aria-hidden>
                   <div className="absolute left-1/4 top-0 h-full w-px -translate-x-1/2 bg-white/15" />
                   <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/15" />
                   <div className="absolute left-3/4 top-0 h-full w-px -translate-x-1/2 bg-white/15" />
@@ -545,9 +335,18 @@ export default function LivePage() {
                   <div className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-white/15" />
                   <div className="absolute left-0 top-3/4 h-px w-full -translate-y-1/2 bg-white/15" />
                 </div>
-                <div className="absolute left-3 top-3 rounded-full border border-cyber-cyan/40 bg-black/60 px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.14em] text-cyber-cyan">
-                  {requesting ? 'Analyzing' : running ? 'Live' : 'Idle'}
+                <div className="absolute left-3 top-3 z-20 rounded-full border border-cyber-cyan/40 bg-black/60 px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.14em] text-cyber-cyan">
+                  {requesting ? 'Analyzing' : running ? 'Live' : cameraPreviewActive ? 'Preview' : 'Idle'}
                 </div>
+                {mode === 'camera' && cameraPreviewActive && !running ? (
+                  <button
+                    type="button"
+                    onClick={stopFeed}
+                    className="absolute right-3 top-3 z-20 rounded-full border border-red-500/50 bg-black/60 px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.14em] text-red-400 transition hover:border-red-400/70 hover:text-red-300"
+                  >
+                    Stop Feed
+                  </button>
+                ) : null}
               </div>
 
               <div className="flex flex-col gap-4">
@@ -603,9 +402,20 @@ export default function LivePage() {
           </div>
 
           <aside className="glass-panel flex h-full min-h-0 flex-col rounded-2xl border border-cyber-cyan/20 p-5">
-            <h3 className="font-orbitron text-lg font-semibold text-cyber-cyan neon-text">
-              Recent Live Detections
-            </h3>
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="font-orbitron text-lg font-semibold text-cyber-cyan neon-text">
+                Recent Live Detections
+              </h3>
+              {plateHistory.length > 0 || lastResult ? (
+                <button
+                  type="button"
+                  onClick={clearPlateHistory}
+                  className="shrink-0 rounded-full border border-white bg-white/15 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-white shadow-[0_0_10px_rgba(255,255,255,0.3)] transition hover:bg-white/25 hover:shadow-[0_0_14px_rgba(255,255,255,0.45)]"
+                >
+                  Reset
+                </button>
+              ) : null}
+            </div>
 
             <div className="mt-5 flex min-h-0 flex-1 flex-col">
               {plateHistory.length === 0 ? (
@@ -622,11 +432,11 @@ export default function LivePage() {
                       key={`${item.frame_id}-${item.plate_number}-${index}`}
                       role="button"
                       tabIndex={0}
-                      onClick={() => openDetectionLog(item.plate_number)}
+                      onClick={() => openDetectionLog(item)}
                       onKeyDown={(event) => {
                         if (event.key === 'Enter' || event.key === ' ') {
                           event.preventDefault();
-                          openDetectionLog(item.plate_number);
+                          openDetectionLog(item);
                         }
                       }}
                       className="shrink-0 cursor-pointer rounded-xl border border-cyber-cyan/20 bg-black/30 p-4 transition hover:border-cyber-cyan/45 hover:bg-black/40"
@@ -668,7 +478,7 @@ export default function LivePage() {
                       {previewItem.plate_number}
                     </h3>
                     <p className="mt-1.5 text-sm text-slate-400">
-                      {formatOverlayVehicleLine(previewItem)}
+                      {formatOverlayVehicleLine(previewItem, resolveVehicleLabel)}
                       {resolveVehicleColour(previewItem) !== '--'
                         ? ` · ${resolveVehicleColour(previewItem)}`
                         : ''}
@@ -716,7 +526,6 @@ export default function LivePage() {
             document.body
           )
         : null}
-      <canvas ref={canvasRef} className="hidden" />
     </div>
   );
 }

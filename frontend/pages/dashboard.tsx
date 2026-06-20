@@ -34,6 +34,8 @@ import {
   uploadVideo,
   waitForJob,
 } from '@/services/api';
+import { getSocket } from '@/services/socket';
+import { isLiveVideoSource } from '@/utils/liveVideoSource';
 import { getDashboardPlates } from '@/utils/dashboardDetections';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
 import { isImageFile } from '@/utils/mediaFile';
@@ -91,6 +93,26 @@ export default function DashboardPage() {
   useEffect(() => {
     hydrate();
   }, [hydrate]);
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    const handleDetectionsChanged = (payload: { videoSource?: string }) => {
+      const videoSource = payload.videoSource;
+      if (!isLiveVideoSource(videoSource)) return;
+
+      void fetchDetections({ limit: 200, video_source: videoSource }).then((res) => {
+        const rows = res.data || [];
+        if (rows.length === 0) return;
+        appendPeakTrafficDetections(rows);
+      });
+    };
+
+    socket.on('detections:changed', handleDetectionsChanged);
+    return () => {
+      socket.off('detections:changed', handleDetectionsChanged);
+    };
+  }, [appendPeakTrafficDetections]);
 
 
   async function handleLoadVideo(file: File): Promise<{ success: boolean; platesDetected: number }> {

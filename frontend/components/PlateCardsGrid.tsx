@@ -11,7 +11,6 @@ import {
 import { normalizePlateKey } from '@/utils/dashboardDetections';
 import { downloadVehicleReportPdf } from '@/utils/vehicleReportPdf';
 import { getHistoryPlate } from '@/utils/vehicleCardDisplay';
-import { markDetectionsPageEnter } from '@/utils/pageTransitions';
 import { getStatusReason } from '@/utils/vehicleStatus';
 import DetectionSnapshotImage from './DetectionSnapshotImage';
 import PlateSnapshotModal from './PlateSnapshotModal';
@@ -212,7 +211,6 @@ export default function PlateCardsGrid({
   }
 
   function handleViewHistory(vehicle: Vehicle) {
-    markDetectionsPageEnter();
     void router.push({
       pathname: '/detections',
       query: { plate: getHistoryPlate(vehicle) },

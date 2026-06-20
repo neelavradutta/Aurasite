@@ -9,7 +9,6 @@ import { getSocket } from '@/services/socket';
 import { Detection } from '@/types/detection';
 import { downloadDetectionsCsv } from '@/utils/detectionExport';
 import { filterDetectionsByQuery } from '@/utils/detectionDisplay';
-import { consumeDetectionsPageEnter } from '@/utils/pageTransitions';
 import {
   patchViolationCounts,
   patchVehicleUpdates as applyVehicleUpdatesToDetections,
@@ -29,7 +28,6 @@ export default function DetectionsPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [pageEntering, setPageEntering] = useState(false);
 
   const plateFromQuery = useMemo(() => {
     if (!router.isReady) return '';
@@ -37,17 +35,25 @@ export default function DetectionsPage() {
     return typeof plate === 'string' ? plate.trim() : '';
   }, [router.isReady, router.query.plate]);
 
-  useEffect(() => {
-    if (consumeDetectionsPageEnter()) {
-      setPageEntering(true);
-      const timer = window.setTimeout(() => setPageEntering(false), 600);
-      return () => window.clearTimeout(timer);
-    }
-  }, []);
+  const highlightFromQuery = useMemo(() => {
+    if (!router.isReady) return '';
+    const highlight = router.query.highlight;
+    return typeof highlight === 'string' ? highlight.trim() : '';
+  }, [router.isReady, router.query.highlight]);
+
+  const highlightIdFromQuery = useMemo(() => {
+    if (!router.isReady) return null;
+    const id = router.query.id;
+    if (typeof id !== 'string' || !id.trim()) return null;
+    const parsed = Number(id);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, [router.isReady, router.query.id]);
+
+  const filterPlate = highlightFromQuery ? '' : plateFromQuery;
 
   useEffect(() => {
-    setSearchQuery(plateFromQuery);
-  }, [plateFromQuery]);
+    setSearchQuery(filterPlate);
+  }, [filterPlate]);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -59,10 +65,10 @@ export default function DetectionsPage() {
       limit: number;
       plate?: string;
     } = {
-      limit: plateFromQuery ? 10000 : 100,
+      limit: filterPlate || highlightFromQuery ? 10000 : 100,
     };
-    if (plateFromQuery) {
-      params.plate = plateFromQuery;
+    if (filterPlate) {
+      params.plate = filterPlate;
     }
 
     fetchDetections(params)
@@ -78,7 +84,7 @@ export default function DetectionsPage() {
     return () => {
       cancelled = true;
     };
-  }, [sessionVersion, detectionsVersion, router.isReady, plateFromQuery]);
+  }, [sessionVersion, detectionsVersion, router.isReady, filterPlate, highlightFromQuery]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -130,14 +136,18 @@ export default function DetectionsPage() {
     downloadDetectionsCsv(rows, 'detections.csv');
   }
 
-  const subtitle = plateFromQuery
+  const subtitle = highlightFromQuery
     ? loading
-      ? `Loading detections for ${plateFromQuery}...`
-      : `${totalCount} detection${totalCount === 1 ? '' : 's'} for ${plateFromQuery}`
-    : 'Searchable detection history';
+      ? `Loading detection log · highlighting ${highlightFromQuery}...`
+      : `${totalCount} detection${totalCount === 1 ? '' : 's'} · ${highlightFromQuery} highlighted`
+    : filterPlate
+      ? loading
+        ? `Loading detections for ${filterPlate}...`
+        : `${totalCount} detection${totalCount === 1 ? '' : 's'} for ${filterPlate}`
+      : 'Searchable detection history';
 
   return (
-    <div className={`min-h-screen${pageEntering ? ' detections-page-enter' : ''}`}>
+    <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         <div className="flex flex-wrap items-end justify-between gap-5">
@@ -157,7 +167,13 @@ export default function DetectionsPage() {
             <p className="text-sm text-slate-500">Loading detections...</p>
           </div>
         ) : (
-          <DetectionLogTable detections={filteredDetections} hideTitle visibleRowCount={25} />
+          <DetectionLogTable
+            detections={filteredDetections}
+            hideTitle
+            visibleRowCount={25}
+            highlightPlate={highlightFromQuery || undefined}
+            highlightDetectionId={highlightIdFromQuery ?? undefined}
+          />
         )}
       </main>
     </div>

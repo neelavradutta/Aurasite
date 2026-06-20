@@ -13,7 +13,6 @@ import {
 import { Vehicle, VehicleStatus } from '@/types/vehicle';
 import { downloadVehicleReportPdf } from '@/utils/vehicleReportPdf';
 import { getHistoryPlate } from '@/utils/vehicleCardDisplay';
-import { markDetectionsPageEnter } from '@/utils/pageTransitions';
 import { getStatusReason } from '@/utils/vehicleStatus';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { normalizePlateKey } from '@/utils/dashboardDetections';
@@ -198,7 +197,6 @@ export default function VehiclesPage() {
   }
 
   function handleViewHistory(vehicle: Vehicle) {
-    markDetectionsPageEnter();
     void router.push({
       pathname: '/detections',
       query: { plate: getHistoryPlate(vehicle) },

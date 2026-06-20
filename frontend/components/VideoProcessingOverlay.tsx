@@ -107,12 +107,11 @@ export default function VideoProcessingOverlay({ state, onClose, onStop, onRetry
         </p>
 
         <div className="mx-auto mt-10 max-w-2xl rounded-full border-2 border-cyber-cyan/70 bg-black/40 p-1 shadow-[0_0_24px_rgba(0,247,255,0.25)]">
-          <div className="h-4 overflow-hidden rounded-full bg-black/50">
+          <div className="processing-progress-bar-container">
+            {!isError && !isComplete ? <div className="processing-progress-grid-bg" /> : null}
             <div
-              className={`h-full rounded-full transition-all duration-500 ease-out ${
-                isError
-                  ? 'bg-gradient-to-r from-cyber-pink/80 to-cyber-pink'
-                  : 'bg-gradient-to-r from-cyan-400 via-sky-400 to-cyber-cyan'
+              className={`processing-progress-bar-fill transition-all duration-500 ease-out ${
+                isError ? 'processing-progress-bar-fill--error' : ''
               }`}
               style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
             />

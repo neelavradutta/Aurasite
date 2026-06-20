@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getSocket } from '@/services/socket';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { Detection } from '@/types/detection';
+import { isLiveVideoSource } from '@/utils/liveVideoSource';
 
 export function useSocket() {
   const { addDetection, sessionVideoSource } = useDashboardStore();
@@ -36,7 +37,10 @@ export function useSocket() {
       bounding_box?: Detection['bounding_box'];
       detection_quality?: string;
     }) => {
-      if (sessionVideoSource && payload.video_source && payload.video_source !== sessionVideoSource) {
+      const videoSource = payload.video_source || sessionVideoSource;
+      if (isLiveVideoSource(videoSource)) return;
+
+      if (sessionVideoSource && videoSource && videoSource !== sessionVideoSource) {
         return;
       }
 
@@ -46,7 +50,7 @@ export function useSocket() {
         plate_confidence: payload.confidence,
         vehicle_type: payload.vehicle_type,
         detection_timestamp: payload.timestamp,
-        video_source: payload.video_source || sessionVideoSource,
+        video_source: videoSource,
         frame_image_path: payload.frame_image_path ?? null,
         frame_number: payload.frame_number,
         track_id: payload.track_id,

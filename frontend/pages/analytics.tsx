@@ -37,54 +37,53 @@ export default function AnalyticsPage() {
     return () => window.cancelAnimationFrame(frame);
   }, [loading]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen">
-        <Header />
-        <main className="px-6 py-10 text-center text-slate-400">Loading analytics...</main>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
-        <PageTitle title="Analytics" subtitle="Traffic, confidence, and vehicle insights">
-          <Button
-            variant="secondary"
-            className="ml-auto shrink-0"
-            onClick={() => downloadCsv(getExportVehiclesUrl(), 'vehicles.csv')}
-          >
-            Export Vehicles CSV
-          </Button>
-        </PageTitle>
-        <div className="grid gap-6 xl:grid-cols-2">
-          <PeakTrafficChart
-            key={peakTrafficKey}
-            data={traffic}
-            sectionId={PEAK_TRAFFIC_HOURS_ANCHOR}
-          />
-          <VehicleSpeedPanel readings={speeds} className="h-full" sectionId={VEHICLE_SPEED_ANCHOR} />
-          <RepeatAnalysisWidget
-            data={repeat}
-            variant="bars"
-            className="h-full"
-            sectionId={REPEAT_VEHICLE_ANALYSIS_ANCHOR}
-          />
-          <MostFrequentVehicles
-            vehicles={frequent}
-            variant="bars"
-            className="h-full"
-            sectionId={MOST_FREQUENT_VEHICLES_ANCHOR}
-          />
-        </div>
-        <ParkingOccupancyPanel
-          key={parkingOccupancyKey}
-          data={parking}
-          maxCapacity={maxCapacity}
-          onCapacityChange={setMaxCapacity}
-        />
+        {loading ? (
+          <div className="glass-panel flex min-h-[24rem] items-center justify-center rounded-xl border border-dashed border-white/10">
+            <p className="text-sm text-slate-500">Loading analytics...</p>
+          </div>
+        ) : (
+          <div className="analytics-panel-enter space-y-6">
+            <PageTitle title="Analytics" subtitle="Traffic, confidence, and vehicle insights">
+              <Button
+                variant="secondary"
+                className="ml-auto shrink-0"
+                onClick={() => downloadCsv(getExportVehiclesUrl(), 'vehicles.csv')}
+              >
+                Export Vehicles CSV
+              </Button>
+            </PageTitle>
+            <div className="grid gap-6 xl:grid-cols-2">
+              <PeakTrafficChart
+                key={peakTrafficKey}
+                data={traffic}
+                sectionId={PEAK_TRAFFIC_HOURS_ANCHOR}
+              />
+              <VehicleSpeedPanel readings={speeds} className="h-full" sectionId={VEHICLE_SPEED_ANCHOR} />
+              <RepeatAnalysisWidget
+                data={repeat}
+                variant="bars"
+                className="h-full"
+                sectionId={REPEAT_VEHICLE_ANALYSIS_ANCHOR}
+              />
+              <MostFrequentVehicles
+                vehicles={frequent}
+                variant="bars"
+                className="h-full"
+                sectionId={MOST_FREQUENT_VEHICLES_ANCHOR}
+              />
+            </div>
+            <ParkingOccupancyPanel
+              key={parkingOccupancyKey}
+              data={parking}
+              maxCapacity={maxCapacity}
+              onCapacityChange={setMaxCapacity}
+            />
+          </div>
+        )}
       </main>
     </div>
   );

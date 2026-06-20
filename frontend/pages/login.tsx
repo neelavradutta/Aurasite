@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { flushSync } from 'react-dom';
 import { useRouter } from 'next/router';
-import { login, register } from '@/services/api';
+import axios from 'axios';
+import { formatApiError, login, register } from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
 import AurasiteIcon from '@/components/AurasiteIcon';
+import PremiumLoginOverlay, { LoginOverlayOutcome } from '@/components/PremiumLoginOverlay';
 
 type FieldErrors = {
   name?: string;
@@ -11,6 +14,14 @@ type FieldErrors = {
   password?: string;
 };
 
+type PendingAuth = { token: string; user: { id: number; email: string; name: string; role: string } };
+
+function isWrongPasswordError(err: unknown): boolean {
+  if (!axios.isAxiosError(err) || err.response?.status !== 401) return false;
+  const code = err.response?.data?.code;
+  const message = String(err.response?.data?.message || '').toLowerCase();
+  return code === 'invalid_credentials' || message.includes('invalid credentials');
+}
 type Star = { left: string; top: string; delay: string };
 type Particle = { left: string; top: string; delay: string };
 
@@ -50,9 +61,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
-  const [loginSuccess, setLoginSuccess] = useState(false);
-  const [successKey, setSuccessKey] = useState(0);
-  const redirectTimeoutRef = useRef<number | null>(null);
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [overlayOutcome, setOverlayOutcome] = useState<LoginOverlayOutcome>('pending');
+  const pendingAuthRef = useRef<PendingAuth | null>(null);
   const [stars, setStars] = useState<Star[]>([]);
   const [particles, setParticles] = useState<Particle[]>([]);
 
@@ -61,21 +72,10 @@ export default function LoginPage() {
   }, [hydrate]);
 
   useEffect(() => {
-    if (!token) {
-      setLoginSuccess(false);
-      return;
-    }
-    if (loginSuccess) return;
+    if (!token) return;
+    if (showOverlay) return;
     router.replace('/dashboard');
-  }, [token, router, loginSuccess]);
-
-  useEffect(() => {
-    return () => {
-      if (redirectTimeoutRef.current !== null) {
-        window.clearTimeout(redirectTimeoutRef.current);
-      }
-    };
-  }, []);
+  }, [token, router, showOverlay]);
 
   useEffect(() => {
     setStars(
@@ -103,7 +103,7 @@ export default function LoginPage() {
   }
 
   function toggleMode() {
-    if (loginSuccess) return;
+    if (showOverlay) return;
     setMode((current) => (current === 'login' ? 'register' : 'login'));
     resetForm();
   }
@@ -127,40 +127,79 @@ export default function LoginPage() {
     return Object.keys(errors).length === 0;
   }
 
+  const handleOverlayComplete = useCallback(
+    (result: 'success' | 'denied') => {
+      if (result === 'success') {
+        if (pendingAuthRef.current) {
+          setAuth(pendingAuthRef.current.token, pendingAuthRef.current.user);
+          pendingAuthRef.current = null;
+        }
+        router.push('/dashboard');
+        return;
+      }
+
+      pendingAuthRef.current = null;
+      setShowOverlay(false);
+      setOverlayOutcome('pending');
+      setPassword('');
+    },
+    [router, setAuth]
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
+    setFieldErrors({});
+
+    if (mode === 'login') {
+      flushSync(() => {
+        setShowOverlay(true);
+        setOverlayOutcome('pending');
+      });
+
+      try {
+        const result = await login(email, password);
+        pendingAuthRef.current = result;
+        setOverlayOutcome('success');
+      } catch (err) {
+        if (isWrongPasswordError(err)) {
+          pendingAuthRef.current = null;
+          setOverlayOutcome('denied');
+        } else {
+          setShowOverlay(false);
+          setOverlayOutcome('pending');
+          setFieldErrors({ password: formatApiError(err, 'Authentication failed') });
+        }
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
 
     try {
-      const result =
-        mode === 'login'
-          ? await login(email, password)
-          : await register(email, password, name);
-
+      const result = await register(email, password, name);
+      pendingAuthRef.current = result;
       flushSync(() => {
-        setLoginSuccess(true);
-        setSuccessKey((current) => current + 1);
+        setShowOverlay(true);
+        setOverlayOutcome('success');
       });
-      setAuth(result.token, result.user);
-
-      if (redirectTimeoutRef.current !== null) {
-        window.clearTimeout(redirectTimeoutRef.current);
-      }
-      redirectTimeoutRef.current = window.setTimeout(() => {
-        router.push('/dashboard');
-      }, 1800);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Authentication failed';
-      setFieldErrors({ password: message });
+      setFieldErrors({ password: formatApiError(err, 'Authentication failed') });
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="anpr-access-portal">
+    <div className={`anpr-access-portal${showOverlay ? ' anpr-access-portal--overlay-active' : ''}`}>
+      {showOverlay && typeof document !== 'undefined'
+        ? createPortal(
+            <PremiumLoginOverlay outcome={overlayOutcome} onComplete={handleOverlayComplete} />,
+            document.body
+          )
+        : null}
       <div className="anpr-access-portal__stars" aria-hidden>
         {stars.map((star, index) => (
           <span
@@ -190,27 +229,8 @@ export default function LoginPage() {
           />
         ))}
 
-        <div
-          className={`anpr-access-portal__card${
-            loginSuccess ? ' anpr-access-portal__card--success' : ''
-          }`}
-        >
-          {loginSuccess ? (
-            <div
-              key={`success-${successKey}`}
-              className="anpr-access-portal__success"
-              role="status"
-              aria-live="polite"
-            >
-              <div className="anpr-access-portal__success-icon">✓</div>
-              <p className="anpr-access-portal__success-title">
-                {mode === 'login' ? 'Login Successful' : 'Registration Successful'}
-              </p>
-              <p className="anpr-access-portal__success-subtitle">Redirecting to dashboard...</p>
-            </div>
-          ) : null}
-
-          <div className={loginSuccess ? 'anpr-access-portal__form--hidden' : undefined}>
+        <div className="anpr-access-portal__card">
+          <div className={showOverlay ? 'anpr-access-portal__form--hidden' : undefined}>
           <div className="mb-3 flex justify-center">
             <AurasiteIcon size={72} />
           </div>

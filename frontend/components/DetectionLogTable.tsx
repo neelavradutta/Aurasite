@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Detection } from '@/types/detection';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { DETECTION_LOG_COLUMNS } from '@/utils/detectionLogColumns';
-import { isAcceptedDetection } from '@/utils/dashboardDetections';
+import { isAcceptedDetection, normalizePlateKey } from '@/utils/dashboardDetections';
 
 interface Props {
   detections: Detection[];
   hideTitle?: boolean;
   visibleRowCount?: number;
+  highlightPlate?: string;
+  highlightDetectionId?: number;
 }
 
 const columns = DETECTION_LOG_COLUMNS;
@@ -38,11 +40,65 @@ export default function DetectionLogTable({
   detections,
   hideTitle = false,
   visibleRowCount = DEFAULT_VISIBLE_ROW_COUNT,
+  highlightPlate,
+  highlightDetectionId,
 }: Props) {
   const { setSelectedPlate } = useDashboardStore();
   const [logSelectedId, setLogSelectedId] = useState<number | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const highlightScrollDoneRef = useRef(false);
   const useInnerScroll = detections.length > visibleRowCount;
   const maxBodyHeight = tableScrollHeight(visibleRowCount);
+  const normalizedHighlightPlate = highlightPlate ? normalizePlateKey(highlightPlate) : '';
+
+  const primaryHighlightId = useMemo(() => {
+    if (highlightDetectionId && detections.some((detection) => detection.id === highlightDetectionId)) {
+      return highlightDetectionId;
+    }
+    if (!normalizedHighlightPlate) return null;
+    const match = detections.find(
+      (detection) => normalizePlateKey(detection.plate_number) === normalizedHighlightPlate
+    );
+    return match?.id ?? null;
+  }, [detections, highlightDetectionId, normalizedHighlightPlate]);
+
+  useEffect(() => {
+    if (!primaryHighlightId) return;
+    setLogSelectedId(primaryHighlightId);
+    const detection = detections.find((item) => item.id === primaryHighlightId);
+    if (detection && isAcceptedDetection(detection)) {
+      setSelectedPlate(detection);
+    }
+  }, [primaryHighlightId, detections, setSelectedPlate]);
+
+  useEffect(() => {
+    if (!normalizedHighlightPlate && !primaryHighlightId) return;
+    if (highlightScrollDoneRef.current) return;
+    if (detections.length === 0) return;
+
+    const timer = window.setTimeout(() => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      let target: HTMLElement | null = null;
+      if (primaryHighlightId) {
+        target = container.querySelector(
+          `[data-detection-id="${primaryHighlightId}"]`
+        ) as HTMLElement | null;
+      }
+      if (!target && normalizedHighlightPlate) {
+        target = container.querySelector(
+          `[data-plate-key="${normalizedHighlightPlate}"]`
+        ) as HTMLElement | null;
+      }
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        highlightScrollDoneRef.current = true;
+      }
+    }, 580);
+
+    return () => window.clearTimeout(timer);
+  }, [detections, normalizedHighlightPlate, primaryHighlightId]);
 
   return (
     <div className="glass-panel overflow-hidden rounded-xl border border-white/5">
@@ -53,6 +109,7 @@ export default function DetectionLogTable({
       )}
       <div className="overflow-x-auto">
         <div
+          ref={scrollContainerRef}
           className={
             useInnerScroll
               ? 'overflow-y-auto [scrollbar-color:rgba(0,247,255,0.45)_transparent] [scrollbar-width:thin]'
@@ -80,10 +137,16 @@ export default function DetectionLogTable({
               ) : (
                 detections.map((detection) => {
                   const isSelected = logSelectedId === detection.id;
+                  const plateKey = normalizePlateKey(detection.plate_number);
+                  const isPrimaryHighlight = primaryHighlightId === detection.id;
+                  const isPlateHighlight =
+                    Boolean(normalizedHighlightPlate) && plateKey === normalizedHighlightPlate;
 
                   return (
                     <tr
                       key={detection.id}
+                      data-detection-id={detection.id}
+                      data-plate-key={plateKey || undefined}
                       onClick={() => {
                         setLogSelectedId(detection.id);
                         if (isAcceptedDetection(detection)) {
@@ -91,9 +154,13 @@ export default function DetectionLogTable({
                         }
                       }}
                       className={`cursor-pointer border-t border-white/5 transition ${
-                        isSelected
-                          ? 'bg-cyber-cyan/10 shadow-[inset_0_3px_0_0_rgba(0,255,255,0.8)]'
-                          : 'hover:bg-white/[0.03]'
+                        isPrimaryHighlight
+                          ? 'detection-log-row--highlight-primary'
+                          : isPlateHighlight
+                            ? 'detection-log-row--highlight'
+                            : isSelected
+                              ? 'bg-cyber-cyan/10 shadow-[inset_0_3px_0_0_rgba(0,255,255,0.8)]'
+                              : 'hover:bg-white/[0.03]'
                       }`}
                     >
                       {columns.map((column) => (
