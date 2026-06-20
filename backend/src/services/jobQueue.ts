@@ -1,8 +1,5 @@
 import axios from 'axios';
-import Bull from 'bull';
-import { env } from '../config/env';
 import { logger } from '../utils/logger';
-import { initRedis, isMemoryCache } from '../utils/redis';
 import { aiService } from './aiService';
 import { detectionService } from './detectionService';
 import { emitDetectionsChanged, emitViolationsUpdated, setRealtimeSocket } from '../utils/realtimeEvents';
@@ -40,7 +37,6 @@ interface MemoryJob {
 }
 
 let io: SocketServer | null = null;
-let videoQueue: Bull.Queue<ProcessVideoJob> | null = null;
 const memoryJobs = new Map<string, MemoryJob>();
 
 export function setSocketServer(server: SocketServer): void {
@@ -114,8 +110,6 @@ async function runProcessVideoJob(data: ProcessVideoJob): Promise<unknown> {
   const isImageJob = (aiResult as { media_type?: string }).media_type === 'image';
   const isVideoJob = (aiResult as { media_type?: string }).media_type === 'video';
 
-  // Image uploads: dashboard_plates (full-frame snapshot rules, image OCR).
-  // Video uploads: full detection log from the video batch pipeline.
   const detectionItems = isImageJob
     ? dashboardPlates
     : isVideoJob
@@ -187,25 +181,7 @@ async function runMemoryJob(data: ProcessVideoJob): Promise<void> {
 }
 
 export async function initJobQueue(): Promise<void> {
-  await initRedis();
-
-  if (isMemoryCache()) {
-    logger.warn('Using in-memory job queue (Redis unavailable)');
-    return;
-  }
-
-  videoQueue = new Bull<ProcessVideoJob>('processVideo', env.redisUrl);
-
-  videoQueue.process(async (job) => {
-    return processVideoJob(job.data);
-  });
-
-  videoQueue.on('failed', (job, err) => {
-    logger.error('Video job failed', { jobId: job?.data.jobId, error: err.message });
-    if (job?.data.jobId) {
-      io?.emit('job:complete', { jobId: job.data.jobId, status: 'failed', error: err.message });
-    }
-  });
+  logger.info('In-memory job queue ready');
 }
 
 export async function enqueueVideoJob(data: ProcessVideoJob): Promise<{ id: string }> {
@@ -218,19 +194,10 @@ export async function enqueueVideoJob(data: ProcessVideoJob): Promise<{ id: stri
     maxFrames,
   });
 
-  if (!videoQueue || isMemoryCache()) {
-    setImmediate(() => {
-      runMemoryJob(data).catch((err) => logger.error('Memory job error', { err }));
-    });
-    return { id: data.jobId };
-  }
-
-  const job = await videoQueue.add(data, {
-    jobId: data.jobId,
-    attempts: 2,
-    backoff: { type: 'exponential', delay: 5000 },
+  setImmediate(() => {
+    runMemoryJob(data).catch((err) => logger.error('Memory job error', { err }));
   });
-  return { id: job.id as string };
+  return { id: data.jobId };
 }
 
 export async function getJobStatus(jobId: string): Promise<Record<string, unknown>> {
@@ -247,19 +214,5 @@ export async function getJobStatus(jobId: string): Promise<Record<string, unknow
     };
   }
 
-  if (!videoQueue || isMemoryCache()) {
-    return { jobId, status: 'not_found' };
-  }
-
-  const job = await videoQueue.getJob(jobId);
-  if (!job) return { jobId, status: 'not_found' };
-
-  const state = await job.getState();
-  return {
-    jobId,
-    status: state,
-    progress: job.progress(),
-    result: job.returnvalue,
-    failedReason: job.failedReason,
-  };
+  return { jobId, status: 'not_found' };
 }

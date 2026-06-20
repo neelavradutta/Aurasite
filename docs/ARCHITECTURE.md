@@ -16,7 +16,7 @@ Frontend → Backend → Python → Backend → Frontend
 
 ### Pattern 2: Async Job Queue (recommended)
 
-1. Frontend uploads video → Backend enqueues Bull job → returns `job_id`
+1. Frontend uploads video → Backend enqueues in-memory job → returns `job_id`
 2. Worker calls Python AI service
 3. Results saved to MySQL
 4. WebSocket emits `job:complete`
@@ -29,8 +29,7 @@ Python processes frames → POST `/api/v1/stream/update` → Backend → Socket.
 
 | Store | Purpose |
 |-------|---------|
-| MySQL | Vehicles, detections, alerts, analytics |
-| Redis | Cache, repeat detection TTL, Bull queue |
+| MySQL | Vehicles, detections, alerts, analytics, in-process cache for repeat detection |
 | Shared volume | Video uploads |
 
 ## AI Pipeline

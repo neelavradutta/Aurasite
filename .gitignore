@@ -40,10 +40,6 @@ npm-debug.log*
 *.swp
 .DS_Store
 
-# Docker
-mysql_data/
-redis_data/
-
 # Coverage
 coverage/
 .coverage

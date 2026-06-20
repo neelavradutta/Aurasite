@@ -4,8 +4,7 @@
 
 - Node.js 18+
 - Python 3.10+
-- Docker & Docker Compose (recommended)
-- MySQL 8.0+ and Redis 7+ (or use Docker)
+- MySQL 8.0+
 
 ## Environment Files
 
@@ -19,20 +18,20 @@ cp frontend/.env.example frontend/.env.local
 
 ## Database
 
-MySQL initializes automatically via Docker using `docs/schema.sql`.
-
-Manual setup:
+Create the database and apply the schema:
 
 ```bash
 mysql -u root -p < docs/schema.sql
 ```
 
-## Running Without Docker
+Or run `npm run db:setup` from `backend/` after configuring `.env`.
+
+## Running Locally
 
 Start services in order:
 
-1. MySQL + Redis
-2. AI service (`uvicorn app:app --port 5000`)
+1. MySQL
+2. AI service (`uvicorn app:app --port 5000` from `ai-service/`)
 3. Backend (`npm run dev` in `backend/`)
 4. Frontend (`npm run dev` in `frontend/`)
 
@@ -68,9 +67,9 @@ Set `MOCK_MODE=true` only for UI dev without GPU/ML deps.
 
 ## Authentication
 
-Default admin (created on first backend start): `admin@anpr.local` / `admin123`
+Default admin (created on first backend start): `admin@gmail.com` / `admin123`
 
-Login at http://localhost:3000/login. Set `AUTH_ENABLED=false` in backend `.env` to skip auth during development.
+Login at http://localhost:3001/login. Set `AUTH_ENABLED=false` in backend `.env` to skip auth during development.
 
 ## Live Streams & CSV Export
 

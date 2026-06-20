@@ -4,34 +4,19 @@ Next-generation Automatic Number Plate Recognition (ANPR) platform with a hybrid
 
 | Service | Stack | Port |
 |---------|-------|------|
-| Frontend | React + Next.js (cyberpunk UI) | 3000 |
-| Backend API | Node.js + Express + MySQL + Redis | 8000 |
+| Frontend | React + Next.js (cyberpunk UI) | 3001 |
+| Backend API | Node.js + Express + MySQL | 8000 |
 | AI Pipeline | Python FastAPI + YOLO + PaddleOCR + ByteTrack | 5000 |
 
-## Quick Start (Docker)
+## Quick Start
+
+### 1. Database
+
+Install MySQL 8+ locally, then apply the schema:
 
 ```bash
-# Clone and start all services
-docker compose up --build
+mysql -u root -p < docs/schema.sql
 ```
-
-Services:
-
-- Dashboard: http://localhost:3000
-- API: http://localhost:8000
-- AI Service: http://localhost:5000
-- API Docs: http://localhost:8000/api/docs
-- AI Health: http://localhost:5000/api/v1/health
-
-## Local Development
-
-### 1. Infrastructure
-
-```bash
-docker compose up mysql redis -d
-```
-
-Apply schema: `docs/schema.sql` (auto-applied on first MySQL container start)
 
 ### 2. Backend
 
@@ -42,7 +27,7 @@ npm install
 npm run dev
 ```
 
-### AI Service (with real YOLO + PaddleOCR)
+### 3. AI Service (with real YOLO + PaddleOCR)
 
 ```powershell
 cd ai-service
@@ -70,15 +55,17 @@ npm install
 npm run dev
 ```
 
+Open http://localhost:3001 — default login: `admin@gmail.com` / `admin123`
+
 ## Architecture
 
 ```
-Frontend (3000) ──HTTP/WS──► Backend (8000) ──REST──► AI Service (5000)
+Frontend (3001) ──HTTP/WS──► Backend (8000) ──REST──► AI Service (5000)
                                    │
-                              MySQL + Redis
+                              MySQL
 ```
 
-- **Async video processing**: Bull queue + WebSocket job updates
+- **Async video processing**: In-memory job queue + WebSocket job updates
 - **Real-time detections**: Socket.IO events (`detection`, `alert`, `job:complete`)
 - **Analytics**: Peak traffic, repeat analysis, confidence heatmap
 
@@ -87,10 +74,9 @@ Frontend (3000) ──HTTP/WS──► Backend (8000) ──REST──► AI Ser
 ```
 anpr-dashboard/
 ├── frontend/     # Next.js cyberpunk dashboard
-├── backend/      # Express REST API + Socket.IO + Bull
+├── backend/      # Express REST API + Socket.IO
 ├── ai-service/   # FastAPI detection pipeline
-├── docs/         # Schema, setup, API, deployment guides
-└── docker-compose.yml
+└── docs/         # Schema, setup, API, deployment guides
 ```
 
 ## Key API Endpoints

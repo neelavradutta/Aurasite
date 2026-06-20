@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Detection } from '@/types/detection';
 import { Vehicle } from '@/types/vehicle';
-import { getItem } from './storage';
+import { getSessionItem } from './storage';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -28,7 +28,7 @@ export function formatApiError(err: unknown, fallback = 'Request failed'): strin
 }
 
 api.interceptors.request.use((config) => {
-  const token = getItem<string | null>('auth_token', null);
+  const token = getSessionItem<string | null>('auth_token', null);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -310,7 +310,7 @@ export function getExportVehiclesUrl() {
 }
 
 export async function downloadCsv(url: string, filename: string) {
-  const token = getItem<string | null>('auth_token', null);
+  const token = getSessionItem<string | null>('auth_token', null);
   const response = await fetch(url, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });

@@ -7,7 +7,6 @@
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
-    "worker": "tsx src/worker.ts",
     "lint": "eslint src --ext .ts",
     "db:setup": "tsx scripts/setup-database.ts",
     "db:backfill-profiles": "tsx scripts/backfill-vehicle-profiles.ts"
@@ -15,12 +14,10 @@
   "dependencies": {
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
-    "bull": "^4.16.5",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "form-data": "^4.0.1",
-    "ioredis": "^5.4.2",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",

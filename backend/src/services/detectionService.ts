@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Detection from '../models/Detection';
 import Vehicle from '../models/Vehicle';
 import Alert from '../models/Alert';
-import { cacheGet, cacheSet } from '../utils/redis';
+import { cacheGet, cacheSet } from '../utils/memoryCache';
 import { logger } from '../utils/logger';
 import { env } from '../config/env';
 import { sequelize } from '../utils/database';

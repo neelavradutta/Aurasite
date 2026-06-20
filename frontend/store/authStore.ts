@@ -1,5 +1,13 @@
 import { create } from 'zustand';
-import { getItem, setItem, removeItem } from '@/services/storage';
+import {
+  getSessionItem,
+  removeItem,
+  removeSessionItem,
+  setSessionItem,
+} from '@/services/storage';
+
+const AUTH_TOKEN_KEY = 'auth_token';
+const AUTH_USER_KEY = 'auth_user';
 
 export interface AuthUser {
   id: number;
@@ -16,22 +24,29 @@ interface AuthState {
   hydrate: () => void;
 }
 
+function clearLegacyAuthStorage(): void {
+  if (typeof window === 'undefined') return;
+  removeItem(AUTH_TOKEN_KEY);
+  removeItem(AUTH_USER_KEY);
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   user: null,
   setAuth: (token, user) => {
-    setItem('auth_token', token);
-    setItem('auth_user', user);
+    setSessionItem(AUTH_TOKEN_KEY, token);
+    setSessionItem(AUTH_USER_KEY, user);
     set({ token, user });
   },
   logout: () => {
-    removeItem('auth_token');
-    removeItem('auth_user');
+    removeSessionItem(AUTH_TOKEN_KEY);
+    removeSessionItem(AUTH_USER_KEY);
     set({ token: null, user: null });
   },
   hydrate: () => {
-    const token = getItem<string | null>('auth_token', null);
-    const user = getItem<AuthUser | null>('auth_user', null);
+    clearLegacyAuthStorage();
+    const token = getSessionItem<string | null>(AUTH_TOKEN_KEY, null);
+    const user = getSessionItem<AuthUser | null>(AUTH_USER_KEY, null);
     set({ token, user });
   },
 }));
