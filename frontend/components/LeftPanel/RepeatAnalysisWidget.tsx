@@ -105,9 +105,20 @@ export default function RepeatAnalysisWidget({
 
 const REPEAT_SCALE_PADDING = 5;
 const REPEAT_LABEL_ROW_H = 'h-6';
+/** Max bar fill ratio — keeps animated wave crest below the top value label. */
+const REPEAT_MAX_FILL_RATIO = 0.72;
 
 function getRepeatScaleMax(unique: number, repeat: number): number {
-  return Math.max(unique, repeat, 0) + REPEAT_SCALE_PADDING;
+  const peak = Math.max(unique, repeat, 0);
+  const defaultMax = peak + REPEAT_SCALE_PADDING;
+
+  const labelSafeMax = Math.max(
+    unique > 0 ? Math.ceil(unique / REPEAT_MAX_FILL_RATIO) : 0,
+    repeat > 0 ? Math.ceil(repeat / REPEAT_MAX_FILL_RATIO) : 0,
+  );
+
+  // Only inflate scale when the default would let the fill/wave cover the number.
+  return Math.max(defaultMax, labelSafeMax);
 }
 
 function getRepeatYAxisTicks(scaleMax: number): number[] {
