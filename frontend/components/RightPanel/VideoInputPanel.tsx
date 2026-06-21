@@ -6,9 +6,10 @@ import { useDashboardStore } from '@/store/dashboardStore';
 
 import { UploadedVideoRecord, useVideoUploadStore } from '@/store/videoUploadStore';
 
-import { getMediaKind, isImageFile, MEDIA_FILE_ACCEPT } from '@/utils/mediaFile';
+import { getMediaKind, isImageFile, isImageFileName, MEDIA_FILE_ACCEPT } from '@/utils/mediaFile';
 
 import VideoPreviewOverlay from '@/components/RightPanel/VideoPreviewOverlay';
+import ImageIcon from '@/components/ImageIcon';
 
 
 
@@ -60,6 +61,7 @@ export default function VideoInputPanel({
     pendingPreviewUrl,
     addUploadedVideo,
     updateUploadedVideo,
+    removeUploadedVideo,
     setPendingSelection,
     clearPendingSelection,
     clearUploadedVideos,
@@ -76,8 +78,6 @@ export default function VideoInputPanel({
 
   const selectedFile = selectedUploadedVideo?.file ?? pendingFile;
   const previewUrl = selectedUploadedVideo?.previewUrl ?? pendingPreviewUrl;
-
-
 
   useEffect(() => {
 
@@ -134,6 +134,24 @@ export default function VideoInputPanel({
 
   function handleSelectUploadedVideo(video: UploadedVideoRecord) {
     setSelectedUploadedVideo(video);
+  }
+
+  function handleRemoveUploadedVideo(
+    event: React.MouseEvent<HTMLButtonElement>,
+    videoId: string
+  ) {
+    event.stopPropagation();
+
+    removeUploadedVideo(videoId);
+
+    if (selectedUploadedVideo?.id === videoId) {
+      setSelectedUploadedVideo(null);
+      clearPendingSelection();
+    }
+
+    if (overlayVideo?.id === videoId) {
+      setOverlayVideo(null);
+    }
   }
 
   useEffect(() => {
@@ -215,6 +233,14 @@ export default function VideoInputPanel({
     fileInputRef.current.click();
   }
 
+  function handleRemovePendingSelection() {
+    clearUploadedSelection();
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }
+
   async function handlePrimaryResultsAction() {
     if (uploading) return;
 
@@ -237,6 +263,7 @@ export default function VideoInputPanel({
 
   const isResults = uploadedVideos.length > 0;
   const isReuploadSelected = Boolean(selectedUploadedVideo);
+  const showSplitInputActions = !isResults && Boolean(selectedFile && previewUrl);
   const primaryResultsLabel = uploading
     ? 'Processing...'
     : isReuploadSelected
@@ -376,7 +403,18 @@ export default function VideoInputPanel({
 
         >
 
-          {isResults ? 'Uploaded Files' : `Preview [${previewStatus}]`}
+          {isResults ? (
+            'Uploaded Files'
+          ) : (
+            <>
+              Preview
+              <span
+                className={`video-input-cyberpunk__preview-status video-input-cyberpunk__preview-status--${previewStatus.toLowerCase()}`}
+              >
+                (  {previewStatus}  )
+              </span>
+            </>
+          )}
 
         </p>
 
@@ -400,7 +438,7 @@ export default function VideoInputPanel({
 
                   tabIndex={0}
 
-                  title="Click to select for reprocessing, double-click to preview"
+                  title="Click to select, double-click to preview"
 
                   data-uploaded-video-card
 
@@ -423,7 +461,11 @@ export default function VideoInputPanel({
                 >
 
                   <div className="video-results-cyberpunk__video-thumb">
-                    {video.mediaType === 'image' ? '🖼️' : '🎬'}
+                    {video.mediaType === 'image' || isImageFileName(video.name) ? (
+                      <ImageIcon size={40} className="shrink-0" />
+                    ) : (
+                      '🎬'
+                    )}
                   </div>
 
                   <div className="video-results-cyberpunk__video-info">
@@ -437,6 +479,18 @@ export default function VideoInputPanel({
                     </p>
 
                   </div>
+
+                  {selectedUploadedVideo?.id === video.id ? (
+                    <button
+                      type="button"
+                      className="video-results-cyberpunk__video-remove"
+                      aria-label={`Remove ${video.name}`}
+                      onClick={(event) => handleRemoveUploadedVideo(event, video.id)}
+                      onDoubleClick={(event) => event.stopPropagation()}
+                    >
+                      Remove
+                    </button>
+                  ) : null}
 
                 </div>
 
@@ -517,6 +571,30 @@ export default function VideoInputPanel({
 
               Preview
 
+            </button>
+
+          </div>
+
+        ) : showSplitInputActions ? (
+
+          <div className="video-input-cyberpunk__btn-group h-full">
+
+            <button
+              type="button"
+              onClick={handleLoadVideo}
+              disabled={uploading}
+              className="video-input-cyberpunk__load-btn video-input-cyberpunk__load-btn--split"
+            >
+              {loadButtonLabel}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleRemovePendingSelection}
+              disabled={uploading}
+              className="video-input-cyberpunk__remove-btn"
+            >
+              Remove
             </button>
 
           </div>

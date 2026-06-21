@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import AurasiteIcon from '@/components/AurasiteIcon';
 
 const TAGLINE =
-  'Your one stop destination for plate detection and surveillance';
+  'Your one stop destination for Plate Detection and Surveillance';
 
 const CLOSE_MS = 520;
 

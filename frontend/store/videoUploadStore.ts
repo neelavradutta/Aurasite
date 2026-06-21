@@ -17,6 +17,7 @@ interface VideoUploadState {
   pendingPreviewUrl: string | null;
   addUploadedVideo: (video: Omit<UploadedVideoRecord, 'id'>) => void;
   updateUploadedVideo: (id: string, updates: Partial<Omit<UploadedVideoRecord, 'id'>>) => void;
+  removeUploadedVideo: (id: string) => void;
   setPendingSelection: (file: File, previewUrl: string) => void;
   clearPendingSelection: () => void;
   clearUploadedVideos: () => void;
@@ -41,6 +42,23 @@ export const useVideoUploadStore = create<VideoUploadState>((set, get) => ({
         video.id === id ? { ...video, ...updates } : video
       ),
     })),
+
+  removeUploadedVideo: (id) => {
+    const { uploadedVideos, pendingPreviewUrl } = get();
+    const video = uploadedVideos.find((item) => item.id === id);
+    if (!video) return;
+
+    const remaining = uploadedVideos.filter((item) => item.id !== id);
+    const previewStillUsed =
+      pendingPreviewUrl === video.previewUrl ||
+      remaining.some((item) => item.previewUrl === video.previewUrl);
+
+    if (video.previewUrl && !previewStillUsed) {
+      URL.revokeObjectURL(video.previewUrl);
+    }
+
+    set({ uploadedVideos: remaining });
+  },
 
   setPendingSelection: (file, previewUrl) => {
     const currentPreview = get().pendingPreviewUrl;
