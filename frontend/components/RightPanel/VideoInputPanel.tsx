@@ -10,6 +10,7 @@ import { getMediaKind, isImageFile, isImageFileName, MEDIA_FILE_ACCEPT } from '@
 
 import VideoPreviewOverlay from '@/components/RightPanel/VideoPreviewOverlay';
 import ImageIcon from '@/components/ImageIcon';
+import VideoIcon from '@/components/VideoIcon';
 
 
 
@@ -464,7 +465,7 @@ export default function VideoInputPanel({
                     {video.mediaType === 'image' || isImageFileName(video.name) ? (
                       <ImageIcon size={40} className="shrink-0" />
                     ) : (
-                      '🎬'
+                      <VideoIcon size={40} className="shrink-0" />
                     )}
                   </div>
 
