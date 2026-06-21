@@ -23,13 +23,12 @@ import {
   persistVehiclesPageCache,
 } from '@/services/sessionPersistence';
 
-const initialVehiclesCache = typeof window !== 'undefined' ? loadVehiclesPageCache<Vehicle>() : null;
-
 export default function VehiclesPage() {
   const router = useRouter();
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);
   const syncVehicleUpdate = useDashboardStore((state) => state.patchVehicleUpdates);
-  const [vehicles, setVehicles] = useState<Vehicle[]>(() => initialVehiclesCache ?? []);
+  const [pageHydrated, setPageHydrated] = useState(false);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [modalVehicle, setModalVehicle] = useState<Vehicle | null>(null);
   const [highlightedVehicleId, setHighlightedVehicleId] = useState<number | null>(null);
@@ -45,8 +44,17 @@ export default function VehiclesPage() {
   }
 
   useEffect(() => {
+    const cache = loadVehiclesPageCache<Vehicle>();
+    if (cache) {
+      setVehicles(cache);
+    }
+    setPageHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!pageHydrated) return;
     loadVehicles();
-  }, [sessionVersion]);
+  }, [sessionVersion, pageHydrated]);
 
   useEffect(() => {
     const socket = getSocket();

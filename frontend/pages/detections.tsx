@@ -29,9 +29,6 @@ import {
   persistDetectionsPageCache,
 } from '@/services/sessionPersistence';
 
-const initialDetectionsCache =
-  typeof window !== 'undefined' ? loadDetectionsPageCache() : null;
-
 export default function DetectionsPage() {
   const router = useRouter();
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);
@@ -40,16 +37,13 @@ export default function DetectionsPage() {
   const patchVehicleViolations = useDashboardStore((state) => state.patchVehicleViolations);
   const syncVehicleUpdate = useDashboardStore((state) => state.patchVehicleUpdates);
   const setSelectedPlate = useDashboardStore((state) => state.setSelectedPlate);
-  const [detections, setDetections] = useState<Detection[]>(() => initialDetectionsCache?.detections ?? []);
-  const [totalCount, setTotalCount] = useState(() => initialDetectionsCache?.totalCount ?? 0);
-  const [loading, setLoading] = useState(() => !initialDetectionsCache);
-  const [searchQuery, setSearchQuery] = useState(() => initialDetectionsCache?.searchQuery ?? '');
-  const [sortOption, setSortOption] = useState<DetectionSortOption>(
-    () => initialDetectionsCache?.sortOption ?? DEFAULT_DETECTION_SORT
-  );
-  const [listFilters, setListFilters] = useState<DetectionListFilters>(
-    () => initialDetectionsCache?.listFilters ?? DEFAULT_DETECTION_FILTERS
-  );
+  const [pageHydrated, setPageHydrated] = useState(false);
+  const [detections, setDetections] = useState<Detection[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState<DetectionSortOption>(DEFAULT_DETECTION_SORT);
+  const [listFilters, setListFilters] = useState<DetectionListFilters>(DEFAULT_DETECTION_FILTERS);
   const [selectedDetections, setSelectedDetections] = useState<Detection[]>([]);
   const [exitingDetectionIds, setExitingDetectionIds] = useState<number[]>([]);
   const [removing, setRemoving] = useState(false);
@@ -79,16 +73,29 @@ export default function DetectionsPage() {
   const filterPlate = highlightFromQuery ? '' : plateFromQuery;
 
   useEffect(() => {
+    const cache = loadDetectionsPageCache();
+    if (cache) {
+      setDetections(cache.detections);
+      setTotalCount(cache.totalCount);
+      setSearchQuery(cache.searchQuery);
+      setSortOption(cache.sortOption ?? DEFAULT_DETECTION_SORT);
+      setListFilters(cache.listFilters ?? DEFAULT_DETECTION_FILTERS);
+      setLoading(false);
+    }
+    setPageHydrated(true);
+  }, []);
+
+  useEffect(() => {
     setSearchQuery(filterPlate);
   }, [filterPlate]);
 
   useEffect(() => {
-    if (loading) return;
+    if (!pageHydrated || loading) return;
     persistDetectionsPageCache({ detections, totalCount, searchQuery, sortOption, listFilters });
-  }, [detections, totalCount, searchQuery, sortOption, listFilters, loading]);
+  }, [detections, totalCount, searchQuery, sortOption, listFilters, loading, pageHydrated]);
 
   useEffect(() => {
-    if (!router.isReady) return;
+    if (!pageHydrated || !router.isReady) return;
     if (Date.now() < suppressDetectionsRefreshUntilRef.current) return;
 
     let cancelled = false;
@@ -118,7 +125,7 @@ export default function DetectionsPage() {
     return () => {
       cancelled = true;
     };
-  }, [sessionVersion, detectionsVersion, router.isReady, filterPlate, highlightFromQuery]);
+  }, [pageHydrated, sessionVersion, detectionsVersion, router.isReady, filterPlate, highlightFromQuery]);
 
   useEffect(() => {
     const socket = getSocket();

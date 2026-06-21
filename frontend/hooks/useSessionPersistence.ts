@@ -3,12 +3,24 @@ import { fetchDetections } from '@/services/api';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useLiveStore } from '@/store/liveStore';
 import {
+  loadDashboardSessionSnapshot,
+  loadLiveSessionSnapshot,
   persistDashboardSessionSnapshot,
   persistLiveSessionSnapshot,
 } from '@/services/sessionPersistence';
 
 export function useSessionPersistence() {
   useEffect(() => {
+    const dashboardSnapshot = loadDashboardSessionSnapshot();
+    if (dashboardSnapshot) {
+      useDashboardStore.getState().hydrateFromSession(dashboardSnapshot);
+    }
+
+    const liveSnapshot = loadLiveSessionSnapshot();
+    if (liveSnapshot) {
+      useLiveStore.getState().hydrateFromSession(liveSnapshot);
+    }
+
     const { detections, sessionVideoSource, setDetections } = useDashboardStore.getState();
     if (detections.length > 0 || !sessionVideoSource) return;
 

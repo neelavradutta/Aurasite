@@ -1,10 +1,12 @@
 import { create } from 'zustand';
 import { LiveDetectionFrame } from '@/services/api';
 import { LiveMode } from '@/utils/liveVideoSource';
-import { clearLiveSessionPersistence, loadLiveSessionSnapshot } from '@/services/sessionPersistence';
+import {
+  clearLiveSessionPersistence,
+  LiveSessionSnapshot,
+} from '@/services/sessionPersistence';
 
 const LIVE_HISTORY_MAX = 30;
-const persistedLive = typeof window !== 'undefined' ? loadLiveSessionSnapshot() : null;
 
 interface LiveState {
   running: boolean;
@@ -38,18 +40,19 @@ interface LiveState {
   bumpPreviewStreamTick: () => void;
   resetSessionUi: () => void;
   stopSessionUi: () => void;
+  hydrateFromSession: (snapshot: LiveSessionSnapshot) => void;
 }
 
 export const useLiveStore = create<LiveState>((set) => ({
   running: false,
   requesting: false,
-  mode: persistedLive?.mode ?? 'camera',
-  source: persistedLive?.source ?? '',
-  deviceId: persistedLive?.deviceId ?? '',
+  mode: 'camera',
+  source: '',
+  deviceId: '',
   videoSource: null,
   previewSrc: null,
-  lastResult: persistedLive?.lastResult ?? null,
-  plateHistory: persistedLive?.plateHistory ?? [],
+  lastResult: null,
+  plateHistory: [],
   cameraPreviewActive: false,
   previewStreamTick: 0,
   error: '',
@@ -99,4 +102,12 @@ export const useLiveStore = create<LiveState>((set) => ({
       requesting: false,
       previewSrc: state.mode === 'camera' ? state.previewSrc : null,
     })),
+  hydrateFromSession: (snapshot) =>
+    set({
+      mode: snapshot.mode,
+      source: snapshot.source,
+      deviceId: snapshot.deviceId,
+      lastResult: snapshot.lastResult,
+      plateHistory: snapshot.plateHistory,
+    }),
 }));
