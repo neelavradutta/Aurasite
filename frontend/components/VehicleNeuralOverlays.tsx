@@ -1,18 +1,14 @@
 import { Vehicle } from '@/types/vehicle';
 import { displayValue } from '@/utils/detectionDisplay';
+import { formatDate } from '@/utils/dateFormat';
 import { formatRelativeLastSeen } from '@/utils/vehicleCardDisplay';
 import { isUnreadablePlate } from '@/utils/dashboardDetections';
 import { getStatusLabel, getVehicleStatus, statusTextClass } from '@/utils/vehicleStatus';
 
 function formatRegistrationDate(value?: string | null): string {
   if (!value) return '--';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return displayValue(value);
-  return date.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: '2-digit',
-  });
+  const formatted = formatDate(value, '');
+  return formatted || displayValue(value);
 }
 
 interface Props {

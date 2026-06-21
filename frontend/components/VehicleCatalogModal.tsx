@@ -10,6 +10,7 @@ import {
   getVehicleLocationHint,
   getVehicleTypeIcon,
 } from '@/utils/vehicleCardDisplay';
+import { formatDateTimeShort } from '@/utils/dateFormat';
 import { isUnreadablePlate } from '@/utils/dashboardDetections';
 import {
   getOtherStatuses,
@@ -38,15 +39,7 @@ interface Props {
 }
 
 function formatTimelineTimestamp(value?: string | null): string {
-  if (!value) return '--';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '--';
-  return date.toLocaleString(undefined, {
-    month: 'short',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  return formatDateTimeShort(value);
 }
 
 function TimelineItem({ item }: { item: VehicleDetectionSummary }) {

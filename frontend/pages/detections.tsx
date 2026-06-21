@@ -3,12 +3,20 @@ import { useRouter } from 'next/router';
 import Header from '@/components/Header';
 import PageTitle from '@/components/shared/PageTitle';
 import DetectionLogTable from '@/components/DetectionLogTable';
+import DetectionFilterBar from '@/components/DetectionFilterBar';
 import Button from '@/components/shared/Button';
 import { deleteDetection, fetchDetections, formatApiError } from '@/services/api';
 import { getSocket } from '@/services/socket';
 import { Detection } from '@/types/detection';
 import { downloadDetectionsCsv } from '@/utils/detectionExport';
 import { filterDetectionsByQuery } from '@/utils/detectionDisplay';
+import {
+  applyDetectionListOptions,
+  DEFAULT_DETECTION_FILTERS,
+  DEFAULT_DETECTION_SORT,
+  DetectionListFilters,
+  DetectionSortOption,
+} from '@/utils/detectionFilters';
 import {
   patchViolationCounts,
   patchVehicleUpdates as applyVehicleUpdatesToDetections,
@@ -36,6 +44,12 @@ export default function DetectionsPage() {
   const [totalCount, setTotalCount] = useState(() => initialDetectionsCache?.totalCount ?? 0);
   const [loading, setLoading] = useState(() => !initialDetectionsCache);
   const [searchQuery, setSearchQuery] = useState(() => initialDetectionsCache?.searchQuery ?? '');
+  const [sortOption, setSortOption] = useState<DetectionSortOption>(
+    () => initialDetectionsCache?.sortOption ?? DEFAULT_DETECTION_SORT
+  );
+  const [listFilters, setListFilters] = useState<DetectionListFilters>(
+    () => initialDetectionsCache?.listFilters ?? DEFAULT_DETECTION_FILTERS
+  );
   const [selectedDetections, setSelectedDetections] = useState<Detection[]>([]);
   const [exitingDetectionIds, setExitingDetectionIds] = useState<number[]>([]);
   const [removing, setRemoving] = useState(false);
@@ -70,8 +84,8 @@ export default function DetectionsPage() {
 
   useEffect(() => {
     if (loading) return;
-    persistDetectionsPageCache({ detections, totalCount, searchQuery });
-  }, [detections, totalCount, searchQuery, loading]);
+    persistDetectionsPageCache({ detections, totalCount, searchQuery, sortOption, listFilters });
+  }, [detections, totalCount, searchQuery, sortOption, listFilters, loading]);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -144,8 +158,8 @@ export default function DetectionsPage() {
   }, [bumpDetectionsVersion, patchVehicleViolations, syncVehicleUpdate]);
 
   const filteredDetections = useMemo(
-    () => filterDetectionsByQuery(detections, searchQuery),
-    [detections, searchQuery]
+    () => applyDetectionListOptions(detections, searchQuery, sortOption, listFilters),
+    [detections, searchQuery, sortOption, listFilters]
   );
 
   async function handleExportCsv() {
@@ -153,7 +167,7 @@ export default function DetectionsPage() {
       limit: 10000,
       ...(searchQuery.trim() ? { plate: searchQuery.trim() } : {}),
     });
-    const rows = filterDetectionsByQuery(res.data || [], searchQuery);
+    const rows = applyDetectionListOptions(res.data || [], searchQuery, sortOption, listFilters);
     downloadDetectionsCsv(rows, 'detections.csv');
   }
 
@@ -229,28 +243,26 @@ export default function DetectionsPage() {
       <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-5">
           <PageTitle title="Detection Log" subtitle={subtitle} />
-          <input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Filter..."
-            data-detection-log-action
-            className="ml-14 w-[54rem] max-w-full rounded-md border border-cyber-cyan/30 bg-black/30 px-3 py-2 text-center text-sm outline-none focus:border-cyber-cyan"
-          />
-          <div className="flex justify-end">
+          <div className="relative">
+            <DetectionFilterBar
+              searchQuery={searchQuery}
+              onSearchQueryChange={setSearchQuery}
+              sort={sortOption}
+              filters={listFilters}
+              onSortChange={setSortOption}
+              onFiltersChange={setListFilters}
+            />
             <Button
               variant="danger"
               onClick={handleRemoveSelected}
-              disabled={removing || selectedDetections.length === 0}
-              aria-hidden={selectedDetections.length === 0}
-              tabIndex={selectedDetections.length > 0 ? 0 : -1}
+              disabled={selectedDetections.length === 0 || removing}
               data-detection-log-action
-              className={`inline-flex h-9 w-[9.75rem] shrink-0 items-center justify-center px-0 ${
-                selectedDetections.length === 0 ? 'invisible pointer-events-none' : ''
-              }`}
+              className="absolute top-1/2 inline-flex h-9 w-[9.75rem] -translate-y-1/2 items-center justify-center px-0 left-[calc(3.5rem+54rem+0.75rem)]"
             >
               Remove
             </Button>
           </div>
+          <div aria-hidden className="pointer-events-none" />
         </div>
         {loading ? (
           <div className="glass-panel flex h-40 items-center justify-center rounded-xl border border-dashed border-white/10">

@@ -1,4 +1,5 @@
 import { Vehicle } from '@/types/vehicle';
+import { formatDateTime } from '@/utils/dateFormat';
 
 function escapeCsvCell(value: string): string {
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
@@ -21,8 +22,8 @@ export function downloadVehicleCsv(vehicle: Vehicle, filename?: string): void {
       vehicle.owner_contact || '',
       vehicle.owner_address || '',
       vehicle.registration_number || '',
-      vehicle.first_detected_timestamp || '',
-      vehicle.last_detected_timestamp || '',
+      vehicle.first_detected_timestamp ? formatDateTime(vehicle.first_detected_timestamp) : '',
+      vehicle.last_detected_timestamp ? formatDateTime(vehicle.last_detected_timestamp) : '',
       vehicle.flagged_reason || '',
     ],
   ];

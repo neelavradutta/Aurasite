@@ -1,5 +1,6 @@
 import { Detection } from '@/types/detection';
 import { DETECTION_LOG_COLUMNS } from './detectionLogColumns';
+import { formatDate, formatDateTime } from './dateFormat';
 
 export function displayValue(value?: string | number | null, fallback = '--'): string {
   if (value === undefined || value === null || value === '') return fallback;
@@ -12,29 +13,11 @@ export function formatConfidence(confidence?: number | null): string {
 }
 
 export function formatTimestamp(timestamp?: string | null): string {
-  if (!timestamp) return '--';
-  const date = new Date(timestamp);
-  if (Number.isNaN(date.getTime())) return '--';
-  return date.toLocaleString(undefined, {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
+  return formatDateTime(timestamp);
 }
 
 export function formatRegistrationDate(detection: Detection): string {
-  const source = detection.vehicle?.registration_date;
-  if (!source) return '--';
-  const date = new Date(source);
-  if (Number.isNaN(date.getTime())) return '--';
-  return date.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  });
+  return formatDate(detection.vehicle?.registration_date);
 }
 
 export function getVehicleColour(detection: Detection): string {

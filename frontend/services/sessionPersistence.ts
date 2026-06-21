@@ -1,6 +1,10 @@
 import { Detection } from '@/types/detection';
 import { LiveDetectionFrame } from '@/services/api';
 import { LiveMode } from '@/utils/liveVideoSource';
+import {
+  DetectionListFilters,
+  DetectionSortOption,
+} from '@/utils/detectionFilters';
 import { getSessionItem, removeSessionItem, setSessionItem } from '@/services/storage';
 
 export const SERVER_SESSION_TTL_MS = 24 * 60 * 60 * 1000;
@@ -35,6 +39,8 @@ export interface DetectionsPageCache {
   detections: Detection[];
   totalCount: number;
   searchQuery: string;
+  sortOption?: DetectionSortOption;
+  listFilters?: DetectionListFilters;
 }
 
 function touchSessionMeta(): void {

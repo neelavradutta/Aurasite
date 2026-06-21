@@ -57,7 +57,7 @@ export default function AnalyticsPage() {
           </div>
         ) : (
           <div className="analytics-panel-enter space-y-6">
-            <PageTitle title="Analytics" subtitle="Traffic, confidence, and vehicle insights" />
+            <PageTitle title="Analytics Studio" subtitle="Traffic, confidence, and vehicle insights" />
             <div className="grid gap-6 xl:grid-cols-2">
               <PeakTrafficChart
                 key={peakTrafficKey}

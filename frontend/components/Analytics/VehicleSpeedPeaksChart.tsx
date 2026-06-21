@@ -3,6 +3,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { VehicleSpeedReading } from '@/utils/speedEstimation';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
+import { formatDateTimeShort } from '@/utils/dateFormat';
 
 const VIEW_W = 800;
 const VIEW_H = 350;
@@ -105,14 +106,7 @@ function formatSpeed(speed: number): string {
 }
 
 function formatMeasuredAt(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  return formatDateTimeShort(iso, iso);
 }
 
 function clamp(value: number, min: number, max: number): number {

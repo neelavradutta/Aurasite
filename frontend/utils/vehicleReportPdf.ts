@@ -4,6 +4,7 @@ import { displayValue } from '@/utils/detectionDisplay';
 import { getStatusLabel, getVehicleStatus } from '@/utils/vehicleStatus';
 import { isUnreadablePlate } from '@/utils/dashboardDetections';
 import { getDetectionSnapshotUrl } from '@/services/api';
+import { formatDateTime, formatDateTimeShort } from '@/utils/dateFormat';
 
 const PAGE_W = 595.28;
 const CONTENT_X = 53;
@@ -85,25 +86,11 @@ const STATUS_COLOR: Record<string, [number, number, number]> = {
 };
 
 function formatTimelineTimestamp(value?: string | null): string {
-  if (!value) return '--';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '--';
-  return date.toLocaleString(undefined, {
-    month: 'short',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  return formatDateTimeShort(value);
 }
 
 function formatReportGeneratedAt(): string {
-  return new Date().toLocaleString(undefined, {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  return formatDateTime(new Date());
 }
 
 function getReportFilename(plate: string): string {

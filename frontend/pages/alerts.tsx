@@ -6,6 +6,7 @@ import Button from '@/components/shared/Button';
 import { fetchAlerts, resolveAlert } from '@/services/api';
 import { Alert } from '@/types/analytics';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { formatDateTime } from '@/utils/dateFormat';
 
 export default function AlertsPage() {
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);
@@ -40,7 +41,7 @@ export default function AlertsPage() {
                 <span className="text-sm uppercase text-slate-400">{alert.alert_type}</span>
               </div>
               <p className="mt-2 text-sm">{alert.alert_message}</p>
-              <p className="mt-1 text-xs text-slate-500">{new Date(alert.created_at).toLocaleString()}</p>
+              <p className="mt-1 text-xs text-slate-500">{formatDateTime(alert.created_at)}</p>
             </div>
             <Button variant="secondary" onClick={() => handleResolve(alert.id)}>
               Resolve

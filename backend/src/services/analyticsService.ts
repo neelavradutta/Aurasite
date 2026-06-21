@@ -1,5 +1,6 @@
 import { QueryTypes } from 'sequelize';
 import { sequelize, isSqliteDb } from '../utils/database';
+import { formatDateTime } from '../utils/dateFormat';
 import Detection from '../models/Detection';
 import Vehicle from '../models/Vehicle';
 import Alert from '../models/Alert';
@@ -139,9 +140,22 @@ export const analyticsService = {
       return str;
     };
 
+    const timestampFields = new Set([
+      'detection_timestamp',
+      'first_detected_timestamp',
+      'last_detected_timestamp',
+    ]);
+
+    const formatCell = (header: string, value: unknown) => {
+      if (timestampFields.has(header)) {
+        return formatDateTime(value);
+      }
+      return value;
+    };
+
     const lines = [
       headers.join(','),
-      ...rows.map((row) => headers.map((h) => escape(row[h])).join(',')),
+      ...rows.map((row) => headers.map((h) => escape(formatCell(h, row[h]))).join(',')),
     ];
 
     return lines.join('\n');
@@ -171,7 +185,18 @@ export const analyticsService = {
 
     return [
       headers.join(','),
-      ...vehicles.map((v) => headers.map((h) => escape((v as unknown as Record<string, unknown>)[h])).join(',')),
+      ...vehicles.map((v) =>
+        headers
+          .map((h) => {
+            const raw = (v as unknown as Record<string, unknown>)[h];
+            const value =
+              h === 'first_detected_timestamp' || h === 'last_detected_timestamp'
+                ? formatDateTime(raw)
+                : raw;
+            return escape(value);
+          })
+          .join(',')
+      ),
     ].join('\n');
   },
 };
