@@ -9,6 +9,7 @@ import { Alert, AnalyticsSummary } from '@/types/analytics';
 import { clearAllSessionData } from '@/services/api';
 import { useVideoUploadStore } from '@/store/videoUploadStore';
 import { VehicleRealtimeUpdate } from '@/utils/violationUpdates';
+import { loadDashboardSessionSnapshot, clearAllSessionPersistence } from '@/services/sessionPersistence';
 
 
 
@@ -21,6 +22,8 @@ function mergeDetections(existing: Detection[], incoming: Detection[]): Detectio
   return merged.slice(0, 5000);
 
 }
+
+const persistedDashboard = typeof window !== 'undefined' ? loadDashboardSessionSnapshot() : null;
 
 
 
@@ -86,9 +89,9 @@ export const useDashboardStore = create<DashboardState>((set) => ({
 
   summary: null,
 
-  detections: [],
+  detections: persistedDashboard?.detections ?? [],
 
-  peakTrafficDetections: [],
+  peakTrafficDetections: persistedDashboard?.peakTrafficDetections ?? [],
 
   vehicles: [],
 
@@ -96,11 +99,11 @@ export const useDashboardStore = create<DashboardState>((set) => ({
 
   selectedPlate: null,
 
-  sessionVersion: 1,
+  sessionVersion: persistedDashboard?.sessionVersion ?? 1,
 
-  detectionsVersion: 1,
+  detectionsVersion: persistedDashboard?.detectionsVersion ?? 1,
 
-  sessionVideoSource: null,
+  sessionVideoSource: persistedDashboard?.sessionVideoSource ?? null,
 
   setSummary: (summary) => set({ summary }),
 
@@ -251,6 +254,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
 
     await clearAllSessionData();
     useVideoUploadStore.getState().clearUploadedVideos();
+    clearAllSessionPersistence();
 
     set((state) => ({
 

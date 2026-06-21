@@ -18,12 +18,18 @@ import { useDashboardStore } from '@/store/dashboardStore';
 import { normalizePlateKey } from '@/utils/dashboardDetections';
 import { getSocket } from '@/services/socket';
 import { VehicleRealtimeUpdate } from '@/utils/violationUpdates';
+import {
+  loadVehiclesPageCache,
+  persistVehiclesPageCache,
+} from '@/services/sessionPersistence';
+
+const initialVehiclesCache = typeof window !== 'undefined' ? loadVehiclesPageCache<Vehicle>() : null;
 
 export default function VehiclesPage() {
   const router = useRouter();
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);
   const syncVehicleUpdate = useDashboardStore((state) => state.patchVehicleUpdates);
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(() => initialVehiclesCache ?? []);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [modalVehicle, setModalVehicle] = useState<Vehicle | null>(null);
   const [highlightedVehicleId, setHighlightedVehicleId] = useState<number | null>(null);
@@ -33,7 +39,9 @@ export default function VehiclesPage() {
 
   async function loadVehicles() {
     const res = await fetchVehicles({ limit: 100 });
-    setVehicles(res.data || []);
+    const rows = res.data || [];
+    setVehicles(rows);
+    persistVehiclesPageCache(rows);
   }
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useAuthStore } from '@/store/authStore';
 import { useSocket } from '@/hooks/useSocket';
@@ -15,7 +15,13 @@ const navItems = [
   { href: '/live', label: 'Live' },
 ];
 
-export default function Header() {
+interface HeaderProps {
+  detectionToolbar?: ReactNode;
+  analyticsToolbar?: ReactNode;
+  liveToolbar?: ReactNode;
+}
+
+export default function Header({ detectionToolbar, analyticsToolbar, liveToolbar }: HeaderProps = {}) {
   const router = useRouter();
   const { clearDashboard } = useDashboardStore();
   const { connected } = useSocket();
@@ -25,6 +31,15 @@ export default function Header() {
 
   const statusLabel = connected ? 'ONLINE' : 'OFFLINE';
   const statusActive = connected;
+  const isDashboard = router.pathname === '/dashboard';
+  const isDetections = router.pathname === '/detections';
+  const isAnalytics = router.pathname === '/analytics';
+  const isLive = router.pathname === '/live';
+  const showDetectionActions = isDetections && Boolean(detectionToolbar);
+  const showAnalyticsActions = isAnalytics && Boolean(analyticsToolbar);
+  const showLiveActions = isLive && Boolean(liveToolbar);
+  const showPageActions = showDetectionActions || showAnalyticsActions || showLiveActions;
+  const reserveDashboardActions = token && !isDashboard && !showPageActions;
 
   useEffect(() => {
     hydrate();
@@ -44,7 +59,7 @@ export default function Header() {
 
   return (
     <header className="glass-panel sticky top-0 z-50 border-b border-cyber-cyan/20 px-6 py-4">
-      <div className="mx-auto flex max-w-[1920px] items-center justify-between gap-6">
+      <div className="mx-auto grid max-w-[1920px] grid-cols-[1fr_auto_1fr] items-center gap-6">
         <div className="flex items-center gap-3">
           <AurasiteIconTrigger onOpen={() => setBrandOpen(true)} />
           <div>
@@ -69,46 +84,61 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4 text-sm">
-          <div className="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-0.5">
-            {token && user?.name ? (
-              <span className="col-start-2 text-slate-400">
-                {user.name.replace(/^System\s+/i, '')}
-              </span>
-            ) : null}
-            <span
-              className={`h-2.5 w-2.5 rounded-full ${statusActive ? 'bg-cyber-green live-dot' : 'bg-slate-500'} ${token && user?.name ? 'row-start-2' : 'row-start-1'}`}
-            />
-            <span className={token && user?.name ? 'row-start-2' : 'row-start-1'}>{statusLabel}</span>
-          </div>
-          {token && (
-            <button
-              type="button"
-              onClick={handleClear}
-              disabled={clearing}
-              className="inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-cyan/40 px-3 text-sm text-cyber-cyan transition hover:bg-cyber-cyan/10 disabled:cursor-not-allowed disabled:opacity-50"
-              title="Clear all detections, vehicles, and alerts"
-            >
-              {clearing ? 'Clearing...' : 'Clear'}
-            </button>
-          )}
-          {token ? (
-            <button
-              onClick={() => {
-                logout();
-                router.push('/login');
-              }}
-              className="inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-pink/30 px-3 text-sm text-cyber-pink transition hover:bg-cyber-pink/10"
-            >
-              Logout
-            </button>
+        <div
+          className={`flex items-center justify-end gap-3 text-sm ${
+            reserveDashboardActions ? 'invisible pointer-events-none select-none' : ''
+          }`}
+          aria-hidden={reserveDashboardActions ? true : undefined}
+        >
+          {showDetectionActions ? (
+            detectionToolbar
+          ) : showAnalyticsActions ? (
+            analyticsToolbar
+          ) : showLiveActions ? (
+            liveToolbar
           ) : (
-            <Link
-              href="/login"
-              className="inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-cyan/40 px-3 text-sm text-cyber-cyan"
-            >
-              Login
-            </Link>
+            <>
+              <div className="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-0.5">
+                {token && user?.name ? (
+                  <span className="col-start-2 text-slate-400">
+                    {user.name.replace(/^System\s+/i, '')}
+                  </span>
+                ) : null}
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${statusActive ? 'bg-cyber-green live-dot' : 'bg-slate-500'} ${token && user?.name ? 'row-start-2' : 'row-start-1'}`}
+                />
+                <span className={token && user?.name ? 'row-start-2' : 'row-start-1'}>{statusLabel}</span>
+              </div>
+              {token && (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  disabled={clearing}
+                  className="inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-cyan/40 px-3 text-sm text-cyber-cyan transition hover:bg-cyber-cyan/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  title="Clear all detections, vehicles, and alerts"
+                >
+                  {clearing ? 'Clearing...' : 'Clear'}
+                </button>
+              )}
+              {token ? (
+                <button
+                  onClick={() => {
+                    logout();
+                    router.push('/login');
+                  }}
+                  className="inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-pink/30 px-3 text-sm text-cyber-pink transition hover:bg-cyber-pink/10"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-cyan/40 px-3 text-sm text-cyber-cyan"
+                >
+                  Login
+                </Link>
+              )}
+            </>
           )}
         </div>
       </div>

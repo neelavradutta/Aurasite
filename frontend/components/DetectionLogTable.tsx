@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Detection } from '@/types/detection';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { DETECTION_LOG_COLUMNS } from '@/utils/detectionLogColumns';
@@ -10,6 +10,10 @@ interface Props {
   visibleRowCount?: number;
   highlightPlate?: string;
   highlightDetectionId?: number;
+  selectedDetectionIds?: number[];
+  exitingDetectionIds?: number[];
+  onSelectionChange?: (detections: Detection[]) => void;
+  onExitAnimationEnd?: (detectionId: number) => void;
 }
 
 const columns = DETECTION_LOG_COLUMNS;
@@ -42,10 +46,22 @@ export default function DetectionLogTable({
   visibleRowCount = DEFAULT_VISIBLE_ROW_COUNT,
   highlightPlate,
   highlightDetectionId,
+  selectedDetectionIds,
+  onSelectionChange,
+  exitingDetectionIds,
+  onExitAnimationEnd,
 }: Props) {
   const { setSelectedPlate } = useDashboardStore();
-  const [logSelectedId, setLogSelectedId] = useState<number | null>(null);
+  const [internalSelectedIds, setInternalSelectedIds] = useState<number[]>([]);
+  const isControlledSelection = selectedDetectionIds !== undefined;
+  const activeSelectedIds = useMemo(
+    () => new Set(isControlledSelection ? selectedDetectionIds ?? [] : internalSelectedIds),
+    [isControlledSelection, selectedDetectionIds, internalSelectedIds]
+  );
+  const exitingIdSet = useMemo(() => new Set(exitingDetectionIds ?? []), [exitingDetectionIds]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const tablePanelRef = useRef<HTMLDivElement>(null);
+  const selectionAnchorIndexRef = useRef<number | null>(null);
   const highlightScrollDoneRef = useRef(false);
   const useInnerScroll = detections.length > visibleRowCount;
   const maxBodyHeight = tableScrollHeight(visibleRowCount);
@@ -62,14 +78,52 @@ export default function DetectionLogTable({
     return match?.id ?? null;
   }, [detections, highlightDetectionId, normalizedHighlightPlate]);
 
+  const applySelection = useCallback(
+    (nextDetections: Detection[], anchorIndex: number | null = null) => {
+      if (!isControlledSelection) {
+        setInternalSelectedIds(nextDetections.map((detection) => detection.id));
+      }
+      onSelectionChange?.(nextDetections);
+
+      const lastDetection = nextDetections[nextDetections.length - 1];
+      if (lastDetection && isAcceptedDetection(lastDetection)) {
+        setSelectedPlate(lastDetection);
+      } else if (nextDetections.length === 0) {
+        setSelectedPlate(null);
+      }
+
+      if (anchorIndex != null) {
+        selectionAnchorIndexRef.current = anchorIndex;
+      }
+    },
+    [isControlledSelection, onSelectionChange, setSelectedPlate]
+  );
+
+  const clearSelection = useCallback(() => {
+    applySelection([], null);
+    selectionAnchorIndexRef.current = null;
+  }, [applySelection]);
+
+  useEffect(() => {
+    if (activeSelectedIds.size === 0) return;
+
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+      if (tablePanelRef.current?.contains(target)) return;
+      if (target.closest('[data-detection-log-action]')) return;
+      clearSelection();
+    }
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, [activeSelectedIds.size, clearSelection]);
+
   useEffect(() => {
     if (!primaryHighlightId) return;
-    setLogSelectedId(primaryHighlightId);
     const detection = detections.find((item) => item.id === primaryHighlightId);
-    if (detection && isAcceptedDetection(detection)) {
-      setSelectedPlate(detection);
-    }
-  }, [primaryHighlightId, detections, setSelectedPlate]);
+    const anchorIndex = detections.findIndex((item) => item.id === primaryHighlightId);
+    applySelection(detection ? [detection] : [], anchorIndex >= 0 ? anchorIndex : null);
+  }, [primaryHighlightId, detections, applySelection]);
 
   useEffect(() => {
     if (!normalizedHighlightPlate && !primaryHighlightId) return;
@@ -100,8 +154,42 @@ export default function DetectionLogTable({
     return () => window.clearTimeout(timer);
   }, [detections, normalizedHighlightPlate, primaryHighlightId]);
 
+  function handleRowClick(detection: Detection, rowIndex: number, event: React.MouseEvent) {
+    if (exitingIdSet.has(detection.id)) return;
+
+    const isSelected = activeSelectedIds.has(detection.id);
+    const selectedList = detections.filter((row) => activeSelectedIds.has(row.id));
+
+    if (event.shiftKey && selectionAnchorIndexRef.current != null) {
+      const anchorIndex = selectionAnchorIndexRef.current;
+      const start = Math.min(anchorIndex, rowIndex);
+      const end = Math.max(anchorIndex, rowIndex);
+      applySelection(detections.slice(start, end + 1), rowIndex);
+      return;
+    }
+
+    if (event.ctrlKey || event.metaKey) {
+      if (isSelected) {
+        applySelection(
+          selectedList.filter((row) => row.id !== detection.id),
+          rowIndex
+        );
+      } else {
+        applySelection([...selectedList, detection], rowIndex);
+      }
+      return;
+    }
+
+    if (isSelected && activeSelectedIds.size === 1) {
+      clearSelection();
+      return;
+    }
+
+    applySelection([detection], rowIndex);
+  }
+
   return (
-    <div className="glass-panel overflow-hidden rounded-xl border border-white/5">
+    <div ref={tablePanelRef} className="glass-panel overflow-hidden rounded-xl border border-white/5">
       {!hideTitle && (
         <div className="border-b border-white/10 px-4 py-3">
           <h3 className="font-orbitron text-sm uppercase tracking-wider text-cyber-cyan">Detection Log</h3>
@@ -112,7 +200,7 @@ export default function DetectionLogTable({
           ref={scrollContainerRef}
           className={
             useInnerScroll
-              ? 'overflow-y-auto [scrollbar-color:rgba(0,247,255,0.45)_transparent] [scrollbar-width:thin]'
+              ? 'overflow-y-auto overflow-x-hidden [scrollbar-color:rgba(0,247,255,0.45)_transparent] [scrollbar-width:thin]'
               : undefined
           }
           style={useInnerScroll ? { maxHeight: maxBodyHeight } : undefined}
@@ -135,8 +223,9 @@ export default function DetectionLogTable({
                   </td>
                 </tr>
               ) : (
-                detections.map((detection) => {
-                  const isSelected = logSelectedId === detection.id;
+                detections.map((detection, rowIndex) => {
+                  const isSelected = activeSelectedIds.has(detection.id);
+                  const isExiting = exitingIdSet.has(detection.id);
                   const plateKey = normalizePlateKey(detection.plate_number);
                   const isPrimaryHighlight = primaryHighlightId === detection.id;
                   const isPlateHighlight =
@@ -147,20 +236,26 @@ export default function DetectionLogTable({
                       key={detection.id}
                       data-detection-id={detection.id}
                       data-plate-key={plateKey || undefined}
-                      onClick={() => {
-                        setLogSelectedId(detection.id);
-                        if (isAcceptedDetection(detection)) {
-                          setSelectedPlate(detection);
-                        }
+                      onAnimationEnd={(animationEvent) => {
+                        if (animationEvent.animationName !== 'detection-log-row-exit') return;
+                        if (!isExiting) return;
+                        onExitAnimationEnd?.(detection.id);
                       }}
-                      className={`cursor-pointer border-t border-white/5 transition ${
-                        isPrimaryHighlight
-                          ? 'detection-log-row--highlight-primary'
-                          : isPlateHighlight
-                            ? 'detection-log-row--highlight'
-                            : isSelected
-                              ? 'bg-cyber-cyan/10 shadow-[inset_0_3px_0_0_rgba(0,255,255,0.8)]'
-                              : 'hover:bg-white/[0.03]'
+                      onClick={(clickEvent) => handleRowClick(detection, rowIndex, clickEvent)}
+                      className={`border-t border-white/5 transition ${
+                        isExiting
+                          ? 'detection-log-row--exit pointer-events-none'
+                          : 'cursor-pointer'
+                      } ${
+                        isExiting
+                          ? ''
+                          : isPrimaryHighlight
+                            ? 'detection-log-row--highlight-primary'
+                            : isPlateHighlight
+                              ? 'detection-log-row--highlight'
+                              : isSelected
+                                ? 'bg-cyber-cyan/10 shadow-[inset_0_3px_0_0_rgba(0,255,255,0.8)]'
+                                : 'hover:bg-white/[0.03]'
                       }`}
                     >
                       {columns.map((column) => (

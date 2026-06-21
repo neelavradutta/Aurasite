@@ -6,6 +6,7 @@ import '@/styles/globals.css';
 import { useAppPageTransition } from '@/hooks/useAppPageTransition';
 import { bumpChartAnimationEpoch } from '@/hooks/useChartAnimationKey';
 import { usePeakTrafficBootstrap } from '@/hooks/usePeakTrafficBootstrap';
+import { useSessionPersistence } from '@/hooks/useSessionPersistence';
 import { useLiveSessionKeepAlive } from '@/hooks/useLiveDetection';
 
 function AppShell({ Component, pageProps }: AppProps) {
@@ -13,6 +14,7 @@ function AppShell({ Component, pageProps }: AppProps) {
   const pageEntering = useAppPageTransition();
 
   usePeakTrafficBootstrap();
+  useSessionPersistence();
   useLiveSessionKeepAlive();
 
   useEffect(() => {

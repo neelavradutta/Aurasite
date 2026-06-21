@@ -213,15 +213,12 @@ export default function LivePage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <Header liveToolbar={<StatusBadge isScanning={running} className="px-5 py-2" />} />
       <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
-        <div className="flex flex-wrap items-end justify-between gap-5">
-          <PageTitle
-            title="Live Monitoring"
-            subtitle="Detection from camera devices and live sources"
-          />
-          <StatusBadge isScanning={running} />
-        </div>
+        <PageTitle
+          title="Live Monitoring"
+          subtitle="Detection from camera devices and live sources"
+        />
 
         <section className="grid items-stretch gap-6 xl:grid-cols-[1.35fr_0.65fr]">
           <div className="glass-panel overflow-hidden rounded-2xl border border-cyber-cyan/20">

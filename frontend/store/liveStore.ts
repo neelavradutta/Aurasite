@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 import { LiveDetectionFrame } from '@/services/api';
 import { LiveMode } from '@/utils/liveVideoSource';
+import { clearLiveSessionPersistence, loadLiveSessionSnapshot } from '@/services/sessionPersistence';
 
 const LIVE_HISTORY_MAX = 30;
+const persistedLive = typeof window !== 'undefined' ? loadLiveSessionSnapshot() : null;
 
 interface LiveState {
   running: boolean;
@@ -41,13 +43,13 @@ interface LiveState {
 export const useLiveStore = create<LiveState>((set) => ({
   running: false,
   requesting: false,
-  mode: 'camera',
-  source: '',
-  deviceId: '',
+  mode: persistedLive?.mode ?? 'camera',
+  source: persistedLive?.source ?? '',
+  deviceId: persistedLive?.deviceId ?? '',
   videoSource: null,
   previewSrc: null,
-  lastResult: null,
-  plateHistory: [],
+  lastResult: persistedLive?.lastResult ?? null,
+  plateHistory: persistedLive?.plateHistory ?? [],
   cameraPreviewActive: false,
   previewStreamTick: 0,
   error: '',
@@ -77,7 +79,10 @@ export const useLiveStore = create<LiveState>((set) => ({
         matcher(entry) ? { ...entry, ...patch } : entry
       ),
     })),
-  clearPlateHistory: () => set({ plateHistory: [] }),
+  clearPlateHistory: () => {
+    clearLiveSessionPersistence();
+    set({ plateHistory: [], lastResult: null });
+  },
   setError: (error) => set({ error }),
   setCameraPreviewActive: (cameraPreviewActive) => set({ cameraPreviewActive }),
   bumpPreviewStreamTick: () =>

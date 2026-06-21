@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Detection } from '@/types/detection';
 import { Vehicle } from '@/types/vehicle';
 import { getSessionItem } from './storage';
+import { clearAllSessionPersistence } from './sessionPersistence';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -39,6 +40,16 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      clearAllSessionPersistence();
+    }
+    return Promise.reject(error);
+  }
+);
+
 export async function login(email: string, password: string) {
   const { data } = await api.post('/auth/login', { email, password });
   return data.data;
@@ -67,6 +78,11 @@ export async function fetchDetections(params?: {
   video_source?: string;
 }) {
   const { data } = await api.get('/detections', { params });
+  return data;
+}
+
+export async function deleteDetection(id: number) {
+  const { data } = await api.delete(`/detections/${id}`);
   return data;
 }
 

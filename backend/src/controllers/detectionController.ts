@@ -6,6 +6,7 @@ import { env } from '../config/env';
 import { detectionService, resolveSnapshotPath } from '../services/detectionService';
 import { enqueueVideoJob, getJobStatus } from '../services/jobQueue';
 import { AppError } from '../middleware/errorHandler';
+import { emitDetectionsChanged } from '../utils/realtimeEvents';
 
 const uploadDir = path.resolve(env.uploadDir);
 if (!fs.existsSync(uploadDir)) {
@@ -88,6 +89,7 @@ export const detectionController = {
     try {
       const deleted = await detectionService.deleteDetection(Number(req.params.id));
       if (!deleted) throw new AppError('Detection not found', 404, 'not_found');
+      emitDetectionsChanged({ videoSource: '', savedCount: 0 });
       res.json({ success: true, message: 'Detection deleted' });
     } catch (error) {
       next(error);

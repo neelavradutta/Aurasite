@@ -39,7 +39,17 @@ export default function AnalyticsPage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <Header
+        analyticsToolbar={
+          <Button
+            variant="secondary"
+            onClick={() => downloadCsv(getExportVehiclesUrl(), 'vehicles.csv')}
+            className="inline-flex h-9 shrink-0 items-center justify-center px-3 py-0"
+          >
+            Export Vehicles Report
+          </Button>
+        }
+      />
       <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         {loading ? (
           <div className="glass-panel flex min-h-[24rem] items-center justify-center rounded-xl border border-dashed border-white/10">
@@ -47,15 +57,7 @@ export default function AnalyticsPage() {
           </div>
         ) : (
           <div className="analytics-panel-enter space-y-6">
-            <PageTitle title="Analytics" subtitle="Traffic, confidence, and vehicle insights">
-              <Button
-                variant="secondary"
-                className="ml-auto shrink-0"
-                onClick={() => downloadCsv(getExportVehiclesUrl(), 'vehicles.csv')}
-              >
-                Export Vehicles CSV
-              </Button>
-            </PageTitle>
+            <PageTitle title="Analytics" subtitle="Traffic, confidence, and vehicle insights" />
             <div className="grid gap-6 xl:grid-cols-2">
               <PeakTrafficChart
                 key={peakTrafficKey}
