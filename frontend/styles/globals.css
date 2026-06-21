@@ -3590,3 +3590,562 @@ body {
   }
 }
 
+/* Aurasite icon trigger */
+.aurasite-icon-trigger {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  outline: none;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.35s ease;
+}
+
+.aurasite-icon-trigger:hover {
+  transform: translateY(-2px) scale(1.08);
+  filter: drop-shadow(0 0 14px rgba(0, 247, 255, 0.55));
+}
+
+.aurasite-icon-trigger:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 247, 255, 0.35);
+}
+
+.aurasite-icon-trigger__icon {
+  position: relative;
+  z-index: 2;
+  border-radius: 0.75rem;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.aurasite-icon-trigger:hover .aurasite-icon-trigger__icon {
+  transform: rotate(-3deg) scale(1.02);
+}
+
+.aurasite-icon-trigger__halo {
+  position: absolute;
+  inset: -6px;
+  z-index: 0;
+  border-radius: 1rem;
+  background: radial-gradient(circle, rgba(0, 247, 255, 0.22) 0%, transparent 68%);
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.aurasite-icon-trigger:hover .aurasite-icon-trigger__halo {
+  opacity: 1;
+  transform: scale(1.12);
+  animation: aurasite-trigger-halo-breathe 2.4s ease-in-out infinite;
+}
+
+.aurasite-icon-trigger__ring {
+  position: absolute;
+  inset: -5px;
+  z-index: 1;
+  border-radius: 0.9rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.aurasite-icon-trigger:hover .aurasite-icon-trigger__ring {
+  opacity: 1;
+}
+
+.aurasite-icon-trigger__ring--outer {
+  border: 1px dashed rgba(0, 247, 255, 0.45);
+  animation: aurasite-trigger-orbit 10s linear infinite;
+}
+
+.aurasite-icon-trigger__ring--inner {
+  inset: -2px;
+  border: 1px solid rgba(0, 255, 170, 0.55);
+  box-shadow:
+    0 0 12px rgba(0, 247, 255, 0.35),
+    inset 0 0 8px rgba(0, 247, 255, 0.15);
+  animation: aurasite-trigger-orbit-reverse 4.5s linear infinite;
+}
+
+.aurasite-icon-trigger__scan {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.aurasite-icon-trigger__scan::after {
+  content: '';
+  position: absolute;
+  left: -120%;
+  top: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 247, 255, 0.35),
+    rgba(255, 255, 255, 0.5),
+    rgba(0, 255, 170, 0.35),
+    transparent
+  );
+  transform: skewX(-18deg);
+}
+
+.aurasite-icon-trigger:hover .aurasite-icon-trigger__scan {
+  opacity: 1;
+}
+
+.aurasite-icon-trigger:hover .aurasite-icon-trigger__scan::after {
+  animation: aurasite-trigger-scan-sweep 1.8s ease-in-out infinite;
+}
+
+.aurasite-icon-trigger__corners {
+  position: absolute;
+  inset: -3px;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.aurasite-icon-trigger__corners::before,
+.aurasite-icon-trigger__corners::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: rgba(0, 247, 255, 0.85);
+  border-style: solid;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.aurasite-icon-trigger__corners::before {
+  top: 0;
+  left: 0;
+  border-width: 2px 0 0 2px;
+  transform: translate(4px, 4px);
+}
+
+.aurasite-icon-trigger__corners::after {
+  right: 0;
+  bottom: 0;
+  border-width: 0 2px 2px 0;
+  transform: translate(-4px, -4px);
+}
+
+.aurasite-icon-trigger:hover .aurasite-icon-trigger__corners {
+  opacity: 1;
+}
+
+.aurasite-icon-trigger:hover .aurasite-icon-trigger__corners::before {
+  transform: translate(0, 0);
+}
+
+.aurasite-icon-trigger:hover .aurasite-icon-trigger__corners::after {
+  transform: translate(0, 0);
+}
+
+.aurasite-icon-trigger__ripple,
+.aurasite-icon-trigger__burst {
+  position: absolute;
+  inset: 50%;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.2);
+}
+
+.aurasite-icon-trigger__ripple {
+  border: 1px solid rgba(0, 247, 255, 0.7);
+  box-shadow: 0 0 20px rgba(0, 247, 255, 0.45);
+}
+
+.aurasite-icon-trigger__burst {
+  background: radial-gradient(circle, rgba(0, 247, 255, 0.55) 0%, transparent 70%);
+}
+
+.aurasite-icon-trigger--launching {
+  pointer-events: none;
+  animation: aurasite-trigger-charge 0.46s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.aurasite-icon-trigger--launching .aurasite-icon-trigger__icon {
+  animation: aurasite-trigger-icon-flare 0.46s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.aurasite-icon-trigger--launching .aurasite-icon-trigger__ripple {
+  animation: aurasite-trigger-ripple 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.aurasite-icon-trigger--launching .aurasite-icon-trigger__burst {
+  animation: aurasite-trigger-burst 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.aurasite-icon-trigger--launching .aurasite-icon-trigger__ring--outer,
+.aurasite-icon-trigger--launching .aurasite-icon-trigger__ring--inner {
+  opacity: 1;
+  animation-duration: 0.35s;
+}
+
+@keyframes aurasite-trigger-halo-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes aurasite-trigger-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes aurasite-trigger-orbit-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes aurasite-trigger-scan-sweep {
+  0% {
+    left: -120%;
+  }
+  55%,
+  100% {
+    left: 140%;
+  }
+}
+
+@keyframes aurasite-trigger-charge {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  38% {
+    transform: scale(0.86);
+    filter: brightness(1.35) drop-shadow(0 0 18px rgba(0, 247, 255, 0.8));
+  }
+  100% {
+    transform: scale(1.22);
+    filter: brightness(2.2) drop-shadow(0 0 28px rgba(0, 255, 170, 0.95));
+  }
+}
+
+@keyframes aurasite-trigger-icon-flare {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes aurasite-trigger-ripple {
+  0% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.8);
+  }
+}
+
+@keyframes aurasite-trigger-burst {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(3.6);
+  }
+}
+
+/* Aurasite brand overlay */
+.aurasite-brand-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(4, 6, 18, 0.92);
+  backdrop-filter: blur(16px);
+  animation: aurasite-brand-portal-open 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.aurasite-brand-overlay--closing {
+  animation: aurasite-brand-portal-close 0.52s cubic-bezier(0.55, 0, 0.85, 0.36) forwards;
+}
+
+.aurasite-brand-overlay--closing .aurasite-brand-overlay__panel {
+  animation: aurasite-brand-panel-exit 0.48s cubic-bezier(0.55, 0, 0.85, 0.36) forwards;
+}
+
+.aurasite-brand-overlay__portal {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(0, 247, 255, 0.18) 0%, transparent 42%),
+    radial-gradient(circle at 50% 50%, rgba(0, 255, 170, 0.08) 0%, transparent 55%);
+  animation: aurasite-brand-portal-flash 0.75s ease-out forwards;
+}
+
+.aurasite-brand-overlay__scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 247, 255, 0.12) 2px,
+    rgba(0, 247, 255, 0.12) 3px
+  );
+  animation: aurasite-brand-scan-drift 6s linear infinite;
+}
+
+.aurasite-brand-overlay__panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: min(92vw, 52rem);
+  text-align: center;
+  animation: aurasite-brand-panel-enter 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.aurasite-brand-overlay__icon-wrap {
+  position: relative;
+  animation: aurasite-brand-icon-pop 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.aurasite-brand-overlay__icon-ring {
+  position: absolute;
+  inset: -14px;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(0, 247, 255, 0.35);
+  box-shadow:
+    0 0 30px rgba(0, 247, 255, 0.25),
+    inset 0 0 24px rgba(0, 247, 255, 0.08);
+  animation: aurasite-brand-icon-ring-spin 8s linear infinite;
+}
+
+.aurasite-brand-overlay__icon {
+  position: relative;
+  z-index: 1;
+  width: 8.75rem;
+  height: 8.75rem;
+  border-radius: 1rem;
+  box-shadow:
+    0 0 40px rgba(0, 247, 255, 0.35),
+    0 0 90px rgba(0, 255, 170, 0.18);
+}
+
+.aurasite-brand-overlay__title {
+  margin-top: 1.25rem;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #00f7ff;
+  text-shadow: 0 0 12px rgba(0, 247, 255, 0.55);
+  opacity: 0;
+  animation:
+    anpr-access-fade-in-up 0.55s ease-out 0.2s forwards,
+    anpr-access-title-glow 2s ease-in-out 0.75s infinite;
+}
+
+.aurasite-brand-overlay__tagline {
+  margin-top: 0.85rem;
+  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+  line-height: 1.4;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.aurasite-brand-overlay__tagline-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: aurasite-brand-tagline-word 0.5s ease-out forwards;
+}
+
+@keyframes aurasite-brand-portal-open {
+  0% {
+    opacity: 0;
+    backdrop-filter: blur(0);
+    clip-path: circle(0% at 50% 8%);
+  }
+  45% {
+    opacity: 1;
+    backdrop-filter: blur(10px);
+    clip-path: circle(85% at 50% 42%);
+  }
+  100% {
+    opacity: 1;
+    backdrop-filter: blur(16px);
+    clip-path: circle(150% at 50% 50%);
+  }
+}
+
+@keyframes aurasite-brand-portal-close {
+  from {
+    opacity: 1;
+    backdrop-filter: blur(16px);
+    clip-path: circle(150% at 50% 50%);
+  }
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0);
+    clip-path: circle(0% at 50% 8%);
+  }
+}
+
+@keyframes aurasite-brand-portal-flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+}
+
+@keyframes aurasite-brand-scan-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 120px;
+  }
+}
+
+@keyframes aurasite-brand-panel-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(36px) scale(0.88);
+    filter: blur(8px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.02);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes aurasite-brand-panel-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(28px) scale(0.9);
+    filter: blur(10px);
+  }
+}
+
+@keyframes aurasite-brand-icon-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes aurasite-brand-overlay-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes aurasite-brand-panel-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes aurasite-brand-icon-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  70% {
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes aurasite-brand-tagline-word {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+

@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useAuthStore } from '@/store/authStore';
 import { useSocket } from '@/hooks/useSocket';
-import AurasiteIcon from '@/components/AurasiteIcon';
+import AurasiteBrandOverlay from '@/components/AurasiteBrandOverlay';
+import AurasiteIconTrigger from '@/components/AurasiteIconTrigger';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard' },
@@ -20,6 +21,7 @@ export default function Header() {
   const { connected } = useSocket();
   const { user, token, logout, hydrate } = useAuthStore();
   const [clearing, setClearing] = useState(false);
+  const [brandOpen, setBrandOpen] = useState(false);
 
   const statusLabel = connected ? 'ONLINE' : 'OFFLINE';
   const statusActive = connected;
@@ -44,7 +46,7 @@ export default function Header() {
     <header className="glass-panel sticky top-0 z-50 border-b border-cyber-cyan/20 px-6 py-4">
       <div className="mx-auto flex max-w-[1920px] items-center justify-between gap-6">
         <div className="flex items-center gap-3">
-          <AurasiteIcon size={44} className="h-11 w-11" />
+          <AurasiteIconTrigger onOpen={() => setBrandOpen(true)} />
           <div>
             <h1 className="font-orbitron text-xl font-bold text-cyber-cyan neon-text">AURASITE</h1>
             <p className="text-xs text-slate-400">Next-Gen Plate Recognition Dashboard</p>
@@ -110,6 +112,7 @@ export default function Header() {
           )}
         </div>
       </div>
+      <AurasiteBrandOverlay open={brandOpen} onClose={() => setBrandOpen(false)} />
     </header>
   );
 }
