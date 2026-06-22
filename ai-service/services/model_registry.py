@@ -15,15 +15,20 @@ class ModelStatus:
     detail: str = ""
 
 
-def resolve_device() -> str:
-    if settings.gpu_enabled:
-        try:
-            import torch
+def cuda_is_available() -> bool:
+    try:
+        import torch
 
-            if torch.cuda.is_available():
-                return "cuda"
-        except ImportError:
-            pass
+        return torch.cuda.is_available()
+    except ImportError:
+        return False
+
+
+def resolve_device() -> str:
+    if not settings.gpu_enabled:
+        return "cpu"
+    if cuda_is_available():
+        return "cuda"
     return "cpu"
 
 

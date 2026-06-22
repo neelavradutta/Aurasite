@@ -47,7 +47,8 @@ cd ai-service
 Or manually from the repo root:
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-cpu.txt       # CPU
+# pip install -r requirements-gpu.txt     # NVIDIA GPU
 cd ai-service && python scripts/download_models.py
 ```
 

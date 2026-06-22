@@ -6,9 +6,10 @@ cd "$AI_ROOT"
 
 echo "=== ANPR AI Service ML Install ==="
 
-echo -e "\n[1/2] Python dependencies (repo requirements.txt)..."
+echo -e "\n[1/2] Python dependencies (requirements-cpu.txt)..."
+echo "      For GPU: pip install -r $REPO_ROOT/requirements-gpu.txt"
 python3 -m pip install --upgrade pip
-pip install -r "$REPO_ROOT/requirements.txt"
+pip install -r "$REPO_ROOT/requirements-cpu.txt"
 
 echo -e "\n[2/2] Download YOLO models..."
 python3 scripts/download_models.py

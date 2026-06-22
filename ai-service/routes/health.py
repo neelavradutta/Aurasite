@@ -3,7 +3,7 @@ import time
 from fastapi import APIRouter
 
 from config.settings import settings
-from services.model_registry import model_status_payload
+from services.model_registry import cuda_is_available, model_status_payload, resolve_device
 
 router = APIRouter(prefix="/api/v1", tags=["health"])
 START_TIME = time.time()
@@ -25,7 +25,9 @@ async def health_check():
             "ocr": status["ocr"]["loaded"],
         },
         "production_ready": all_loaded,
-        "gpu_available": settings.gpu_enabled,
+        "gpu_available": cuda_is_available(),
+        "using_gpu": resolve_device() == "cuda",
+        "gpu_auto_enabled": settings.gpu_enabled,
         "uptime_seconds": int(time.time() - START_TIME),
     }
 

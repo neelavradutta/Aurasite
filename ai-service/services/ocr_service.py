@@ -18,12 +18,21 @@ _ocr_engine: Any = None
 _ocr_status = ModelStatus("paddleocr", False, "cpu", "not loaded")
 
 
+def _paddle_use_gpu() -> bool:
+    """Paddle GPU + PyTorch CUDA conflict in one process on Windows — YOLO uses GPU, OCR stays CPU."""
+    if resolve_device() != "cuda":
+        return False
+    import sys
+
+    return sys.platform != "win32"
+
+
 def _create_paddle_ocr():
     os.environ.setdefault("FLAGS_use_mkldnn", "0")
 
     from paddleocr import PaddleOCR
 
-    use_gpu = settings.gpu_enabled and resolve_device() == "cuda"
+    use_gpu = _paddle_use_gpu()
     lang = settings.ocr_lang
 
     try:
@@ -43,7 +52,7 @@ def load_ocr(force: bool = False):
     if _ocr_engine is not None and not force:
         return _ocr_engine
 
-    device = "gpu" if settings.gpu_enabled and resolve_device() == "cuda" else "cpu"
+    device = "gpu" if _paddle_use_gpu() else "cpu"
     try:
         _ocr_engine = _create_paddle_ocr()
         _ocr_status = ModelStatus("paddleocr", True, device, f"PaddleOCR {settings.ocr_lang}")

@@ -6,9 +6,10 @@ Set-Location $AiRoot
 
 Write-Host "=== ANPR AI Service ML Install ===" -ForegroundColor Cyan
 
-Write-Host "`n[1/2] Python dependencies (repo requirements.txt)..." -ForegroundColor Yellow
+Write-Host "`n[1/2] Python dependencies (requirements-cpu.txt)..." -ForegroundColor Yellow
+Write-Host "      For GPU: pip install -r `"$RepoRoot\requirements-gpu.txt`"" -ForegroundColor DarkGray
 python -m pip install --upgrade pip
-pip install -r "$RepoRoot\requirements.txt"
+pip install -r "$RepoRoot\requirements-cpu.txt"
 
 Write-Host "`n[2/2] Download YOLO models..." -ForegroundColor Yellow
 python scripts/download_models.py

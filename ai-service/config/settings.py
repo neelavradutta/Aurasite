@@ -4,7 +4,8 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     fastapi_env: str = "development"
     log_level: str = "INFO"
-    gpu_enabled: bool = False
+  # When true, use CUDA if available; set false to force CPU only
+    gpu_enabled: bool = True
     port: int = 5000
 
     # Vehicle YOLO (COCO — car, truck, bus, etc.)
