@@ -5,6 +5,15 @@ import { logger } from './logger';
 
 const isSqlite = env.databaseUrl.startsWith('sqlite:');
 
+function mysqlNeedsSsl(url: string): boolean {
+  try {
+    const host = new URL(url.replace(/^mysql:\/\//, 'http://')).hostname;
+    return host !== 'localhost' && host !== '127.0.0.1';
+  } catch {
+    return false;
+  }
+}
+
 export const sequelize = isSqlite
   ? new Sequelize({
       dialect: 'sqlite',
@@ -14,6 +23,13 @@ export const sequelize = isSqlite
   : new Sequelize(env.databaseUrl, {
       dialect: 'mysql',
       logging: env.nodeEnv === 'development' ? (msg) => logger.debug(msg) : false,
+      ...(mysqlNeedsSsl(env.databaseUrl)
+        ? {
+            dialectOptions: {
+              ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true },
+            },
+          }
+        : {}),
       pool: {
         max: 10,
         min: 0,
