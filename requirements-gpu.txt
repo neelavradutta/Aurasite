@@ -1,5 +1,6 @@
 # GPU install (NVIDIA + CUDA 12.1): pip install -r requirements-gpu.txt
-# CPU-only machine: use requirements-cpu.txt instead.
+
+
 #
 # On Windows, after this install also run:
 #   pip install paddlepaddle==2.6.2

@@ -1,5 +1,6 @@
 # CPU install (no NVIDIA GPU): pip install -r requirements-cpu.txt
-# GPU install (NVIDIA):         pip install -r requirements-gpu.txt
+
+
 #
 # The service auto-uses GPU when CUDA is available, otherwise CPU.
 
