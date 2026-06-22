@@ -244,7 +244,6 @@ function AuthenticatingOverlay({
       <ParticleField particles={particles} />
       <div className="premium-login-auth-fx pointer-events-none absolute inset-0 overflow-hidden">
         <RadialWaves />
-        <div className="premium-login-auth-grid absolute inset-0 opacity-5" aria-hidden />
       </div>
 
       <div className="relative z-10 flex flex-col items-center gap-5 text-center">
@@ -277,8 +276,6 @@ function AuthenticatingOverlay({
           </>
         ) : null}
       </div>
-
-      <CornerAccents />
     </motion.div>
   );
 }
