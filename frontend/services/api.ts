@@ -312,6 +312,11 @@ export async function updateVehicleStatus(id: number, status: string, reason?: s
   return data.data as Vehicle;
 }
 
+export async function updateVehicle(id: number, payload: Partial<Vehicle>): Promise<Vehicle> {
+  const { data } = await api.put(`/vehicles/${id}`, payload);
+  return data.data as Vehicle;
+}
+
 export function getExportDetectionsUrl(params?: { plate?: string; days?: number }) {
   const base = `${API_URL}/api/v1/analytics/export/detections`;
   const query = new URLSearchParams();

@@ -12,6 +12,11 @@ import { normalizePlateKey } from '@/utils/dashboardDetections';
 import { downloadVehicleReportPdf } from '@/utils/vehicleReportPdf';
 import { getHistoryPlate } from '@/utils/vehicleCardDisplay';
 import { getStatusReason } from '@/utils/vehicleStatus';
+import {
+  parseVehicleModalRestoreQuery,
+  stampVehicleModalReturnUrl,
+  stripVehicleModalRestoreQuery,
+} from '@/utils/vehicleModalReturn';
 import DetectionSnapshotImage from './DetectionSnapshotImage';
 import PlateSnapshotModal from './PlateSnapshotModal';
 import VehicleCatalogModal from './VehicleCatalogModal';
@@ -65,8 +70,10 @@ export default function PlateCardsGrid({
   const [modalVehicle, setModalVehicle] = useState<Vehicle | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
+  const [restoreInstantClose, setRestoreInstantClose] = useState(false);
   const gridScrollRef = useRef<HTMLDivElement>(null);
   const deselectTimerRef = useRef<number | null>(null);
+  const restoredReturnRef = useRef(false);
   const visibleDetections = detections;
   const hasSelection = selectToPreview && Boolean(selectedPlate);
   const vehicleDetailsOpen = Boolean(detailVehicle);
@@ -132,6 +139,53 @@ export default function PlateCardsGrid({
     return () => container.removeEventListener('wheel', handleWheel);
   }, [visibleDetections.length]);
 
+  useEffect(() => {
+    if (!router.isReady || router.pathname !== '/dashboard') {
+      restoredReturnRef.current = false;
+      return;
+    }
+
+    const pending = parseVehicleModalRestoreQuery(router.query);
+    if (!pending || restoredReturnRef.current) return;
+
+    restoredReturnRef.current = true;
+    setRestoreInstantClose(true);
+
+    const cleanQuery = stripVehicleModalRestoreQuery(router.query);
+    void router.replace({ pathname: '/dashboard', query: cleanQuery }, undefined, { shallow: true });
+
+    void (async () => {
+      setLoadingDetail(true);
+      try {
+        const detail = await fetchVehicleById(pending.vehicleId);
+        setDetailVehicle(detail);
+        setModalVehicle(detail);
+
+        let restoredSelection = false;
+        if (pending.selectedDetectionId) {
+          const detection = detections.find((item) => item.id === pending.selectedDetectionId);
+          if (detection) {
+            setSelectedPlate(detection);
+            restoredSelection = true;
+          }
+        }
+        if (!restoredSelection && pending.plateNumber) {
+          const normalized = normalizePlateKey(pending.plateNumber);
+          const byPlate = detections.find((item) => normalizePlateKey(item.plate_number) === normalized);
+          if (byPlate) {
+            setSelectedPlate(byPlate);
+          }
+        }
+      } finally {
+        setLoadingDetail(false);
+      }
+
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: pending.scrollY, left: 0, behavior: 'auto' });
+      });
+    })();
+  }, [router, router.isReady, router.pathname, router.query, detections, setSelectedPlate]);
+
   function handleCardClick(detection: Detection) {
     if (selectToPreview && selectedPlate?.id === detection.id) {
       // Delay deselect so a double-click can open preview without flashing header actions closed.
@@ -187,6 +241,7 @@ export default function PlateCardsGrid({
     setModalVehicle(null);
     setLoadingDetail(false);
     setStatusUpdating(false);
+    setRestoreInstantClose(false);
   }
 
   async function handleStatusChange(vehicle: Vehicle, status: VehicleStatus) {
@@ -201,6 +256,11 @@ export default function PlateCardsGrid({
     }
   }
 
+  async function handleVehicleUpdated(vehicle: Vehicle) {
+    setModalVehicle(vehicle);
+    setDetailVehicle(vehicle);
+  }
+
   async function handleExport(vehicle: Vehicle) {
     try {
       const detail = vehicle.detections?.length ? vehicle : await fetchVehicleById(vehicle.id);
@@ -211,6 +271,11 @@ export default function PlateCardsGrid({
   }
 
   function handleViewHistory(vehicle: Vehicle) {
+    stampVehicleModalReturnUrl(vehicle, {
+      scrollY: window.scrollY,
+      selectedDetectionId: selectedPlate?.id ?? null,
+    });
+
     void router.push({
       pathname: '/detections',
       query: { plate: getHistoryPlate(vehicle) },
@@ -355,10 +420,12 @@ export default function PlateCardsGrid({
         open={vehicleDetailsOpen}
         loading={loadingDetail}
         statusUpdating={statusUpdating}
+        instantClose={restoreInstantClose}
         onClose={closeVehicleDetails}
         onStatusChange={handleStatusChange}
         onExport={handleExport}
         onViewHistory={handleViewHistory}
+        onVehicleUpdated={handleVehicleUpdated}
       />
     </section>
   );

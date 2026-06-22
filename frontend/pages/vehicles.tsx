@@ -22,6 +22,11 @@ import {
   loadVehiclesPageCache,
   persistVehiclesPageCache,
 } from '@/services/sessionPersistence';
+import {
+  parseVehicleModalRestoreQuery,
+  stampVehicleModalReturnUrl,
+  stripVehicleModalRestoreQuery,
+} from '@/utils/vehicleModalReturn';
 
 export default function VehiclesPage() {
   const router = useRouter();
@@ -34,7 +39,9 @@ export default function VehiclesPage() {
   const [highlightedVehicleId, setHighlightedVehicleId] = useState<number | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
+  const [restoreInstantClose, setRestoreInstantClose] = useState(false);
   const openedQueryKeyRef = useRef<string | null>(null);
+  const restoredReturnRef = useRef(false);
 
   async function loadVehicles() {
     const res = await fetchVehicles({ limit: 100 });
@@ -182,12 +189,48 @@ export default function VehiclesPage() {
     void openFromQuery();
   }, [router.isReady, router.query.plate, router.query.id]);
 
+  useEffect(() => {
+    if (!router.isReady || router.pathname !== '/vehicles' || !pageHydrated) {
+      restoredReturnRef.current = false;
+      return;
+    }
+
+    const pending = parseVehicleModalRestoreQuery(router.query);
+    if (!pending || restoredReturnRef.current) return;
+
+    restoredReturnRef.current = true;
+    setRestoreInstantClose(true);
+
+    const cleanQuery = stripVehicleModalRestoreQuery(router.query);
+    void router.replace({ pathname: '/vehicles', query: cleanQuery }, undefined, { shallow: true });
+
+    void (async () => {
+      setLoadingDetail(true);
+      try {
+        const detail = await fetchVehicleById(pending.vehicleId);
+        setSelectedVehicle(detail);
+        setModalVehicle(detail);
+        setHighlightedVehicleId(detail.id);
+      } catch {
+        restoredReturnRef.current = false;
+        setRestoreInstantClose(false);
+      } finally {
+        setLoadingDetail(false);
+      }
+
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: pending.scrollY, left: 0, behavior: 'auto' });
+      });
+    })();
+  }, [router, router.isReady, router.pathname, router.query, pageHydrated]);
+
   function closeModal() {
     setSelectedVehicle(null);
     setModalVehicle(null);
     setHighlightedVehicleId(null);
     setLoadingDetail(false);
     setStatusUpdating(false);
+    setRestoreInstantClose(false);
   }
 
   async function handleStatusChange(vehicle: Vehicle, status: VehicleStatus) {
@@ -213,10 +256,17 @@ export default function VehiclesPage() {
   }
 
   function handleViewHistory(vehicle: Vehicle) {
+    stampVehicleModalReturnUrl(vehicle, { scrollY: window.scrollY });
+
     void router.push({
       pathname: '/detections',
       query: { plate: getHistoryPlate(vehicle) },
     });
+  }
+
+  function handleVehicleUpdated(vehicle: Vehicle) {
+    setModalVehicle(vehicle);
+    setVehicles((prev) => prev.map((item) => (item.id === vehicle.id ? { ...item, ...vehicle } : item)));
   }
 
   return (
@@ -247,10 +297,12 @@ export default function VehiclesPage() {
         open={Boolean(selectedVehicle)}
         loading={loadingDetail}
         statusUpdating={statusUpdating}
+        instantClose={restoreInstantClose}
         onClose={closeModal}
         onStatusChange={handleStatusChange}
         onExport={handleExport}
         onViewHistory={handleViewHistory}
+        onVehicleUpdated={handleVehicleUpdated}
       />
     </div>
   );

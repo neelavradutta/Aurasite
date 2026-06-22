@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import MarqueeText from '@/components/shared/MarqueeText';
 import VehicleStatusBadge from '@/components/VehicleStatusBadge';
-import VehicleNeuralShell from '@/components/VehicleNeuralOverlays';
+import VehicleNeuralShell, { EditableValue } from '@/components/VehicleNeuralOverlays';
+import { updateVehicle } from '@/services/api';
 import { Vehicle, VehicleDetectionSummary, VehicleStatus } from '@/types/vehicle';
 import { getDetectionSnapshotUrl } from '@/services/api';
 import {
@@ -36,6 +37,7 @@ interface Props {
   onStatusChange?: (vehicle: Vehicle, status: VehicleStatus) => void;
   onExport?: (vehicle: Vehicle) => void;
   onViewHistory?: (vehicle: Vehicle) => void;
+  onVehicleUpdated?: (vehicle: Vehicle) => void;
 }
 
 function formatTimelineTimestamp(value?: string | null): string {
@@ -64,11 +66,13 @@ export default function VehicleCatalogModal({
   onStatusChange,
   onExport,
   onViewHistory,
+  onVehicleUpdated,
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [historyNavigating, setHistoryNavigating] = useState(false);
   const [displayVehicle, setDisplayVehicle] = useState<Vehicle | null>(null);
+  const [detailsEditing, setDetailsEditing] = useState(false);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wasOpenRef = useRef(false);
 
@@ -129,6 +133,10 @@ export default function VehicleCatalogModal({
       return;
     }
 
+    if (!open) {
+      setDetailsEditing(false);
+    }
+
     if (!open && displayVehicle && !isClosing && !historyNavigating) {
       beginClose();
     }
@@ -165,6 +173,58 @@ export default function VehicleCatalogModal({
     });
   }, [displayVehicle?.detections]);
 
+  const exitDetailsEditing = useCallback(() => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    setDetailsEditing(false);
+  }, []);
+
+  const toggleDetailsEditing = useCallback(() => {
+    if (detailsEditing) {
+      exitDetailsEditing();
+      return;
+    }
+    setDetailsEditing(true);
+  }, [detailsEditing, exitDetailsEditing]);
+
+  const handleStatusNoteSave = useCallback(
+    async (raw: string) => {
+      if (!displayVehicle) return;
+
+      const trimmed = raw.trim();
+      const nextValue = !trimmed || trimmed === '--' ? null : trimmed;
+      const currentValue = displayVehicle.flagged_reason?.trim() || null;
+      if (nextValue === currentValue) return;
+
+      try {
+        const updated = await updateVehicle(displayVehicle.id, { flagged_reason: nextValue });
+        const merged = { ...displayVehicle, ...updated };
+        setDisplayVehicle(merged);
+        onVehicleUpdated?.(merged);
+      } catch {
+        // keep previous value on failure
+      }
+    },
+    [displayVehicle, onVehicleUpdated]
+  );
+
+  useEffect(() => {
+    if (!detailsEditing || !isRendered) return;
+
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+      if (target.closest('.neural-satellite-tl') || target.closest('.neural-satellite-br')) return;
+      if (target.closest('[data-vehicle-edit-toggle]')) return;
+      if (target.closest('[data-vehicle-edit-surface]')) return;
+
+      exitDetailsEditing();
+    }
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, [detailsEditing, isRendered, exitDetailsEditing]);
+
   if (!mounted || !isRendered) return null;
 
   const isUnreadable = isUnreadablePlate(displayVehicle.plate_number);
@@ -185,7 +245,12 @@ export default function VehicleCatalogModal({
       aria-modal="true"
       aria-labelledby="vehicle-catalog-modal-title"
     >
-      <VehicleNeuralShell vehicle={displayVehicle} loading={loading}>
+      <VehicleNeuralShell
+        vehicle={displayVehicle}
+        loading={loading}
+        editing={detailsEditing}
+        onVehicleUpdated={onVehicleUpdated}
+      >
       <div
         className="vehicle-modal-card flex h-[38rem] max-h-[88vh] w-full flex-col overflow-hidden rounded-xl border border-[#00D9FF]/30 bg-[#0a1028] shadow-[0_0_36px_rgba(0,217,255,0.1)]"
       >
@@ -279,10 +344,25 @@ export default function VehicleCatalogModal({
                 </div>
               </section>
 
-              {displayVehicle.flagged_reason && currentStatus !== 'active' && (
-                <div className="modal-stagger-4 shrink-0 rounded-lg border border-white/10 bg-black/25 px-4 py-2">
+              {currentStatus !== 'active' && (displayVehicle.flagged_reason || detailsEditing) && (
+                <div
+                  className="modal-stagger-4 shrink-0 rounded-lg border border-white/10 bg-black/25 px-4 py-2"
+                  {...(detailsEditing ? { 'data-vehicle-edit-surface': true } : {})}
+                >
                   <p className="text-xs uppercase tracking-[0.14em] text-[#6B7A8F]">Status Note</p>
-                  <p className="mt-1 text-xs text-slate-200">{displayVehicle.flagged_reason}</p>
+                  <div className="mt-1 text-xs text-slate-200">
+                    {detailsEditing ? (
+                      <EditableValue
+                        editing
+                        display={displayVehicle.flagged_reason || '--'}
+                        multiline
+                        onSave={handleStatusNoteSave}
+                        className="block w-full text-left"
+                      />
+                    ) : (
+                      displayVehicle.flagged_reason
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -320,13 +400,24 @@ export default function VehicleCatalogModal({
                     </div>
                   </div>
                 )}
-                <button
-                  type="button"
-                  onClick={() => onExport?.(displayVehicle)}
-                  className="vehicle-modal-action rounded-md border border-[#00D9FF]/40 bg-[#00D9FF]/10 px-3.5 py-2 text-sm text-[#00D9FF] transition duration-300"
-                >
-                  Export
-                </button>
+                {!isUnreadable && (
+                  <button
+                    type="button"
+                    data-vehicle-edit-toggle
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleDetailsEditing();
+                    }}
+                    disabled={statusUpdating || historyNavigating}
+                    className={`vehicle-modal-action rounded-md border px-3.5 py-2 text-sm transition duration-300 disabled:cursor-not-allowed disabled:opacity-50 ${
+                      detailsEditing
+                        ? 'border-[#d946ef]/70 bg-[#d946ef]/22 text-[#fae8ff] shadow-[0_0_14px_rgba(217,70,239,0.2)]'
+                        : 'border-[#d946ef]/45 bg-[#d946ef]/12 text-[#f0abfc] hover:border-[#d946ef]/65 hover:bg-[#d946ef]/18 hover:text-[#f5d0fe]'
+                    }`}
+                  >
+                    {detailsEditing ? 'Done' : 'Edit'}
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={(event) => {
@@ -339,6 +430,13 @@ export default function VehicleCatalogModal({
                   }`}
                 >
                   {historyNavigating ? 'Opening history...' : 'View History'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onExport?.(displayVehicle)}
+                  className="vehicle-modal-action min-w-[5.5rem] flex-1 rounded-md border border-[#00D9FF]/40 bg-[#00D9FF]/10 px-3.5 py-2 text-center text-sm text-[#00D9FF] transition duration-300"
+                >
+                  Export
                 </button>
               </div>
             </>

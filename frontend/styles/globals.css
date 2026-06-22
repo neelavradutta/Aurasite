@@ -1676,6 +1676,11 @@ body {
   transform: translateY(-100%);
 }
 
+.vehicle-info-satellite-anchor {
+  top: calc(50% + 17rem);
+  transform: translateY(-100%);
+}
+
 .neural-satellite-br {
   animation-delay: 0.55s;
 }
@@ -1759,6 +1764,18 @@ body {
   white-space: normal;
   overflow-wrap: break-word;
   word-break: break-word;
+}
+
+.owner-profile-editable-value {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.owner-profile-editable:empty::before {
+  content: '—';
+  color: rgba(148, 163, 184, 0.55);
 }
 
 @keyframes neural-quality-fill {
