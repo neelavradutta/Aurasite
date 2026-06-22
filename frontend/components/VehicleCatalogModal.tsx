@@ -356,11 +356,14 @@ export default function VehicleCatalogModal({
                         editing
                         display={displayVehicle.flagged_reason || '--'}
                         multiline
+                        clampLines={undefined}
                         onSave={handleStatusNoteSave}
-                        className="block w-full text-left"
+                        className="owner-profile-address-value block w-full text-left"
                       />
                     ) : (
-                      displayVehicle.flagged_reason
+                      <span className="owner-profile-address-value block w-full text-left">
+                        {displayVehicle.flagged_reason}
+                      </span>
                     )}
                   </div>
                 </div>

@@ -1751,6 +1751,13 @@ body {
   line-clamp: 2;
 }
 
+.owner-profile-value-expanded {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+}
+
 .owner-profile-email-value {
   display: block;
   overflow: hidden;
@@ -1763,13 +1770,6 @@ body {
   display: block;
   white-space: normal;
   overflow-wrap: break-word;
-  word-break: break-word;
-}
-
-.owner-profile-editable-value {
-  display: block;
-  white-space: normal;
-  overflow-wrap: anywhere;
   word-break: break-word;
 }
 

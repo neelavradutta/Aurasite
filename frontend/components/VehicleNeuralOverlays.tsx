@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Vehicle } from '@/types/vehicle';
 import { displayValue } from '@/utils/detectionDisplay';
 import { formatDate } from '@/utils/dateFormat';
@@ -49,16 +49,26 @@ export function EditableValue({
   editing,
   display,
   multiline = false,
+  clampLines = 2,
   onSave,
   className = 'text-slate-200',
 }: {
   editing: boolean;
   display: string;
   multiline?: boolean;
+  clampLines?: number;
   onSave: (next: string) => void;
   className?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const isClampable = !multiline && clampLines !== undefined;
+
+  useLayoutEffect(() => {
+    if (!editing) {
+      setExpanded(false);
+    }
+  }, [editing, display]);
 
   if (!editing) {
     return (
@@ -74,6 +84,30 @@ export function EditableValue({
     onSave(el.innerText);
   }
 
+  function syncExpanded() {
+    requestAnimationFrame(() => {
+      const el = ref.current;
+      if (!el || !isClampable) return;
+
+      const lineHeight = parseFloat(getComputedStyle(el).lineHeight) || 20;
+      const clampedHeight = lineHeight * clampLines;
+      const isExpanded = el.classList.contains('owner-profile-value-expanded');
+
+      if (!isExpanded) {
+        if (el.scrollHeight > el.clientHeight + 1) {
+          setExpanded(true);
+        }
+        return;
+      }
+
+      if (el.scrollHeight <= clampedHeight + 1) {
+        setExpanded(false);
+      }
+    });
+  }
+
+  const expandedClass = isClampable && expanded ? 'owner-profile-value-expanded' : '';
+
   return (
     <span
       ref={ref}
@@ -81,8 +115,9 @@ export function EditableValue({
       tabIndex={0}
       contentEditable
       suppressContentEditableWarning
-      className={`${className} owner-profile-editable min-h-[1.25rem] cursor-text rounded border border-transparent px-1 py-0.5 outline-none focus:border-[#00D9FF]/45`}
+      className={`${className} owner-profile-editable cursor-text outline-none focus:outline focus:outline-1 focus:outline-[#00D9FF]/45 ${expandedClass}`}
       onBlur={commit}
+      onInput={syncExpanded}
       onKeyDown={(event) => {
         if (event.key === 'Enter' && !multiline) {
           event.preventDefault();
@@ -92,6 +127,7 @@ export function EditableValue({
         if (event.key === 'Escape') {
           event.preventDefault();
           if (ref.current) ref.current.textContent = display === '--' ? '' : display;
+          setExpanded(false);
           (event.target as HTMLElement).blur();
         }
       }}
@@ -120,8 +156,9 @@ function OwnerProfileEmailRow({
         <EditableValue
           editing
           display={value}
+          clampLines={undefined}
           onSave={onSave}
-          className="owner-profile-editable-value min-w-0 max-w-[58%] text-right text-slate-200"
+          className="owner-profile-email-value min-w-0 max-w-[58%] text-right text-slate-200"
         />
       ) : (
         <span className="owner-profile-email-value min-w-0 max-w-[58%] text-right text-slate-200" title={value}>
@@ -157,9 +194,7 @@ function OwnerProfileRow({
 }) {
   const valueClass = fullWrap
     ? 'owner-profile-address-value min-w-0 max-w-[58%] text-right'
-    : editing
-      ? 'owner-profile-editable-value min-w-0 max-w-[58%] text-right'
-      : 'owner-profile-value min-w-0 max-w-[58%] text-right';
+    : 'owner-profile-value min-w-0 max-w-[58%] text-right';
 
   return (
     <div className="flex items-start justify-between gap-3 text-sm leading-snug">
@@ -169,6 +204,7 @@ function OwnerProfileRow({
           editing
           display={value}
           multiline={fullWrap}
+          clampLines={fullWrap ? undefined : 2}
           onSave={onSave}
           className={`${valueClass} ${valueClassName}`}
         />
