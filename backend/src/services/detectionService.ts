@@ -68,6 +68,14 @@ function vehicleKeyFor(item: AiDetectionItem, plateNumber: string, index: number
   return `${plateNumber}-${item.track_id || item.frame_id || index}`;
 }
 
+function resolveDetectedColor(item: AiDetectionItem): string | null {
+  const direct = item.vehicle_color?.trim();
+  if (direct) return direct;
+  const nested = item.vehicle?.color?.trim();
+  if (nested) return nested;
+  return null;
+}
+
 function normalizePlateKey(plate: string): string {
   return plate.toUpperCase().replace(/[^A-Z0-9]/g, '');
 }
@@ -220,6 +228,8 @@ export const detectionService = {
       const isRepeat = quality === 'accepted' && (await this.checkRepeatDetection(plateNumber));
       const generateProfile = shouldGenerateVehicleProfile(vehiclePlateKey, plateNumber, quality);
 
+      const detectedColor = resolveDetectedColor(item);
+
       let vehicle = await findExistingVehicle(vehiclePlateKey, plateNumber, quality);
       if (vehicle) {
         const profilePatch = generateProfile
@@ -230,6 +240,7 @@ export const detectionService = {
           last_detected_timestamp: new Date(),
           detection_count: vehicle.detection_count + 1,
           vehicle_type: item.vehicle?.class_name || vehicle.vehicle_type || profilePatch.vehicle_type,
+          ...(detectedColor ? { color: detectedColor } : {}),
         });
       } else {
         const profile = generateProfile ? generateVehicleProfile(vehiclePlateKey) : null;
@@ -240,6 +251,7 @@ export const detectionService = {
           last_detected_timestamp: new Date(),
           violation_count: 0,
           ...(profile || {}),
+          ...(detectedColor ? { color: detectedColor } : {}),
           ...(generateProfile ? { registration_date: randomRegistrationDate() } : {}),
         });
       }
@@ -258,7 +270,7 @@ export const detectionService = {
             ? { bbox: item.plate.plate_bbox }
             : null,
         vehicle_type: item.vehicle?.class_name ?? null,
-        vehicle_color: item.vehicle_color ?? item.vehicle?.color ?? null,
+        vehicle_color: detectedColor,
         video_source: videoSource,
         frame_image_path: snapshotFile,
         is_repeat_detection: isRepeat || item.is_repeat_detection || false,

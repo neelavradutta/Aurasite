@@ -8,6 +8,7 @@ from config.settings import settings
 from services.detection_service import detect_vehicles
 from services.plate_detection_service import detect_plates, is_plate_model_ready
 from services.plate_extractor import extract_plate_record
+from services.vehicle_color_service import apply_vehicle_color
 from services.tracker import ByteTracker
 
 logger = logging.getLogger(__name__)
@@ -196,7 +197,7 @@ class AnprPipeline:
                 min_conf,
             )
             if record:
-                results.append(record)
+                results.append(apply_vehicle_color(record, frame))
 
         return results
 

@@ -195,10 +195,16 @@ def extract_plate_record(
 
     ocr = {**ocr, "cleaned_text": display_plate, "detection_quality": quality}
 
+    vehicle_payload: dict[str, Any] = vehicle or {
+        "class_name": "unknown",
+        "confidence": 0.0,
+        "bbox": bbox,
+    }
+
     return {
         "frame_id": frame_id,
         "timestamp": timestamp,
-        "vehicle": vehicle or {"class_name": "unknown", "confidence": 0.0, "bbox": bbox},
+        "vehicle": vehicle_payload,
         "plate_detection": plate_det,
         "plate": ocr,
         "plate_number": display_plate,

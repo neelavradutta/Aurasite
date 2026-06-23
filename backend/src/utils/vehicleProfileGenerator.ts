@@ -7,7 +7,6 @@ type VehicleProfile = {
   owner_email: string;
   owner_address: string;
   driving_license: string;
-  color: string;
   model: string;
   manufacturing_year: string;
   modifications: string;
@@ -46,7 +45,6 @@ const CITIES = [
   'Pune, Maharashtra', 'Mysuru, Karnataka', 'Mangaluru, Karnataka',
 ];
 
-const COLORS = ['White', 'Silver', 'Black', 'Blue', 'Red', 'Grey', 'Brown', 'Green'];
 const MODELS = [
   'Swift Dzire', 'Hyundai Creta', 'Honda City', 'Toyota Innova', 'Mahindra XUV700',
   'Tata Nexon', 'Kia Seltos', 'Maruti Baleno', 'Hyundai i20', 'Renault Kiger',
@@ -135,7 +133,6 @@ export function generateVehicleProfile(plateNumber: string): VehicleProfile {
     owner_email: `${emailSlug}${digits(seed, 5, 2)}@gmail.com`,
     owner_address: `${10 + (seed % 180)}, ${pick(STREETS, seed, 6)}, ${pick(CITIES, seed, 7)}`,
     driving_license: `${prefix}${digits(seed, 8, 2)} ${year}${digits(seed, 9, 7)}`,
-    color: pick(COLORS, seed, 10),
     model: pick(MODELS, seed, 11),
     manufacturing_year: String(year),
     modifications: pick(MODIFICATIONS, seed, 12),
@@ -155,7 +152,6 @@ const PROFILE_KEYS = [
   'owner_email',
   'owner_address',
   'driving_license',
-  'color',
   'model',
   'manufacturing_year',
   'modifications',

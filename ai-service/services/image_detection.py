@@ -17,6 +17,7 @@ from services.plate_extractor import (
     encode_plate_snapshot,
     extract_plate_record,
 )
+from services.vehicle_color_service import apply_vehicle_color
 from services.ocr_service import recognize_plate, recognize_plate_crop
 from services.plate_format import is_indian_plate, is_indian_plate_partial
 from services.plate_quality import (
@@ -265,7 +266,7 @@ def _extract_image_plate_record(
     if not refined_text or not _is_valid_image_plate_read(refined_text):
         if record.get("detection_quality") == "accepted":
             record["detection_quality"] = "partial"
-        return record
+        return apply_vehicle_color(record, frame)
 
     if refined_text != plate_key(str(record.get("plate_number", ""))):
         plate_info = dict(record.get("plate") or {})
@@ -281,7 +282,7 @@ def _extract_image_plate_record(
         record["plate"] = plate_info
         record["detection_quality"] = quality
 
-    return record
+    return apply_vehicle_color(record, frame)
 
 
 def _refine_oversized_plate_bbox(bbox: list[int]) -> list[int]:
