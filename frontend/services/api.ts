@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { Detection } from '@/types/detection';
 import { Vehicle } from '@/types/vehicle';
+import { API_BASE_URL } from '@/config/backend';
 import { getSessionItem } from './storage';
 import { clearAllSessionPersistence } from './sessionPersistence';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = API_BASE_URL;
 
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
@@ -22,7 +23,7 @@ export function formatApiError(err: unknown, fallback = 'Request failed'): strin
     return 'Request timed out. Try a smaller video or restart the backend and AI services.';
   }
   if (code === 'ECONNRESET' || err.message.toLowerCase().includes('socket hang up')) {
-    return 'Connection lost to server. Ensure backend (port 8000) and AI service (port 5000) are running.';
+    return 'Connection lost to server. Ensure the backend and AI service are running.';
   }
 
   return String(err.response?.data?.message || err.message || fallback);
@@ -395,8 +396,7 @@ export async function downloadCsv(url: string, filename: string) {
 }
 
 export function getDetectionSnapshotUrl(detectionId: number): string {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-  return `${API_URL}/api/v1/detections/${detectionId}/snapshot`;
+  return `${API_BASE_URL}/api/v1/detections/${detectionId}/snapshot`;
 }
 
 export async function downloadDetectionSnapshot(detection: Detection): Promise<void> {

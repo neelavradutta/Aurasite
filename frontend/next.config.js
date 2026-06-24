@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'aurasite.onrender.com'],
   },
 };
 

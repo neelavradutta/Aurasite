@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     track_buffer: int = 30
     track_match_iou: float = 0.8
     track_thresh: float = 0.5
-    backend_callback_url: str = "http://localhost:8000"
+    backend_callback_url: str = "https://aurasite.onrender.com"
     stream_frame_interval: float = 0.5
 
     class Config:
