@@ -330,6 +330,52 @@ export function getExportVehiclesUrl() {
   return `${API_URL}/api/v1/analytics/export/vehicles`;
 }
 
+export function getExportLiveReportUrl() {
+  return `${API_URL}/api/v1/analytics/export/live`;
+}
+
+export async function downloadLiveReport(
+  history: LiveDetectionFrame[],
+  session?: { mode?: 'camera' | 'source'; source?: string },
+  resolveVehicleLabel?: (result: LiveDetectionFrame | null) => string,
+  resolveVehicleColour?: (result: LiveDetectionFrame | null) => string
+) {
+  const entries = history.map((item) => {
+    const colour = resolveVehicleColour?.(item);
+    return {
+      plate_number: item.plate_number || '',
+      frame_id: item.frame_id,
+      plate_confidence: item.plate_confidence,
+      vehicle_type: resolveVehicleLabel?.(item) || item.vehicle_type || '',
+      vehicle_color: colour && colour !== '--' ? colour : item.vehicle_color ?? null,
+      timestamp: item.timestamp,
+      detection_id: item.detection_id,
+    };
+  });
+
+  const token = getSessionItem<string | null>('auth_token', null);
+  const response = await fetch(getExportLiveReportUrl(), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({
+      entries,
+      mode: session?.mode,
+      source: session?.source,
+    }),
+  });
+  if (!response.ok) throw new Error('Export failed');
+
+  const blob = await response.blob();
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'live-detections-report.xlsx';
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
 export async function downloadFile(url: string, filename: string) {
   const token = getSessionItem<string | null>('auth_token', null);
   const response = await fetch(url, {

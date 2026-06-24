@@ -85,4 +85,22 @@ export const analyticsController = {
       next(error);
     }
   },
+
+  async exportLiveReport(req: Request, res: Response, next: NextFunction) {
+    try {
+      const entries = Array.isArray(req.body?.entries) ? req.body.entries : [];
+      const buffer = await analyticsService.exportLiveVehiclesExcel(entries, {
+        mode: typeof req.body?.mode === 'string' ? req.body.mode : undefined,
+        source: typeof req.body?.source === 'string' ? req.body.source : undefined,
+      });
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      res.setHeader('Content-Disposition', 'attachment; filename="live-detections-report.xlsx"');
+      res.send(buffer);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

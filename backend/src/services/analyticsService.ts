@@ -51,6 +51,251 @@ function cell(value: unknown): string | number {
   return String(value);
 }
 
+function normalizePlateKey(plate: string): string {
+  return plate.toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+export interface LiveExportEntry {
+  plate_number: string;
+  frame_id?: number;
+  plate_confidence?: number;
+  vehicle_type?: string;
+  vehicle_color?: string | null;
+  timestamp?: number;
+  detection_id?: number;
+}
+
+function formatLiveTimestamp(timestamp?: number): string {
+  if (timestamp == null || !Number.isFinite(timestamp)) return '';
+  const ms = timestamp < 1e12 ? timestamp * 1000 : timestamp;
+  return formatDateTime(new Date(ms));
+}
+
+function formatLiveConfidence(confidence?: number): string {
+  if (confidence == null || !Number.isFinite(confidence)) return '';
+  const value = confidence <= 1 ? confidence * 100 : confidence;
+  return `${Math.round(value)}%`;
+}
+
+async function findVehicleForPlate(plateNumber: string): Promise<Vehicle | null> {
+  const direct = plateNumber.toUpperCase().replace(/-/g, '').trim();
+  const normalized = normalizePlateKey(plateNumber);
+  if (!normalized) return null;
+
+  const candidates = await Vehicle.findAll({
+    where: {
+      [Op.or]: [
+        { plate_number: direct },
+        { plate_number: normalized },
+        { plate_number: { [Op.like]: `${normalized}%` } },
+      ],
+    },
+    order: [['last_detected_timestamp', 'DESC']],
+    limit: 10,
+  });
+
+  return (
+    candidates.find((row) => normalizePlateKey(row.plate_number) === normalized) ||
+    candidates.find((row) => normalizePlateKey(row.plate_number).startsWith(normalized)) ||
+    candidates[0] ||
+    null
+  );
+}
+
+function buildVehicleExportRow(
+  vehicle: Vehicle | null,
+  location: CameraLocationPayload | null,
+  timeline: string,
+  live?: LiveExportEntry
+): Record<string, string | number> {
+  const record: Record<string, unknown> = vehicle
+    ? (vehicle.toJSON() as unknown as Record<string, unknown>)
+    : {};
+  const row: Record<string, string | number> = {};
+
+  if (live) {
+    row['Live Detected At'] = formatLiveTimestamp(live.timestamp);
+    row['Live Frame'] = cell(live.frame_id);
+    row['Live Plate Confidence'] = formatLiveConfidence(live.plate_confidence);
+    row['Live Vehicle Type'] = cell(live.vehicle_type);
+    row['Live Vehicle Colour'] = cell(live.vehicle_color);
+    row['Live Detection ID'] = cell(live.detection_id);
+  }
+
+  row['Plate Number'] = cell(live?.plate_number || record.plate_number);
+  row['Detection Count'] = cell(record.detection_count);
+  row['Registration Number'] = cell(record.registration_number);
+  row['Owner Name'] = cell(record.owner_name);
+  row.Work = cell(record.work);
+  row['Contact Number'] = cell(record.owner_contact);
+  row['Email Address'] = cell(record.owner_email);
+  row['Residential Address'] = cell(record.owner_address);
+  row['Driving License'] = cell(record.driving_license);
+  row['Vehicle Type'] = cell(record.vehicle_type || live?.vehicle_type);
+  row['Vehicle Status'] = vehicle ? resolveVehicleStatusLabel(vehicle) : '';
+  row.Colour = cell(record.color || live?.vehicle_color);
+  row.Model = cell(record.model);
+  row['Manufacturing Year'] = cell(record.manufacturing_year);
+  row.Modifications = cell(record.modifications);
+  row['Engine Number'] = cell(record.engine_number);
+  row['Chassis Number'] = cell(record.chassis_number);
+  row['Fuel Type'] = cell(record.fuel_type);
+  row['Insurance Status'] = cell(record.insurance_status);
+  row['Registration Date'] = cell(
+    record.registration_date ? formatDateTime(record.registration_date) : ''
+  );
+  row['First Detected'] = cell(formatDateTime(record.first_detected_timestamp));
+  row['Last Detected'] = cell(formatDateTime(record.last_detected_timestamp));
+  row['Last Seen'] = cell(formatDateTime(record.last_detected_timestamp));
+  row['Violation Count'] = cell(record.violation_count);
+  row['Is Suspicious'] = vehicle?.is_suspicious ? 'Yes' : vehicle ? 'No' : '';
+  row['Status Note'] = cell(record.flagged_reason);
+  row['Recent Location'] = formatLocationExport(location);
+  row['Camera Name'] = cell(location?.camera_name);
+  row['Camera Code'] = cell(location?.camera_code);
+  row['Place Name'] = cell(location?.place_name);
+  row.Latitude = cell(location?.latitude);
+  row.Longitude = cell(location?.longitude);
+  row['Latest Video Source'] = cell(location?.video_source);
+  row['Detection Timeline'] = timeline;
+
+  return row;
+}
+
+const VEHICLE_EXPORT_COLUMN_WIDTHS = [
+  { wch: 20 },
+  { wch: 12 },
+  { wch: 18 },
+  { wch: 14 },
+  { wch: 14 },
+  { wch: 14 },
+  { wch: 14 },
+  { wch: 16 },
+  { wch: 18 },
+  { wch: 22 },
+  { wch: 18 },
+  { wch: 16 },
+  { wch: 28 },
+  { wch: 32 },
+  { wch: 18 },
+  { wch: 14 },
+  { wch: 14 },
+  { wch: 12 },
+  { wch: 18 },
+  { wch: 10 },
+  { wch: 22 },
+  { wch: 18 },
+  { wch: 18 },
+  { wch: 14 },
+  { wch: 16 },
+  { wch: 18 },
+  { wch: 20 },
+  { wch: 20 },
+  { wch: 20 },
+  { wch: 14 },
+  { wch: 14 },
+  { wch: 36 },
+  { wch: 22 },
+  { wch: 14 },
+  { wch: 24 },
+  { wch: 12 },
+  { wch: 12 },
+  { wch: 28 },
+  { wch: 48 },
+];
+
+function buildVehicleWorkbook(
+  rows: Record<string, string | number>[],
+  sheetName: string,
+  emptyMessage: string
+): Buffer {
+  const payload =
+    rows.length > 0 ? rows : [{ Message: emptyMessage }];
+  const worksheet = XLSX.utils.json_to_sheet(payload);
+  worksheet['!cols'] = VEHICLE_EXPORT_COLUMN_WIDTHS;
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' }) as Buffer;
+}
+
+async function loadVehicleExportContext(vehicles: Vehicle[]) {
+  if (vehicles.length === 0) {
+    return {
+      detectionsByVehicle: new Map<number, Detection[]>(),
+      locationBySource: new Map<string, CameraLocationPayload | null>(),
+    };
+  }
+
+  const vehicleIds = vehicles.map((vehicle) => vehicle.id);
+  const detections = await Detection.findAll({
+    where: { vehicle_id: { [Op.in]: vehicleIds } },
+    attributes: ['id', 'vehicle_id', 'detection_timestamp', 'video_source'],
+    order: [['detection_timestamp', 'DESC']],
+  });
+
+  const detectionsByVehicle = new Map<number, Detection[]>();
+  for (const detection of detections) {
+    const vehicleId = detection.vehicle_id;
+    if (vehicleId == null) continue;
+    const bucket = detectionsByVehicle.get(vehicleId) ?? [];
+    if (bucket.length < 20) bucket.push(detection);
+    detectionsByVehicle.set(vehicleId, bucket);
+  }
+
+  const videoSources = new Set<string>();
+  for (const bucket of detectionsByVehicle.values()) {
+    for (const detection of bucket) {
+      const source = detection.video_source?.trim();
+      if (source) videoSources.add(source);
+    }
+  }
+
+  const locationBySource = new Map<string, CameraLocationPayload | null>();
+  await Promise.all(
+    [...videoSources].map(async (source) => {
+      locationBySource.set(source, await cameraService.getLiveLocationByVideoSource(source));
+    })
+  );
+
+  return { detectionsByVehicle, locationBySource };
+}
+
+function resolveExportLocation(
+  vehicle: Vehicle | null,
+  detectionsByVehicle: Map<number, Detection[]>,
+  locationBySource: Map<string, CameraLocationPayload | null>,
+  fallbackVideoSource?: string | null
+): CameraLocationPayload | null {
+  const vehicleDetections = vehicle ? detectionsByVehicle.get(vehicle.id) ?? [] : [];
+  const latestVideoSource =
+    vehicleDetections.find((item) => item.video_source?.trim())?.video_source?.trim() ||
+    fallbackVideoSource?.trim() ||
+    null;
+  if (!latestVideoSource) return null;
+  const location = locationBySource.get(latestVideoSource) ?? null;
+  return location ? { ...location, video_source: latestVideoSource } : null;
+}
+
+function buildDetectionTimeline(
+  vehicle: Vehicle | null,
+  detectionsByVehicle: Map<number, Detection[]>,
+  live?: LiveExportEntry
+): string {
+  const vehicleDetections = vehicle ? detectionsByVehicle.get(vehicle.id) ?? [] : [];
+  if (vehicleDetections.length > 0) {
+    return vehicleDetections
+      .map(
+        (item) =>
+          `${formatDateTime(item.detection_timestamp)} | ${item.video_source?.trim() || 'Detection recorded'}`
+      )
+      .join('; ');
+  }
+  if (live) {
+    return `${formatLiveTimestamp(live.timestamp)} | Live detection`;
+  }
+  return '';
+}
+
 export const analyticsService = {
   async getSummary() {
     const [totalDetections, uniquePlates, avgConfidence, unresolvedAlerts] = await Promise.all([
@@ -213,132 +458,68 @@ export const analyticsService = {
     });
 
     if (vehicles.length === 0) {
-      const workbook = XLSX.utils.book_new();
-      const worksheet = XLSX.utils.aoa_to_sheet([['No vehicles in catalog']]);
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Vehicle Catalog');
-      return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' }) as Buffer;
+      return buildVehicleWorkbook([], 'Vehicle Catalog', 'No vehicles in catalog');
     }
 
-    const vehicleIds = vehicles.map((vehicle) => vehicle.id);
-    const detections = await Detection.findAll({
-      where: { vehicle_id: { [Op.in]: vehicleIds } },
-      attributes: ['id', 'vehicle_id', 'detection_timestamp', 'video_source'],
-      order: [['detection_timestamp', 'DESC']],
-    });
-
-    const detectionsByVehicle = new Map<number, Detection[]>();
-    for (const detection of detections) {
-      const vehicleId = detection.vehicle_id;
-      if (vehicleId == null) continue;
-      const bucket = detectionsByVehicle.get(vehicleId) ?? [];
-      if (bucket.length < 20) bucket.push(detection);
-      detectionsByVehicle.set(vehicleId, bucket);
-    }
-
-    const videoSources = new Set<string>();
-    for (const bucket of detectionsByVehicle.values()) {
-      for (const detection of bucket) {
-        const source = detection.video_source?.trim();
-        if (source) videoSources.add(source);
-      }
-    }
-
-    const locationBySource = new Map<string, CameraLocationPayload | null>();
-    await Promise.all(
-      [...videoSources].map(async (source) => {
-        locationBySource.set(source, await cameraService.getLiveLocationByVideoSource(source));
-      })
-    );
+    const { detectionsByVehicle, locationBySource } = await loadVehicleExportContext(vehicles);
 
     const rows = vehicles.map((vehicle) => {
-      const record = vehicle.toJSON();
-      const vehicleDetections = detectionsByVehicle.get(vehicle.id) ?? [];
-      const latestVideoSource = vehicleDetections.find((item) => item.video_source?.trim())?.video_source?.trim();
-      const location = latestVideoSource ? locationBySource.get(latestVideoSource) ?? null : null;
-      const timeline = vehicleDetections
-        .map(
-          (item) =>
-            `${formatDateTime(item.detection_timestamp)} | ${item.video_source?.trim() || 'Detection recorded'}`
-        )
-        .join('; ');
-
-      return {
-        'Plate Number': cell(record.plate_number),
-        'Detection Count': cell(record.detection_count),
-        'Registration Number': cell(record.registration_number),
-        'Owner Name': cell(record.owner_name),
-        Work: cell(record.work),
-        'Contact Number': cell(record.owner_contact),
-        'Email Address': cell(record.owner_email),
-        'Residential Address': cell(record.owner_address),
-        'Driving License': cell(record.driving_license),
-        'Vehicle Type': cell(record.vehicle_type),
-        'Vehicle Status': resolveVehicleStatusLabel(record),
-        Colour: cell(record.color),
-        Model: cell(record.model),
-        'Manufacturing Year': cell(record.manufacturing_year),
-        Modifications: cell(record.modifications),
-        'Engine Number': cell(record.engine_number),
-        'Chassis Number': cell(record.chassis_number),
-        'Fuel Type': cell(record.fuel_type),
-        'Insurance Status': cell(record.insurance_status),
-        'Registration Date': cell(record.registration_date ? formatDateTime(record.registration_date) : ''),
-        'First Detected': cell(formatDateTime(record.first_detected_timestamp)),
-        'Last Detected': cell(formatDateTime(record.last_detected_timestamp)),
-        'Last Seen': cell(formatDateTime(record.last_detected_timestamp)),
-        'Violation Count': cell(record.violation_count),
-        'Is Suspicious': record.is_suspicious ? 'Yes' : 'No',
-        'Status Note': cell(record.flagged_reason),
-        'Recent Location': formatLocationExport(location),
-        'Camera Name': cell(location?.camera_name),
-        'Camera Code': cell(location?.camera_code),
-        'Place Name': cell(location?.place_name),
-        Latitude: cell(location?.latitude),
-        Longitude: cell(location?.longitude),
-        'Latest Video Source': cell(latestVideoSource),
-        'Detection Timeline': timeline,
-      };
+      const location = resolveExportLocation(vehicle, detectionsByVehicle, locationBySource);
+      const timeline = buildDetectionTimeline(vehicle, detectionsByVehicle);
+      return buildVehicleExportRow(vehicle, location, timeline);
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(rows);
-    worksheet['!cols'] = [
-      { wch: 14 },
-      { wch: 16 },
-      { wch: 18 },
-      { wch: 22 },
-      { wch: 18 },
-      { wch: 16 },
-      { wch: 28 },
-      { wch: 32 },
-      { wch: 18 },
-      { wch: 14 },
-      { wch: 14 },
-      { wch: 12 },
-      { wch: 18 },
-      { wch: 10 },
-      { wch: 22 },
-      { wch: 18 },
-      { wch: 18 },
-      { wch: 14 },
-      { wch: 16 },
-      { wch: 18 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 14 },
-      { wch: 14 },
-      { wch: 36 },
-      { wch: 22 },
-      { wch: 14 },
-      { wch: 24 },
-      { wch: 12 },
-      { wch: 12 },
-      { wch: 28 },
-      { wch: 48 },
-    ];
+    return buildVehicleWorkbook(rows, 'Vehicle Catalog', 'No vehicles in catalog');
+  },
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Vehicle Catalog');
-    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' }) as Buffer;
+  async exportLiveVehiclesExcel(
+    entries: LiveExportEntry[],
+    session?: { mode?: string; source?: string }
+  ): Promise<Buffer> {
+    const uniqueEntries: LiveExportEntry[] = [];
+    const seen = new Set<string>();
+
+    for (const entry of entries) {
+      const key = normalizePlateKey(entry.plate_number || '');
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      uniqueEntries.push({ ...entry, plate_number: entry.plate_number.trim() });
+    }
+
+    if (uniqueEntries.length === 0) {
+      return buildVehicleWorkbook([], 'Live Detections', 'No recent live detections to export');
+    }
+
+    const fallbackVideoSource =
+      session?.mode === 'source' && session.source?.trim()
+        ? session.source.trim()
+        : 'live-camera';
+
+    const vehicles = await Promise.all(
+      uniqueEntries.map((entry) => findVehicleForPlate(entry.plate_number))
+    );
+    const foundVehicles = vehicles.filter((vehicle): vehicle is Vehicle => vehicle != null);
+    const { detectionsByVehicle, locationBySource } = await loadVehicleExportContext(foundVehicles);
+
+    if (!locationBySource.has(fallbackVideoSource)) {
+      locationBySource.set(
+        fallbackVideoSource,
+        await cameraService.getLiveLocationByVideoSource(fallbackVideoSource)
+      );
+    }
+
+    const rows = uniqueEntries.map((entry, index) => {
+      const vehicle = vehicles[index];
+      const location = resolveExportLocation(
+        vehicle,
+        detectionsByVehicle,
+        locationBySource,
+        fallbackVideoSource
+      );
+      const timeline = buildDetectionTimeline(vehicle, detectionsByVehicle, entry);
+      return buildVehicleExportRow(vehicle, location, timeline, entry);
+    });
+
+    return buildVehicleWorkbook(rows, 'Live Detections', 'No recent live detections to export');
   },
 };

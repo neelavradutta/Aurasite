@@ -9,6 +9,7 @@ import StatusBadge from '@/components/shared/StatusBadge';
 import { LiveDetectionFrame } from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
 import { useLiveDetection, useLiveCameraVideo } from '@/hooks/useLiveDetection';
+import { downloadLiveReport } from '@/services/api';
 import { getLiveSnapshotSrc } from '@/utils/liveVideoSource';
 
 const LIVE_HISTORY_VISIBLE = 5;
@@ -69,6 +70,7 @@ export default function LivePage() {
   const [deviceMenuOpen, setDeviceMenuOpen] = useState(false);
   const [previewItem, setPreviewItem] = useState<LiveDetectionFrame | null>(null);
   const [portalMounted, setPortalMounted] = useState(false);
+  const [exportingLive, setExportingLive] = useState(false);
 
   useEffect(() => {
     if (mode !== 'camera' || !deviceId) return;
@@ -197,6 +199,23 @@ export default function LivePage() {
     return 'Select Device';
   }, [deviceId, devices]);
 
+  async function handleExportLiveReport() {
+    if (exportingLive || plateHistory.length === 0) return;
+    setExportingLive(true);
+    try {
+      await downloadLiveReport(
+        plateHistory,
+        { mode, source },
+        resolveVehicleLabel,
+        resolveVehicleColour
+      );
+    } catch {
+      window.alert('Failed to export live report.');
+    } finally {
+      setExportingLive(false);
+    }
+  }
+
   function openDetectionLog(item: LiveDetectionFrame) {
     const plate = item.plate_number?.trim();
     if (!plate) return;
@@ -213,12 +232,26 @@ export default function LivePage() {
 
   return (
     <div className="min-h-screen">
-      <Header liveToolbar={<StatusBadge isScanning={running} className="px-5 py-2" />} />
+      <Header
+        liveToolbar={
+          <Button
+            variant="secondary"
+            onClick={handleExportLiveReport}
+            disabled={exportingLive || plateHistory.length === 0}
+            className="inline-flex h-9 shrink-0 items-center justify-center px-3 py-0"
+          >
+            {exportingLive ? 'Exporting...' : 'Export Live Report'}
+          </Button>
+        }
+      />
       <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
-        <PageTitle
-          title="Live Monitoring"
-          subtitle="Detection from camera devices and live sources"
-        />
+        <div className="flex flex-wrap items-end justify-between gap-5">
+          <PageTitle
+            title="Live Monitoring"
+            subtitle="Detection from camera devices and live sources"
+          />
+          <StatusBadge isScanning={running} className="mr-2 px-5 py-2 sm:mr-4 xl:mr-6" />
+        </div>
 
         <section className="grid items-stretch gap-6 xl:grid-cols-[1.35fr_0.65fr]">
           <div className="glass-panel overflow-hidden rounded-2xl border border-cyber-cyan/20">
@@ -399,7 +432,7 @@ export default function LivePage() {
           </div>
 
           <aside className="glass-panel flex h-full min-h-0 flex-col rounded-2xl border border-cyber-cyan/20 p-5">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex shrink-0 items-center justify-between gap-3">
               <h3 className="font-orbitron text-lg font-semibold text-cyber-cyan neon-text">
                 Recent Live Detections
               </h3>

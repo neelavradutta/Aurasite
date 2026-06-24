@@ -12,5 +12,6 @@ router.get('/vehicles', analyticsController.vehicles);
 router.get('/trends', analyticsController.trends);
 router.get('/export/detections', requireAuth, analyticsController.exportDetections);
 router.get('/export/vehicles', requireAuth, analyticsController.exportVehicles);
+router.post('/export/live', requireAuth, analyticsController.exportLiveReport);
 
 export default router;
