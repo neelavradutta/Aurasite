@@ -12,6 +12,15 @@
     "db:backfill-profiles": "tsx scripts/backfill-vehicle-profiles.ts"
   },
   "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.10.5",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.7",
+    "@types/uuid": "^10.0.0",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -27,21 +36,15 @@
     "sqlite3": "^6.0.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "typescript": "^5.7.3",
     "uuid": "^11.0.5",
     "winston": "^3.17.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/jsonwebtoken": "^9.0.7",
-    "@types/multer": "^1.4.12",
-    "@types/node": "^22.10.5",
-    "@types/swagger-jsdoc": "^6.0.4",
-    "@types/swagger-ui-express": "^4.1.7",
-    "@types/uuid": "^10.0.0",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "tsx": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=20 <25"
   }
 }

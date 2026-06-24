@@ -164,10 +164,10 @@ async function runProcessVideoJob(data: ProcessVideoJob): Promise<unknown> {
   update(0, 'processing', 0, maxFramesOption);
 
   await aiService.startVideoJob(videoPath, {
-    ...(options as Parameters<typeof aiService.startVideoJob>[1]),
+    ...(options ?? {}),
     max_frames: maxFramesOption,
     job_id: jobId,
-  });
+  } as Parameters<typeof aiService.startVideoJob>[1]);
 
   const aiResult = await aiService.waitForDetectJob(jobId, (aiJob) => {
     update(
@@ -189,16 +189,17 @@ async function runProcessVideoJob(data: ProcessVideoJob): Promise<unknown> {
 
   await detectionService.clearDetectionsForVideoSource(videoSource);
 
-  const dashboardPlates = Array.isArray(
-    (aiResult as { dashboard_plates?: Array<Record<string, unknown>> }).dashboard_plates
-  )
-    ? (aiResult as { dashboard_plates: Array<Record<string, unknown>> }).dashboard_plates
+  const aiResultPayload = aiResult as unknown as {
+    dashboard_plates?: Array<Record<string, unknown>>;
+    media_type?: string;
+    detections?: Array<Record<string, unknown>>;
+  };
+  const dashboardPlates = Array.isArray(aiResultPayload.dashboard_plates)
+    ? aiResultPayload.dashboard_plates
     : [];
-  const isImageJob = (aiResult as { media_type?: string }).media_type === 'image';
-  const isVideoJob = (aiResult as { media_type?: string }).media_type === 'video';
-  const allDetections = Array.isArray(aiResult.detections)
-    ? (aiResult.detections as Array<Record<string, unknown>>)
-    : [];
+  const isImageJob = aiResultPayload.media_type === 'image';
+  const isVideoJob = aiResultPayload.media_type === 'video';
+  const allDetections = Array.isArray(aiResultPayload.detections) ? aiResultPayload.detections : [];
 
   const detectionItems = isImageJob
     ? dashboardPlates

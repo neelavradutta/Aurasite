@@ -248,7 +248,7 @@ export const detectionService = {
       let vehicle = await findExistingVehicle(vehiclePlateKey, plateNumber, quality);
       if (vehicle) {
         const profilePatch = generateProfile
-          ? getMissingProfileFields(vehiclePlateKey, vehicle.toJSON() as Record<string, unknown>)
+          ? getMissingProfileFields(vehiclePlateKey, vehicle.toJSON() as unknown as Record<string, unknown>)
           : {};
         await vehicle.update({
           ...profilePatch,

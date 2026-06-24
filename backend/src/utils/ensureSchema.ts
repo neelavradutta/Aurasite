@@ -57,7 +57,7 @@ function resolveDbColumnName(
     return attribute.field;
   }
   if (model.options.underscored) {
-    return Utils.underscore(attributeName);
+    return Utils.underscoredIf(attributeName, true);
   }
   return attributeName;
 }
@@ -70,8 +70,8 @@ function modelColumnNames(model: ModelStatic<Model>): Set<string> {
   );
 }
 
-function buildColumnDefinition(attribute: ModelAttributeColumnOptions): Record<string, unknown> {
-  const columnDef: Record<string, unknown> = {
+function buildColumnDefinition(attribute: ModelAttributeColumnOptions): ModelAttributeColumnOptions {
+  const columnDef: ModelAttributeColumnOptions = {
     type: attribute.type,
     allowNull: attribute.allowNull ?? true,
   };
@@ -217,7 +217,7 @@ async function pruneOrphanColumns(queryInterface: QueryInterface): Promise<void>
         continue;
       }
 
-      const underscored = Utils.underscore(dbColumn);
+      const underscored = Utils.underscoredIf(dbColumn, true);
       if (expected.has(underscored)) {
         try {
           await queryInterface.removeColumn(table, dbColumn);
