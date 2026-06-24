@@ -17,7 +17,7 @@ from services.plate_extractor import (
     encode_plate_snapshot,
     extract_plate_record,
 )
-from services.vehicle_color_service import apply_vehicle_color
+from services.vehicle_color_service import apply_vehicle_color, enrich_records_color_from_snapshot
 from services.ocr_service import recognize_plate, recognize_plate_crop
 from services.plate_format import is_indian_plate, is_indian_plate_partial
 from services.plate_quality import (
@@ -809,6 +809,9 @@ def run_image_detection_pipeline(
         if full_snapshot:
             unique_accepted[0]["dashboard_image_base64"] = full_snapshot
             unique_accepted[0]["snapshot_mode"] = "full_frame_single_plate"
+
+    enrich_records_color_from_snapshot(unique_accepted)
+    enrich_records_color_from_snapshot(log_records)
 
     unique_plates = {plate_key(str(d.get("plate_number", ""))) for d in unique_accepted}
 

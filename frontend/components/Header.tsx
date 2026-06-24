@@ -18,10 +18,11 @@ const navItems = [
 interface HeaderProps {
   detectionToolbar?: ReactNode;
   analyticsToolbar?: ReactNode;
+  vehiclesToolbar?: ReactNode;
   liveToolbar?: ReactNode;
 }
 
-export default function Header({ detectionToolbar, analyticsToolbar, liveToolbar }: HeaderProps = {}) {
+export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToolbar, liveToolbar }: HeaderProps = {}) {
   const router = useRouter();
   const { clearDashboard } = useDashboardStore();
   const { connected } = useSocket();
@@ -34,11 +35,14 @@ export default function Header({ detectionToolbar, analyticsToolbar, liveToolbar
   const isDashboard = router.pathname === '/dashboard';
   const isDetections = router.pathname === '/detections';
   const isAnalytics = router.pathname === '/analytics';
+  const isVehicles = router.pathname === '/vehicles';
   const isLive = router.pathname === '/live';
   const showDetectionActions = isDetections && Boolean(detectionToolbar);
   const showAnalyticsActions = isAnalytics && Boolean(analyticsToolbar);
+  const showVehiclesActions = isVehicles && Boolean(vehiclesToolbar);
   const showLiveActions = isLive && Boolean(liveToolbar);
-  const showPageActions = showDetectionActions || showAnalyticsActions || showLiveActions;
+  const showPageActions =
+    showDetectionActions || showAnalyticsActions || showVehiclesActions || showLiveActions;
   const reserveDashboardActions = token && !isDashboard && !showPageActions;
 
   useEffect(() => {
@@ -94,6 +98,8 @@ export default function Header({ detectionToolbar, analyticsToolbar, liveToolbar
             detectionToolbar
           ) : showAnalyticsActions ? (
             analyticsToolbar
+          ) : showVehiclesActions ? (
+            vehiclesToolbar
           ) : showLiveActions ? (
             liveToolbar
           ) : (

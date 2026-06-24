@@ -5,6 +5,54 @@ import { detectionService } from './detectionService';
 import { emitDetectionsChanged, emitViolationsUpdated, setRealtimeSocket } from '../utils/realtimeEvents';
 import { Server as SocketServer } from 'socket.io';
 
+function normalizePlateKey(plate: string): string {
+  return plate.toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function resolveAiPlate(item: Record<string, unknown>): string {
+  const direct = typeof item.plate_number === 'string' ? item.plate_number : '';
+  const plate = item.plate as { cleaned_text?: string } | undefined;
+  const fromOcr = typeof plate?.cleaned_text === 'string' ? plate.cleaned_text : '';
+  return normalizePlateKey(direct || fromOcr);
+}
+
+function resolveAiColor(item: Record<string, unknown>): string | null {
+  const direct = typeof item.vehicle_color === 'string' ? item.vehicle_color.trim() : '';
+  if (direct) return direct;
+  const vehicle = item.vehicle as { color?: string } | undefined;
+  const nested = typeof vehicle?.color === 'string' ? vehicle.color.trim() : '';
+  return nested || null;
+}
+
+/** Copy best dashboard colour onto per-frame detections (speed needs all frames saved). */
+function mergeVehicleColorsFromDashboard(
+  detections: Array<Record<string, unknown>>,
+  dashboardPlates: Array<Record<string, unknown>>
+): Array<Record<string, unknown>> {
+  const colorByPlate = new Map<string, string>();
+  for (const item of dashboardPlates) {
+    const color = resolveAiColor(item);
+    if (!color) continue;
+    const key = resolveAiPlate(item);
+    if (key) colorByPlate.set(key, color);
+  }
+  if (colorByPlate.size === 0) return detections;
+
+  return detections.map((item) => {
+    if (resolveAiColor(item)) return item;
+    const key = resolveAiPlate(item);
+    const color = key ? colorByPlate.get(key) : null;
+    if (!color) return item;
+
+    const vehicle =
+      item.vehicle && typeof item.vehicle === 'object'
+        ? { ...(item.vehicle as Record<string, unknown>), color }
+        : { color };
+
+    return { ...item, vehicle_color: color, vehicle };
+  });
+}
+
 function formatJobError(error: unknown): string {
   if (axios.isAxiosError(error)) {
     const code = error.code;
@@ -109,15 +157,16 @@ async function runProcessVideoJob(data: ProcessVideoJob): Promise<unknown> {
     : [];
   const isImageJob = (aiResult as { media_type?: string }).media_type === 'image';
   const isVideoJob = (aiResult as { media_type?: string }).media_type === 'video';
+  const allDetections = Array.isArray(aiResult.detections)
+    ? (aiResult.detections as Array<Record<string, unknown>>)
+    : [];
 
   const detectionItems = isImageJob
     ? dashboardPlates
     : isVideoJob
-      ? Array.isArray(aiResult.detections)
-        ? aiResult.detections
-        : []
-      : Array.isArray(aiResult.detections) && aiResult.detections.length > 0
-        ? aiResult.detections
+      ? mergeVehicleColorsFromDashboard(allDetections, dashboardPlates)
+      : allDetections.length > 0
+        ? allDetections
         : dashboardPlates;
 
   const { saved, violationUpdates } = await detectionService.saveAiDetections(

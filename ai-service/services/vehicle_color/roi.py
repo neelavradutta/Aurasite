@@ -8,6 +8,28 @@ import numpy as np
 from services.vehicle_color.config import CONFIG
 
 
+def snapshot_body_mask(shape: tuple[int, int]) -> np.ndarray:
+    """Gentler inset for dashboard snapshot crops (already vehicle-scoped)."""
+    height, width = shape
+    mask = np.zeros((height, width), dtype=np.uint8)
+    x1 = int(width * CONFIG.snapshot_body_inset_x)
+    x2 = int(width * (1.0 - CONFIG.snapshot_body_inset_x))
+    y1 = int(height * CONFIG.snapshot_body_inset_top)
+    y2 = int(height * (1.0 - CONFIG.snapshot_body_inset_bottom))
+    if x2 > x1 and y2 > y1:
+        mask[y1:y2, x1:x2] = 1
+    return mask.astype(bool)
+
+
+def snapshot_paint_mask(lab: np.ndarray, hsv: np.ndarray, body_mask: np.ndarray) -> np.ndarray:
+    flat_hsv = hsv.reshape(-1, 3).astype(np.float32)
+    value = flat_hsv[:, 2]
+    valid = body_mask.reshape(-1) & (value > 28) & (value < 252)
+    if int(np.count_nonzero(valid)) < CONFIG.min_paint_pixels:
+        valid = body_mask.reshape(-1) & (value > 18) & (value < 252)
+    return valid.reshape(lab.shape[:2])
+
+
 def body_band_mask(shape: tuple[int, int]) -> np.ndarray:
     height, width = shape
     mask = np.zeros((height, width), dtype=np.uint8)

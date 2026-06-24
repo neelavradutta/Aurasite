@@ -330,7 +330,7 @@ export function getExportVehiclesUrl() {
   return `${API_URL}/api/v1/analytics/export/vehicles`;
 }
 
-export async function downloadCsv(url: string, filename: string) {
+export async function downloadFile(url: string, filename: string) {
   const token = getSessionItem<string | null>('auth_token', null);
   const response = await fetch(url, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -342,6 +342,10 @@ export async function downloadCsv(url: string, filename: string) {
   link.download = filename;
   link.click();
   URL.revokeObjectURL(link.href);
+}
+
+export async function downloadCsv(url: string, filename: string) {
+  return downloadFile(url, filename);
 }
 
 export function getDetectionSnapshotUrl(detectionId: number): string {

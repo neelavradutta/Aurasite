@@ -9,6 +9,7 @@ from config.settings import settings
 from services.anpr_pipeline import AnprPipeline
 from services import batch_context
 from services.plate_consolidation import consolidate_video_plates
+from services.vehicle_color_service import enrich_records_color_from_snapshot
 from services.video_plate_processing import pick_best_video_dashboard_plates, refine_video_plate_read
 from services.plate_quality import plate_key
 
@@ -298,6 +299,8 @@ class VideoProcessor:
         detections = consolidate_video_plates(detections)
         log_records = [{k: v for k, v in d.items() if k != "_score"} for d in detections]
         unique_accepted = pick_best_video_dashboard_plates(detections)
+        enrich_records_color_from_snapshot(unique_accepted)
+        enrich_records_color_from_snapshot(log_records)
         unique_plates = {plate_key(str(d.get("plate_number", ""))) for d in unique_accepted}
 
         return {

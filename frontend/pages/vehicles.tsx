@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Header from '@/components/Header';
 import PageTitle from '@/components/shared/PageTitle';
+import Button from '@/components/shared/Button';
 import VehicleCatalogCard from '@/components/VehicleCatalogCard';
 import VehicleCatalogModal from '@/components/VehicleCatalogModal';
 import {
@@ -9,6 +10,8 @@ import {
   fetchVehicles,
   searchVehiclesByPlate,
   updateVehicleStatus,
+  downloadFile,
+  getExportVehiclesUrl,
 } from '@/services/api';
 import { Vehicle, VehicleStatus } from '@/types/vehicle';
 import { downloadVehicleReportPdf } from '@/utils/vehicleReportPdf';
@@ -39,6 +42,7 @@ export default function VehiclesPage() {
   const [highlightedVehicleId, setHighlightedVehicleId] = useState<number | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
+  const [exportingCatalog, setExportingCatalog] = useState(false);
   const [restoreInstantClose, setRestoreInstantClose] = useState(false);
   const openedQueryKeyRef = useRef<string | null>(null);
   const restoredReturnRef = useRef(false);
@@ -246,6 +250,18 @@ export default function VehiclesPage() {
     }
   }
 
+  async function handleExportCatalog() {
+    if (exportingCatalog) return;
+    setExportingCatalog(true);
+    try {
+      await downloadFile(getExportVehiclesUrl(), 'vehicle-catalog.xlsx');
+    } catch {
+      window.alert('Failed to export vehicle catalog.');
+    } finally {
+      setExportingCatalog(false);
+    }
+  }
+
   async function handleExport(vehicle: Vehicle) {
     try {
       const detail = vehicle.detections?.length ? vehicle : await fetchVehicleById(vehicle.id);
@@ -271,7 +287,18 @@ export default function VehiclesPage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <Header
+        vehiclesToolbar={
+          <Button
+            variant="secondary"
+            onClick={handleExportCatalog}
+            disabled={exportingCatalog}
+            className="inline-flex h-9 shrink-0 items-center justify-center px-3 py-0"
+          >
+            {exportingCatalog ? 'Exporting...' : 'Export Vehicles Report'}
+          </Button>
+        }
+      />
       <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         <PageTitle title="Vehicle Catalog" subtitle="Registered vehicles from detection history" />
         {vehicles.length === 0 ? (

@@ -15,7 +15,51 @@ from services.vehicle_color.tracking import reset_color_history
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["apply_vehicle_color", "detect_color_from_frame", "reset_color_history"]
+__all__ = [
+    "apply_vehicle_color",
+    "detect_color_from_frame",
+    "enrich_records_color_from_snapshot",
+    "refresh_color_from_snapshot",
+    "reset_color_history",
+]
+
+
+def _attach_color_result(record: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
+    vehicle_hint = record.get("vehicle") if isinstance(record.get("vehicle"), dict) else None
+    vehicle_payload = dict(vehicle_hint) if vehicle_hint else {}
+    vehicle_payload["color"] = result["color"]
+    vehicle_payload["color_confidence"] = result["confidence"]
+    if result.get("vehicle_bbox"):
+        vehicle_payload["color_bbox"] = result["vehicle_bbox"]
+    record["vehicle"] = vehicle_payload
+    record["vehicle_color"] = result["color"]
+    return record
+
+
+def refresh_color_from_snapshot(record: dict[str, Any]) -> dict[str, Any]:
+    """Re-run colour from dashboard JPEG only (no full frame required)."""
+    if not record or record.get("detection_quality") == "invalid":
+        return record
+
+    dashboard = decode_dashboard_snapshot(record)
+    if dashboard is None:
+        return record
+
+    try:
+        result = detect_color_on_crop(dashboard, track_id=None, snapshot_mode=True)
+    except Exception as exc:
+        logger.debug("Snapshot colour refresh failed: %s", exc)
+        result = None
+
+    if not result:
+        return record
+
+    return _attach_color_result(record, result)
+
+
+def enrich_records_color_from_snapshot(records: list[dict[str, Any]]) -> None:
+    for record in records:
+        refresh_color_from_snapshot(record)
 
 
 def apply_vehicle_color(record: dict[str, Any], frame: np.ndarray) -> dict[str, Any]:
@@ -32,7 +76,7 @@ def apply_vehicle_color(record: dict[str, Any], frame: np.ndarray) -> dict[str, 
     try:
         dashboard = decode_dashboard_snapshot(record)
         if dashboard is not None:
-            result = detect_color_on_crop(dashboard, track_id)
+            result = detect_color_on_crop(dashboard, track_id, snapshot_mode=True)
 
         if not result:
             result = detect_color_from_frame(frame, vehicle_hint, anchor_bbox, track_id)
@@ -44,11 +88,4 @@ def apply_vehicle_color(record: dict[str, Any], frame: np.ndarray) -> dict[str, 
         record["vehicle_color"] = None
         return record
 
-    vehicle_payload = dict(vehicle_hint) if vehicle_hint else {}
-    vehicle_payload["color"] = result["color"]
-    vehicle_payload["color_confidence"] = result["confidence"]
-    if result.get("vehicle_bbox"):
-        vehicle_payload["color_bbox"] = result["vehicle_bbox"]
-    record["vehicle"] = vehicle_payload
-    record["vehicle_color"] = result["color"]
-    return record
+    return _attach_color_result(record, result)

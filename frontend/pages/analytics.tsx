@@ -12,12 +12,9 @@ import MostFrequentVehicles, {
 } from '@/components/LeftPanel/MostFrequentVehicles';
 import VehicleSpeedPanel, { VEHICLE_SPEED_ANCHOR } from '@/components/Analytics/VehicleSpeedPanel';
 import ParkingOccupancyPanel from '@/components/Analytics/ParkingOccupancyPanel';
-import Button from '@/components/shared/Button';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
 import { useParkingCapacity } from '@/hooks/useParkingCapacity';
-import { downloadCsv, getExportVehiclesUrl } from '@/services/api';
-
 export default function AnalyticsPage() {
   const { maxCapacity, setMaxCapacity } = useParkingCapacity();
   const { traffic, repeat, frequent, speeds, parking, loading } = useAnalytics(maxCapacity);
@@ -39,18 +36,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="min-h-screen">
-      <Header
-        analyticsToolbar={
-          <Button
-            variant="secondary"
-            onClick={() => downloadCsv(getExportVehiclesUrl(), 'vehicles.csv')}
-            className="inline-flex h-9 shrink-0 items-center justify-center px-3 py-0"
-          >
-            Export Vehicles Report
-          </Button>
-        }
-      />
-      <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
+      <Header />      <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         {loading ? (
           <div className="glass-panel flex min-h-[24rem] items-center justify-center rounded-xl border border-dashed border-white/10">
             <p className="text-sm text-slate-500">Loading analytics...</p>

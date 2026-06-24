@@ -99,6 +99,27 @@ def histogram_dominant(hsv_pixels: np.ndarray) -> tuple[str, float, float] | Non
     return name, float(confidence), peak_weight
 
 
+def majority_vote_dominant(lab_pixels: np.ndarray, hsv_pixels: np.ndarray) -> tuple[str, float] | None:
+    if lab_pixels.shape[0] < 12:
+        return None
+
+    step = max(1, lab_pixels.shape[0] // 600)
+    votes: dict[str, float] = {}
+    for idx in range(0, lab_pixels.shape[0], step):
+        name, hue_score = classify_centroid(lab_pixels[idx], hsv_pixels[idx])
+        votes[name] = votes.get(name, 0.0) + hue_score
+
+    if not votes:
+        return None
+
+    best_name = max(votes, key=votes.get)
+    total = float(sum(votes.values()))
+    confidence = votes[best_name] / max(total, 1e-6)
+    if confidence < 0.18:
+        return None
+    return best_name, min(1.0, confidence)
+
+
 def fuse_extractions(
     kmeans_result: tuple[str, float, float] | None,
     histogram_result: tuple[str, float, float] | None,
