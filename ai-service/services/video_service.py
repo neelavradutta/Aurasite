@@ -9,6 +9,7 @@ from config.settings import settings
 from services.anpr_pipeline import AnprPipeline
 from services import batch_context
 from services.plate_consolidation import consolidate_video_plates
+from services.vehicle_brand_service import enrich_records_brand_from_pool
 from services.vehicle_color_service import enrich_records_color_from_snapshot
 from services.video_plate_processing import pick_best_video_dashboard_plates, refine_video_plate_read
 from services.plate_quality import plate_key
@@ -301,6 +302,8 @@ class VideoProcessor:
         unique_accepted = pick_best_video_dashboard_plates(detections)
         enrich_records_color_from_snapshot(unique_accepted)
         enrich_records_color_from_snapshot(log_records)
+        enrich_records_brand_from_pool(unique_accepted, detections)
+        enrich_records_brand_from_pool(log_records, detections)
         unique_plates = {plate_key(str(d.get("plate_number", ""))) for d in unique_accepted}
 
         return {

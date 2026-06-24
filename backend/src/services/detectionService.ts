@@ -76,6 +76,16 @@ function resolveDetectedColor(item: AiDetectionItem): string | null {
   return null;
 }
 
+function resolveDetectedBrand(item: AiDetectionItem): string | null {
+  const direct = item.vehicle_brand?.trim();
+  if (direct) return direct;
+  const modelField = typeof item.model === 'string' ? item.model.trim() : '';
+  if (modelField) return modelField;
+  const nestedBrand = item.vehicle?.brand?.trim();
+  if (nestedBrand) return nestedBrand;
+  return null;
+}
+
 function normalizePlateKey(plate: string): string {
   return plate.toUpperCase().replace(/[^A-Z0-9]/g, '');
 }
@@ -130,6 +140,7 @@ interface AiDetectionItem {
     confidence?: number;
     bbox?: number[];
     color?: string;
+    brand?: string;
   };
   plate?: {
     cleaned_text?: string;
@@ -141,6 +152,9 @@ interface AiDetectionItem {
   track_id?: string;
   is_repeat_detection?: boolean;
   vehicle_color?: string | null;
+  vehicle_brand?: string | null;
+  vehicle_brand_confidence?: number | null;
+  model?: string | null;
 }
 
 export const detectionService = {
@@ -229,6 +243,7 @@ export const detectionService = {
       const generateProfile = shouldGenerateVehicleProfile(vehiclePlateKey, plateNumber, quality);
 
       const detectedColor = resolveDetectedColor(item);
+      const detectedBrand = resolveDetectedBrand(item);
 
       let vehicle = await findExistingVehicle(vehiclePlateKey, plateNumber, quality);
       if (vehicle) {
@@ -241,17 +256,20 @@ export const detectionService = {
           detection_count: vehicle.detection_count + 1,
           vehicle_type: item.vehicle?.class_name || vehicle.vehicle_type || profilePatch.vehicle_type,
           ...(detectedColor ? { color: detectedColor } : {}),
+          ...(detectedBrand ? { model: detectedBrand } : {}),
         });
       } else {
         const profile = generateProfile ? generateVehicleProfile(vehiclePlateKey) : null;
+        const { model: _profileModel, ...profileWithoutModel } = profile || {};
         vehicle = await Vehicle.create({
           plate_number: vehiclePlateKey,
           vehicle_type: item.vehicle?.class_name || profile?.vehicle_type || 'unknown',
           first_detected_timestamp: new Date(),
           last_detected_timestamp: new Date(),
           violation_count: 0,
-          ...(profile || {}),
+          ...(profileWithoutModel || {}),
           ...(detectedColor ? { color: detectedColor } : {}),
+          model: detectedBrand || _profileModel || null,
           ...(generateProfile ? { registration_date: randomRegistrationDate() } : {}),
         });
       }

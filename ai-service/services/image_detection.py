@@ -17,6 +17,7 @@ from services.plate_extractor import (
     encode_plate_snapshot,
     extract_plate_record,
 )
+from services.vehicle_brand_service import apply_vehicle_brand, enrich_records_brand_from_frame
 from services.vehicle_color_service import apply_vehicle_color, enrich_records_color_from_snapshot
 from services.ocr_service import recognize_plate, recognize_plate_crop
 from services.plate_format import is_indian_plate, is_indian_plate_partial
@@ -266,7 +267,7 @@ def _extract_image_plate_record(
     if not refined_text or not _is_valid_image_plate_read(refined_text):
         if record.get("detection_quality") == "accepted":
             record["detection_quality"] = "partial"
-        return apply_vehicle_color(record, frame)
+        return apply_vehicle_brand(apply_vehicle_color(record, frame), frame)
 
     if refined_text != plate_key(str(record.get("plate_number", ""))):
         plate_info = dict(record.get("plate") or {})
@@ -282,7 +283,7 @@ def _extract_image_plate_record(
         record["plate"] = plate_info
         record["detection_quality"] = quality
 
-    return apply_vehicle_color(record, frame)
+    return apply_vehicle_brand(apply_vehicle_color(record, frame), frame)
 
 
 def _refine_oversized_plate_bbox(bbox: list[int]) -> list[int]:
@@ -812,6 +813,8 @@ def run_image_detection_pipeline(
 
     enrich_records_color_from_snapshot(unique_accepted)
     enrich_records_color_from_snapshot(log_records)
+    enrich_records_brand_from_frame(unique_accepted, frame)
+    enrich_records_brand_from_frame(log_records, frame)
 
     unique_plates = {plate_key(str(d.get("plate_number", ""))) for d in unique_accepted}
 

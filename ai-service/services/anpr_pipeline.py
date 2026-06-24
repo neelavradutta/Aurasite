@@ -8,6 +8,7 @@ from config.settings import settings
 from services.detection_service import detect_vehicles
 from services.plate_detection_service import detect_plates, is_plate_model_ready
 from services.plate_extractor import extract_plate_record
+from services.vehicle_brand_service import apply_vehicle_brand
 from services.vehicle_color_service import apply_vehicle_color
 from services.tracker import ByteTracker
 
@@ -197,7 +198,8 @@ class AnprPipeline:
                 min_conf,
             )
             if record:
-                results.append(apply_vehicle_color(record, frame))
+                enriched = apply_vehicle_color(record, frame)
+                results.append(apply_vehicle_brand(enriched, frame))
 
         return results
 
@@ -236,6 +238,7 @@ class AnprPipeline:
             slim = {k: v for k, v in best.items() if k != "_score"}
             if live_mode:
                 slim.pop("plate_image_base64", None)
+                slim.pop("logo_image_base64", None)
                 slim.pop("plate_detection", None)
             payload.update(slim)
         return payload

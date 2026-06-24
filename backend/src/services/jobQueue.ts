@@ -24,6 +24,16 @@ function resolveAiColor(item: Record<string, unknown>): string | null {
   return nested || null;
 }
 
+function resolveAiBrand(item: Record<string, unknown>): string | null {
+  const direct = typeof item.vehicle_brand === 'string' ? item.vehicle_brand.trim() : '';
+  if (direct) return direct;
+  const model = typeof item.model === 'string' ? item.model.trim() : '';
+  if (model) return model;
+  const vehicle = item.vehicle as { brand?: string } | undefined;
+  const nested = typeof vehicle?.brand === 'string' ? vehicle.brand.trim() : '';
+  return nested || null;
+}
+
 /** Copy best dashboard colour onto per-frame detections (speed needs all frames saved). */
 function mergeVehicleColorsFromDashboard(
   detections: Array<Record<string, unknown>>,
@@ -50,6 +60,35 @@ function mergeVehicleColorsFromDashboard(
         : { color };
 
     return { ...item, vehicle_color: color, vehicle };
+  });
+}
+
+/** Copy best dashboard brand onto per-frame detections for vehicle.model persistence. */
+function mergeVehicleBrandsFromDashboard(
+  detections: Array<Record<string, unknown>>,
+  dashboardPlates: Array<Record<string, unknown>>
+): Array<Record<string, unknown>> {
+  const brandByPlate = new Map<string, string>();
+  for (const item of dashboardPlates) {
+    const brand = resolveAiBrand(item);
+    if (!brand) continue;
+    const key = resolveAiPlate(item);
+    if (key) brandByPlate.set(key, brand);
+  }
+  if (brandByPlate.size === 0) return detections;
+
+  return detections.map((item) => {
+    if (resolveAiBrand(item)) return item;
+    const key = resolveAiPlate(item);
+    const brand = key ? brandByPlate.get(key) : null;
+    if (!brand) return item;
+
+    const vehicle =
+      item.vehicle && typeof item.vehicle === 'object'
+        ? { ...(item.vehicle as Record<string, unknown>), brand }
+        : { brand };
+
+    return { ...item, vehicle_brand: brand, model: brand, vehicle };
   });
 }
 
@@ -164,7 +203,10 @@ async function runProcessVideoJob(data: ProcessVideoJob): Promise<unknown> {
   const detectionItems = isImageJob
     ? dashboardPlates
     : isVideoJob
-      ? mergeVehicleColorsFromDashboard(allDetections, dashboardPlates)
+      ? mergeVehicleBrandsFromDashboard(
+          mergeVehicleColorsFromDashboard(allDetections, dashboardPlates),
+          dashboardPlates
+        )
       : allDetections.length > 0
         ? allDetections
         : dashboardPlates;

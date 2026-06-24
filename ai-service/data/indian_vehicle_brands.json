@@ -1,0 +1,15 @@
+{
+  "reference_image": "indian_vehicle_brands_reference.png",
+  "grid": { "columns": 12, "rows": 9, "logo_height_fraction": 0.58 },
+  "brands": [
+    ["Maruti Suzuki", "Hyundai Motor India", "Tata Motors", "Mahindra & Mahindra", "Toyota Kirloskar Motor", "Honda Cars India", "Kia India", "MG Motor India", "Renault India", "Volkswagen India", "Skoda Auto India", "Nissan India"],
+    ["Citroen India", "Jeep India", "BMW India", "Mercedes-Benz India", "Audi India", "Volvo Car India", "Lexus India", "Jaguar Land Rover India", "Land Rover", "Jaguar", "Mini", null],
+    ["Porsche India", "Ferrari", "Lamborghini", "Bentley Motors", "Rolls-Royce Motor Cars", "Maserati", "BYD India", "Tesla", "VinFast", "Fiat India", "Ford India", "Chevrolet India"],
+    ["Opel India", "Daewoo Motors", "Mitsubishi Motors India", "Datsun", "SsangYong", "Hindustan Motors", "Premier Automobiles", "Standard Motor Products of India", "Hero MotoCorp", "Honda Motorcycle & Scooter India", "TVS Motor Company", "Bajaj Auto"],
+    ["Royal Enfield", "Yamaha Motor India", "Suzuki Motorcycle India", "KTM India", "Kawasaki India", "Triumph Motorcycles India", "Harley-Davidson", "Ducati", "BMW Motorrad", "Aprilia", "Vespa", "Moto Guzzi"],
+    ["Benelli", "CFMOTO", "MV Agusta", "Indian Motorcycle", "BSA Motorcycles", "Yezdi", "Jawa", "Ather Energy", "Ola Electric", "Simple Energy", "River", "Ultraviolette Automotive"],
+    ["Oben Electric", "Vida", "Ampere Vehicles", "Bounce Infinity", "Okaya EV", "Lectrix EV", "Pure EV", "Tork Motors", "Ashok Leyland", "Tata Motors", "Eicher Motors", "BharatBenz"],
+    ["Force Motors", "Mahindra Truck and Bus", "SML Isuzu", "Isuzu Motors India", "Volvo Trucks", "Scania India", "MAN Truck & Bus", "Daimler Truck", "Piaggio Vehicles", "Atul Auto", "Bajaj Auto", "Mahindra Last Mile Mobility"],
+    ["TVS Motor Company", "YC Electric", "Eicher Motors", "Omega Seiki Mobility", "Altigreen Propulsion Labs", "Euler Motors", null, null, null, null, null, null]
+  ]
+}
