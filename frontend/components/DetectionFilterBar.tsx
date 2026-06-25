@@ -116,7 +116,7 @@ export default function DetectionFilterBar({
   }
 
   return (
-    <div className="ml-14 flex w-[54rem] max-w-full items-center gap-3">
+    <div className="detection-filter-bar ml-14 flex w-[54rem] max-w-full items-center gap-3">
       <input
         type="text"
         value={searchQuery}

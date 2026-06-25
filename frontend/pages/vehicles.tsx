@@ -299,7 +299,7 @@ export default function VehiclesPage() {
           </Button>
         }
       />
-      <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
+      <main className="mobile-page-main mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         <PageTitle title="Vehicle Catalog" subtitle="Registered vehicles from detection history" />
         {vehicles.length === 0 ? (
           <div className="glass-panel flex h-40 items-center justify-center rounded-xl border border-dashed border-white/10">

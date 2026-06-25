@@ -307,14 +307,14 @@ export default function DashboardPage() {
         />
       )}
       <Header />
-      <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
+      <main className="mobile-page-main mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         <PageTitle title="Operations Dashboard" />
 
         <KPICards summary={summary} />
 
         {/* Analytics row — fixed row heights so panels stay the same in input vs results mode */}
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-12 xl:grid-rows-[27.5rem_27.5rem] xl:items-stretch">
-          <div className="flex h-[27.5rem] min-h-[27.5rem] max-h-[27.5rem] shrink-0 flex-col overflow-hidden xl:col-span-3 xl:row-start-1">
+          <div className="dashboard-panel-slot flex shrink-0 flex-col overflow-hidden xl:col-span-3 xl:row-start-1 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
             <MostFrequentVehicles
               vehicles={frequent}
               size="lg"
@@ -322,20 +322,20 @@ export default function DashboardPage() {
               platesOnly
               fillHeight
               href={`/analytics#${MOST_FREQUENT_VEHICLES_ANCHOR}`}
-              className="!h-[27.5rem] !min-h-[27.5rem] !max-h-[27.5rem] !shrink-0"
+              className="xl:!h-[27.5rem] xl:!min-h-[27.5rem] xl:!max-h-[27.5rem] xl:!shrink-0"
             />
           </div>
 
-          <div className="flex h-[27.5rem] min-h-[27.5rem] max-h-[27.5rem] shrink-0 flex-col overflow-hidden xl:col-span-5 xl:row-start-1">
+          <div className="dashboard-panel-slot flex shrink-0 flex-col overflow-hidden xl:col-span-5 xl:row-start-1 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
             <ConfidenceHeatmap
               key={confidenceHeatmapKey}
               data={confidence}
               compact
-              className="!h-[27.5rem] !min-h-[27.5rem] !max-h-[27.5rem] !shrink-0"
+              className="xl:!h-[27.5rem] xl:!min-h-[27.5rem] xl:!max-h-[27.5rem] xl:!shrink-0"
             />
           </div>
 
-          <div className="flex h-[27.5rem] min-h-[27.5rem] max-h-[27.5rem] shrink-0 flex-col overflow-hidden xl:col-span-4 xl:row-start-1">
+          <div className="dashboard-panel-slot flex shrink-0 flex-col overflow-hidden xl:col-span-4 xl:row-start-1 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
             <VideoInputPanel
               uploading={uploading}
               uploadError={uploadError}
@@ -344,7 +344,7 @@ export default function DashboardPage() {
             />
           </div>
 
-          <div className="h-[27.5rem] min-h-[27.5rem] max-h-[27.5rem] shrink-0 overflow-hidden xl:col-span-3 xl:row-start-2">
+          <div className="dashboard-panel-slot h-auto min-h-0 shrink-0 overflow-hidden xl:col-span-3 xl:row-start-2 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
             <PeakTrafficChart
               key={peakTrafficKey}
               data={traffic}
@@ -356,11 +356,11 @@ export default function DashboardPage() {
             />
           </div>
 
-          <div className="h-[27.5rem] min-h-[27.5rem] max-h-[27.5rem] shrink-0 overflow-hidden xl:col-span-5 xl:row-start-2">
+          <div className="dashboard-panel-slot h-auto min-h-0 shrink-0 overflow-hidden xl:col-span-5 xl:row-start-2 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
             <SuspiciousVehiclesSection vehicles={suspicious} fillHeight className="h-full min-h-0 max-h-full" />
           </div>
 
-          <div className="grid h-[27.5rem] min-h-[27.5rem] max-h-[27.5rem] shrink-0 grid-rows-[13rem_minmax(0,1fr)] gap-3 overflow-hidden xl:col-span-4 xl:row-start-2">
+          <div className="dashboard-panel-slot dashboard-speed-repeat grid shrink-0 gap-3 overflow-hidden xl:col-span-4 xl:row-start-2 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem] xl:grid-rows-[13rem_minmax(0,1fr)]">
             <VehicleSpeedPanel
               readings={speeds}
               limit={3}
@@ -380,11 +380,11 @@ export default function DashboardPage() {
 
         {/* Detection row — matched height; plates empty area + live feed share bottom line */}
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-12 xl:grid-rows-[44rem]">
-          <div className="h-[44rem] min-h-[44rem] max-h-[44rem] shrink-0 overflow-hidden xl:col-span-8">
+          <div className="dashboard-panel-slot dashboard-panel-slot--plates h-auto min-h-0 shrink-0 overflow-hidden xl:col-span-8 xl:h-[44rem] xl:min-h-[44rem] xl:max-h-[44rem]">
             <PlateCardsGrid detections={dashboardPlates} fillHeight selectToPreview className="h-full min-h-0 max-h-full" />
           </div>
 
-          <div className="flex h-[44rem] min-h-[44rem] max-h-[44rem] shrink-0 flex-col gap-3 overflow-hidden xl:col-span-4">
+          <div className="dashboard-panel-slot dashboard-panel-slot--side flex shrink-0 flex-col gap-3 overflow-hidden xl:col-span-4 xl:h-[44rem] xl:min-h-[44rem] xl:max-h-[44rem]">
             <SelectedPlatePanel />
             <LiveFeedLaunchCard />
           </div>

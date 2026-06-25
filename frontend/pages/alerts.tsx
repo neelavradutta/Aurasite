@@ -29,7 +29,7 @@ export default function AlertsPage() {
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="mx-auto max-w-[1200px] space-y-4 px-6 py-6">
+      <main className="mobile-page-main mx-auto max-w-[1200px] space-y-4 px-6 py-6">
         <PageTitle title="Alert Management" subtitle="Review and resolve system alerts" />
         {alerts.map((alert) => (
           <div key={alert.id} className="glass-panel flex items-center justify-between rounded-xl p-4">

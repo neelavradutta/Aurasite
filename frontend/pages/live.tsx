@@ -244,7 +244,7 @@ export default function LivePage() {
           </Button>
         }
       />
-      <main className="mx-auto max-w-[1920px] space-y-6 px-6 py-6">
+      <main className="mobile-page-main mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         <div className="flex flex-wrap items-end justify-between gap-5">
           <PageTitle
             title="Live Monitoring"
@@ -253,7 +253,7 @@ export default function LivePage() {
           <StatusBadge isScanning={running} className="mr-2 px-5 py-2 sm:mr-4 xl:mr-6" />
         </div>
 
-        <section className="grid items-stretch gap-6 xl:grid-cols-[1.35fr_0.65fr]">
+        <section className="live-page-grid grid items-stretch gap-6 xl:grid-cols-[1.35fr_0.65fr]">
           <div className="glass-panel overflow-hidden rounded-2xl border border-cyber-cyan/20">
             <div className="border-b border-cyber-cyan/15 px-5 py-4">
               <div className="grid items-center gap-5 lg:grid-cols-[1fr_18rem]">
@@ -454,7 +454,7 @@ export default function LivePage() {
                 </div>
               ) : (
                 <div
-                  className="space-y-3 overflow-y-auto overscroll-contain pr-1 [scrollbar-color:rgba(0,247,255,0.45)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-cyber-cyan/45"
+                  className="live-history-panel space-y-3 overflow-y-auto overscroll-contain pr-1 [scrollbar-color:rgba(0,247,255,0.45)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-cyber-cyan/45"
                   style={{ maxHeight: LIVE_HISTORY_SCROLL_MAX }}
                 >
                   {plateHistory.map((item, index) => (

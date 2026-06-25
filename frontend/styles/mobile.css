@@ -1,0 +1,349 @@
+/**
+ * Mobile / tablet only — desktop (1280px+) is untouched.
+ * Matches Tailwind `xl` breakpoint.
+ */
+@media (max-width: 1279px) {
+  /* ── Page shell ── */
+  .mobile-page-main {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  /* ── Header ── */
+  header.glass-panel {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+
+  header.glass-panel > div {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 0.75rem !important;
+  }
+
+  header.glass-panel h1 {
+    font-size: 1rem !important;
+  }
+
+  header.glass-panel p.text-xs {
+    display: none;
+  }
+
+  header.glass-panel .flex.items-center.gap-3 > div:last-child p {
+    display: none;
+  }
+
+  header.glass-panel .flex.items-center.justify-end {
+    gap: 0.5rem !important;
+  }
+
+  header.glass-panel .flex.items-center.justify-end button,
+  header.glass-panel .flex.items-center.justify-end a {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* ── Mobile nav drawer ── */
+  .mobile-nav {
+    position: relative;
+    z-index: 60;
+  }
+
+  .mobile-nav__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(0, 247, 255, 0.35);
+    background: rgba(0, 247, 255, 0.08);
+    color: #00f7ff;
+  }
+
+  .mobile-nav__bars,
+  .mobile-nav__bars::before,
+  .mobile-nav__bars::after {
+    display: block;
+    width: 1.125rem;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    position: relative;
+  }
+
+  .mobile-nav__bars::before,
+  .mobile-nav__bars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .mobile-nav__bars::before {
+    top: -6px;
+  }
+
+  .mobile-nav__bars::after {
+    top: 6px;
+  }
+
+  .mobile-nav__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    border: 0;
+    background: rgba(5, 8, 22, 0.72);
+    backdrop-filter: blur(4px);
+  }
+
+  .mobile-nav__drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    width: min(18rem, 88vw);
+    height: 100dvh;
+    padding: 1.25rem 1rem 1.5rem;
+    background: linear-gradient(180deg, #0c1230 0%, #070a1c 100%);
+    border-left: 1px solid rgba(0, 247, 255, 0.2);
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  .mobile-nav__drawer--open {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .mobile-nav__title {
+    margin-bottom: 1rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+
+  .mobile-nav__links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mobile-nav__link {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .mobile-nav__link--active {
+    background: rgba(0, 247, 255, 0.12);
+    color: #00f7ff;
+    box-shadow: 0 0 20px rgba(0, 247, 255, 0.15);
+  }
+
+  .mobile-nav__footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .mobile-nav__user {
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    color: #94a3b8;
+  }
+
+  .mobile-nav__logout {
+    width: 100%;
+    min-height: 2.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 0, 110, 0.35);
+    background: transparent;
+    color: #ff006e;
+    font-size: 0.875rem;
+  }
+
+  /* ── Dashboard panels ── */
+  .dashboard-panel-slot {
+    height: auto !important;
+    min-height: 14rem !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .dashboard-panel-slot--tall {
+    min-height: 18rem !important;
+  }
+
+  .dashboard-panel-slot--plates {
+    min-height: 22rem !important;
+  }
+
+  .dashboard-panel-slot--side {
+    min-height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .dashboard-speed-repeat {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    gap: 0.75rem !important;
+    grid-template-rows: none !important;
+  }
+
+  .dashboard-speed-repeat > * {
+    min-height: 12rem !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* ── Detection log page ── */
+  .mobile-detection-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .detection-filter-bar {
+    margin-left: 0 !important;
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+
+  .detection-filter-bar input {
+    min-height: 2.75rem;
+  }
+
+  .detection-filter-bar .relative.shrink-0 {
+    width: 100%;
+  }
+
+  .detection-filter-bar .relative.shrink-0 > button {
+    width: 100%;
+    min-height: 2.75rem;
+  }
+
+  .detection-filter-bar .absolute.right-0.top-full {
+    left: 0 !important;
+    right: 0 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .detection-filter-bar .absolute.right-0.top-full .flex.items-stretch {
+    flex-direction: column !important;
+  }
+
+  .detection-filter-bar .absolute.right-0.top-full .w-px {
+    display: none !important;
+  }
+
+  .detection-filter-bar .absolute.right-0.top-full > .flex > div {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .mobile-detection-remove {
+    width: 100% !important;
+    min-height: 2.75rem !important;
+  }
+
+  /* ── Tables ── */
+  .glass-panel .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .glass-panel table {
+    min-width: 44rem;
+  }
+
+  .glass-panel th,
+  .glass-panel td {
+    padding-left: 0.625rem !important;
+    padding-right: 0.625rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* ── Vehicle modal ── */
+  .vehicle-modal-overlay {
+    padding: 0.75rem !important;
+    align-items: flex-end !important;
+  }
+
+  .vehicle-modal-overlay__panel,
+  .vehicle-modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92dvh !important;
+    overflow-y: auto !important;
+    border-radius: 1rem 1rem 0 0 !important;
+  }
+
+  .neural-satellite,
+  .neural-satellite-tl,
+  .neural-satellite-br {
+    display: none !important;
+  }
+
+  /* ── Live page ── */
+  .live-page-grid > .glass-panel {
+    min-height: 16rem;
+  }
+
+  .live-history-panel {
+    max-height: none !important;
+  }
+
+  /* ── Login ── */
+  .anpr-access-portal__container {
+    padding: 1rem !important;
+  }
+
+  .anpr-access-portal__card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1.25rem !important;
+  }
+
+  /* ── Touch targets ── */
+  button,
+  a.rounded-md,
+  .glass-panel label,
+  input,
+  select {
+    min-height: 2.75rem;
+  }
+
+  /* ── Page titles ── */
+  .mobile-page-title h2 {
+    font-size: 1.35rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .mobile-page-title p {
+    font-size: 0.8rem !important;
+  }
+}

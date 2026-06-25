@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useSocket } from '@/hooks/useSocket';
 import AurasiteBrandOverlay from '@/components/AurasiteBrandOverlay';
 import AurasiteIconTrigger from '@/components/AurasiteIconTrigger';
+import MobileNav from '@/components/MobileNav';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard' },
@@ -72,21 +73,24 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
           </div>
         </div>
 
-        <nav className="hidden items-center gap-1 lg:flex">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`rounded-md px-3 py-2 text-sm transition ${
-                router.pathname === item.href
-                  ? 'bg-cyber-cyan/15 text-cyber-cyan shadow-neon'
-                  : 'text-slate-300 hover:bg-white/5 hover:text-cyber-cyan'
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex items-center justify-center">
+          <nav className="hidden items-center gap-1 lg:flex">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`rounded-md px-3 py-2 text-sm transition ${
+                  router.pathname === item.href
+                    ? 'bg-cyber-cyan/15 text-cyber-cyan shadow-neon'
+                    : 'text-slate-300 hover:bg-white/5 hover:text-cyber-cyan'
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <MobileNav />
+        </div>
 
         <div
           className={`flex items-center justify-end gap-3 text-sm ${
