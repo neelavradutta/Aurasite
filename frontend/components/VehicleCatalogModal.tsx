@@ -225,7 +225,7 @@ export default function VehicleCatalogModal({
     return () => document.removeEventListener('mousedown', handlePointerDown);
   }, [detailsEditing, isRendered, exitDetailsEditing]);
 
-  if (!mounted || !isRendered) return null;
+  if (!mounted || !isRendered || !displayVehicle) return null;
 
   const isUnreadable = isUnreadablePlate(displayVehicle.plate_number);
   const currentStatus = getVehicleStatus(displayVehicle);

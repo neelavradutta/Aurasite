@@ -122,15 +122,15 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const context = canvas.getContext('2d');
+    if (!context) return;
 
     const dpr = Math.max(2, window.devicePixelRatio || 1);
     canvas.width = size * dpr;
     canvas.height = size * dpr;
 
     const scale = size / CANVAS_SIZE;
-    ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+    context.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
 
     const cx = CANVAS_SIZE / 2;
     const cy = CANVAS_SIZE / 2;
@@ -141,34 +141,36 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
     const particles = createParticles(cx, cy);
 
     function renderFrame() {
+      if (!context) return;
+
       time += 0.03;
 
-      const bgGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, CANVAS_SIZE * 0.72);
+      const bgGrad = context.createRadialGradient(cx, cy, 10, cx, cy, CANVAS_SIZE * 0.72);
       bgGrad.addColorStop(0, '#0d1330');
       bgGrad.addColorStop(0.5, '#070814');
       bgGrad.addColorStop(1, '#11051c');
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      context.fillStyle = bgGrad;
+      context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-      ctx.lineWidth = 1.5;
+      context.lineWidth = 1.5;
       circuits.forEach((circuit) => {
         const pulseAlpha = circuit.alpha * (1 + 0.4 * Math.sin(time * 2 + circuit.phase));
-        ctx.strokeStyle = `rgba(0, 180, 255, ${pulseAlpha})`;
-        ctx.beginPath();
-        ctx.moveTo(circuit.points[0].x, circuit.points[0].y);
+        context.strokeStyle = `rgba(0, 180, 255, ${pulseAlpha})`;
+        context.beginPath();
+        context.moveTo(circuit.points[0].x, circuit.points[0].y);
         for (let i = 1; i < circuit.points.length; i++) {
-          ctx.lineTo(circuit.points[i].x, circuit.points[i].y);
+          context.lineTo(circuit.points[i].x, circuit.points[i].y);
         }
-        ctx.stroke();
+        context.stroke();
       });
 
-      ctx.globalCompositeOperation = 'screen';
+      context.globalCompositeOperation = 'screen';
       particles.forEach((particle) => {
         particle.update();
-        particle.draw(ctx);
+        particle.draw(context);
       });
 
-      const grad = ctx.createLinearGradient(cx - 130, cy - 130, cx + 130, cy + 130);
+      const grad = context.createLinearGradient(cx - 130, cy - 130, cx + 130, cy + 130);
       grad.addColorStop(0, '#00ffaa');
       grad.addColorStop(0.4, '#00f3ff');
       grad.addColorStop(1, '#0044ff');
@@ -182,27 +184,27 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
       const pulseIntensity = 1 + 0.05 * Math.sin(time * 2.5);
 
       passes.forEach((pass) => {
-        ctx.save();
-        ctx.strokeStyle = grad;
-        ctx.globalAlpha = pass.opacity;
-        ctx.shadowColor = '#00f3ff';
-        ctx.shadowBlur = pass.blur * pulseIntensity;
-        ctx.lineWidth = (pass.width + 2) * 1.1;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 125, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.lineWidth = pass.width * 0.6;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 112, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.lineWidth = pass.width * 1.3;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        drawA(ctx, cx, cy, pulseIntensity);
-        ctx.restore();
+        context.save();
+        context.strokeStyle = grad;
+        context.globalAlpha = pass.opacity;
+        context.shadowColor = '#00f3ff';
+        context.shadowBlur = pass.blur * pulseIntensity;
+        context.lineWidth = (pass.width + 2) * 1.1;
+        context.beginPath();
+        context.arc(cx, cy, 125, 0, Math.PI * 2);
+        context.stroke();
+        context.lineWidth = pass.width * 0.6;
+        context.beginPath();
+        context.arc(cx, cy, 112, 0, Math.PI * 2);
+        context.stroke();
+        context.lineWidth = pass.width * 1.3;
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+        drawA(context, cx, cy, pulseIntensity);
+        context.restore();
       });
 
-      ctx.globalCompositeOperation = 'source-over';
+      context.globalCompositeOperation = 'source-over';
       frameId = window.requestAnimationFrame(renderFrame);
     }
 

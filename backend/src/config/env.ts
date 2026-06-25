@@ -22,3 +22,11 @@ export const env = {
   defaultAdminPassword: process.env.DEFAULT_ADMIN_PASSWORD || 'admin123',
   authEnabled: process.env.AUTH_ENABLED !== 'false',
 };
+
+/** ngrok free tier returns an HTML warning unless this header is sent. */
+export function pythonServiceRequestHeaders(): Record<string, string> {
+  if (env.pythonServiceUrl.includes('ngrok')) {
+    return { 'ngrok-skip-browser-warning': 'true' };
+  }
+  return {};
+}

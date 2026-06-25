@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import axios from 'axios';
 import FormData from 'form-data';
 import multer from 'multer';
-import { env } from '../config/env';
+import { env, pythonServiceRequestHeaders } from '../config/env';
 import { requireAuth } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
 import {
@@ -20,6 +20,7 @@ const upload = multer({
 const aiClient = axios.create({
   baseURL: env.pythonServiceUrl,
   timeout: 120_000,
+  headers: pythonServiceRequestHeaders(),
 });
 
 function parseFrameNumber(value: unknown): number {

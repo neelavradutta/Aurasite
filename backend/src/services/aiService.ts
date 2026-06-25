@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import FormData from 'form-data';
 import fs from 'fs';
 import path from 'path';
-import { env } from '../config/env';
+import { env, pythonServiceRequestHeaders } from '../config/env';
 import { logger } from '../utils/logger';
 
 export interface DetectOptions {
@@ -100,6 +100,7 @@ class AiService {
     this.client = axios.create({
       baseURL: env.pythonServiceUrl,
       timeout: 600000,
+      headers: pythonServiceRequestHeaders(),
     });
   }
 
