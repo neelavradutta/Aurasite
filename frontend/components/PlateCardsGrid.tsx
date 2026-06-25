@@ -289,7 +289,7 @@ export default function PlateCardsGrid({
   return (
     <section
       id={selectToPreview ? DETECTED_LICENSE_PLATES_ANCHOR : undefined}
-      className={`glass-panel relative flex flex-col overflow-hidden rounded-xl border border-white/5 p-5 ${
+      className={`detected-plates-section glass-panel relative flex flex-col overflow-hidden rounded-xl border border-white/5 p-5 ${
         fillHeight ? 'h-full max-h-full min-h-0' : ''
       } ${selectToPreview ? 'scroll-mt-24' : ''} ${className}`.trim()}
     >

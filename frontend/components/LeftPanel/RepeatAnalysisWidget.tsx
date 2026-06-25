@@ -66,7 +66,7 @@ export default function RepeatAnalysisWidget({
       ) : (
 
         <div
-          className={`grid grid-cols-3 text-center ${compact ? 'gap-2' : 'gap-3'}${
+          className={`repeat-metrics-grid grid grid-cols-3 text-center ${compact ? 'gap-2' : 'gap-3'}${
             fillHeight
               ? ` mt-auto min-h-0 flex-1 items-stretch${compact ? ' mb-2' : ''}`
               : ' shrink-0'
@@ -140,8 +140,8 @@ function RepeatBarChart({
   const yTicks = getRepeatYAxisTicks(scaleMax);
 
   return (
-    <div className="flex min-h-[10rem] flex-1 items-center px-1 pb-2 pt-0">
-      <div className="relative flex w-full items-end">
+    <div className="repeat-bar-chart-shell flex min-h-[10rem] flex-1 items-center px-1 pb-2 pt-0">
+      <div className="repeat-bar-chart-layout relative flex w-full items-end">
         <span
           className="pointer-events-none absolute bottom-6 left-0 right-0 z-10 border-t border-[#00d4ff]/50"
           aria-hidden

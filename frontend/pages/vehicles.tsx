@@ -293,7 +293,7 @@ export default function VehiclesPage() {
             variant="secondary"
             onClick={handleExportCatalog}
             disabled={exportingCatalog}
-            className="inline-flex h-9 shrink-0 items-center justify-center px-3 py-0"
+            className="header-toolbar-btn"
           >
             {exportingCatalog ? 'Exporting...' : 'Export Vehicles Report'}
           </Button>

@@ -64,8 +64,8 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
 
   return (
     <header className="glass-panel sticky top-0 z-50 border-b border-cyber-cyan/20 px-6 py-4">
-      <div className="mx-auto grid max-w-[1920px] grid-cols-[1fr_auto_1fr] items-center gap-6">
-        <div className="flex items-center gap-3">
+      <div className="header-shell mx-auto grid max-w-[1920px] grid-cols-[1fr_auto_1fr] items-center gap-6">
+        <div className="header-brand flex items-center gap-3">
           <AurasiteIconTrigger onOpen={() => setBrandOpen(true)} />
           <div>
             <h1 className="font-orbitron text-xl font-bold text-cyber-cyan neon-text">AURASITE</h1>
@@ -93,9 +93,9 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
         </div>
 
         <div
-          className={`flex items-center justify-end gap-3 text-sm ${
-            reserveDashboardActions ? 'invisible pointer-events-none select-none' : ''
-          }`}
+          className={`header-actions-slot flex items-center justify-end gap-3 text-sm ${
+            showPageActions ? 'header-actions-slot--page-toolbar' : ''
+          } ${reserveDashboardActions ? 'invisible pointer-events-none select-none' : ''}`}
           aria-hidden={reserveDashboardActions ? true : undefined}
         >
           {showDetectionActions ? (
@@ -108,9 +108,9 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
             liveToolbar
           ) : (
             <>
-              <div className="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-0.5">
+              <div className="header-status grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-0.5">
                 {token && user?.name ? (
-                  <span className="col-start-2 text-slate-400">
+                  <span className="header-user-name col-start-2 text-slate-400">
                     {user.name.replace(/^System\s+/i, '')}
                   </span>
                 ) : null}
@@ -124,7 +124,7 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
                   type="button"
                   onClick={handleClear}
                   disabled={clearing}
-                  className="inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-cyan/40 px-3 text-sm text-cyber-cyan transition hover:bg-cyber-cyan/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="header-clear-btn inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-cyan/40 px-3 text-sm text-cyber-cyan transition hover:bg-cyber-cyan/10 disabled:cursor-not-allowed disabled:opacity-50"
                   title="Clear all detections, vehicles, and alerts"
                 >
                   {clearing ? 'Clearing...' : 'Clear'}
@@ -136,14 +136,14 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
                     logout();
                     router.push('/login');
                   }}
-                  className="inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-pink/30 px-3 text-sm text-cyber-pink transition hover:bg-cyber-pink/10"
+                  className="header-logout-btn inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-pink/30 px-3 text-sm text-cyber-pink transition hover:bg-cyber-pink/10"
                 >
                   Logout
                 </button>
               ) : (
                 <Link
                   href="/login"
-                  className="inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-cyan/40 px-3 text-sm text-cyber-cyan"
+                  className="header-login-link inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-cyan/40 px-3 text-sm text-cyber-cyan"
                 >
                   Login
                 </Link>

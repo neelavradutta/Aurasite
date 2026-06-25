@@ -189,19 +189,19 @@ export default function DetectionLogTable({
   }
 
   return (
-    <div ref={tablePanelRef} className="glass-panel overflow-hidden rounded-xl border border-white/5">
+    <div ref={tablePanelRef} className="detection-log-panel glass-panel overflow-hidden rounded-xl border border-white/5">
       {!hideTitle && (
         <div className="border-b border-white/10 px-4 py-3">
           <h3 className="font-orbitron text-sm uppercase tracking-wider text-cyber-cyan">Detection Log</h3>
         </div>
       )}
-      <div className="overflow-x-auto">
+      <div className="detection-log-scroll-wrap overflow-x-auto">
         <div
           ref={scrollContainerRef}
           className={
             useInnerScroll
-              ? 'overflow-y-auto overflow-x-hidden [scrollbar-color:rgba(0,247,255,0.45)_transparent] [scrollbar-width:thin]'
-              : undefined
+              ? 'detection-log-body-scroll overflow-y-auto overflow-x-hidden [scrollbar-color:rgba(0,247,255,0.45)_transparent] [scrollbar-width:thin]'
+              : 'detection-log-body-scroll'
           }
           style={useInnerScroll ? { maxHeight: maxBodyHeight } : undefined}
         >

@@ -181,7 +181,7 @@ export default function PeakTrafficChart({
         </div>
       ) : (
         <div
-          className={`mt-2 flex flex-1 justify-start gap-6 overflow-visible sm:gap-8 ${
+          className={`peak-traffic-donut-row mt-2 flex flex-1 justify-start gap-6 overflow-visible sm:gap-8 ${
             peakIntervals.length > 4 ? 'items-start' : 'items-center'
           }`}
         >

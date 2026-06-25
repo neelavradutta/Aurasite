@@ -241,13 +241,34 @@ export default function DetectionsPage() {
           <Button
             variant="secondary"
             onClick={handleExportCsv}
-            className="inline-flex h-9 shrink-0 items-center justify-center px-3 py-0"
+            className="header-toolbar-btn"
           >
             Export Detection Report
           </Button>
         }
       />
       <main className="mobile-page-main mx-auto max-w-[1920px] space-y-6 px-6 py-6">
+        <PageTitle title="Detection Log" subtitle={subtitle} className="xl:hidden" />
+        <div className="mobile-detection-toolbar xl:hidden">
+          <DetectionFilterBar
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+            sort={sortOption}
+            filters={listFilters}
+            onSortChange={setSortOption}
+            onFiltersChange={setListFilters}
+          />
+          <Button
+            variant="danger"
+            onClick={handleRemoveSelected}
+            disabled={selectedDetections.length === 0 || removing}
+            data-detection-log-action
+            className="mobile-detection-remove"
+          >
+            Remove selected
+          </Button>
+        </div>
+
         <div className="hidden xl:grid grid-cols-[1fr_auto_1fr] items-end gap-5">
           <PageTitle title="Detection Log" subtitle={subtitle} />
           <div className="relative">
@@ -272,26 +293,6 @@ export default function DetectionsPage() {
           <div aria-hidden className="pointer-events-none" />
         </div>
 
-        <div className="mobile-detection-toolbar xl:hidden">
-          <PageTitle title="Detection Log" subtitle={subtitle} className="mobile-page-title" />
-          <DetectionFilterBar
-            searchQuery={searchQuery}
-            onSearchQueryChange={setSearchQuery}
-            sort={sortOption}
-            filters={listFilters}
-            onSortChange={setSortOption}
-            onFiltersChange={setListFilters}
-          />
-          <Button
-            variant="danger"
-            onClick={handleRemoveSelected}
-            disabled={selectedDetections.length === 0 || removing}
-            data-detection-log-action
-            className="mobile-detection-remove"
-          >
-            Remove selected
-          </Button>
-        </div>
         {loading ? (
           <div className="glass-panel flex h-40 items-center justify-center rounded-xl border border-dashed border-white/10">
             <p className="text-sm text-slate-500">Loading detections...</p>

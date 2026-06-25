@@ -210,11 +210,6 @@ export default function LoginPage() {
         ))}
       </div>
 
-      <div className="anpr-access-portal__grid-bg" aria-hidden />
-      <div className="anpr-access-portal__orbit anpr-access-portal__orbit--1" aria-hidden />
-      <div className="anpr-access-portal__orbit anpr-access-portal__orbit--2" aria-hidden />
-      <div className="anpr-access-portal__orbit anpr-access-portal__orbit--3" aria-hidden />
-
       <div className="anpr-access-portal__container">
         {particles.map((particle, index) => (
           <span

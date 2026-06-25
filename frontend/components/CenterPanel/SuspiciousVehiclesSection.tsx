@@ -21,7 +21,7 @@ export default function SuspiciousVehiclesSection({
     : 'shrink-0 overflow-hidden';
 
   return (
-    <Card className={`${cardClass} ${className}`.trim()}>
+    <Card className={`suspicious-vehicles-section ${cardClass} ${className}`.trim()}>
       <header className="mb-3 shrink-0">
         <h3 className="section-title">Suspicious Vehicles</h3>
         <p className="mt-0.5 w-full truncate text-[10px] text-nowrap text-slate-500">

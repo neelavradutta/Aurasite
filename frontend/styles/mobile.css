@@ -3,6 +3,12 @@
  * Matches Tailwind `xl` breakpoint.
  */
 @media (max-width: 1279px) {
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
   /* ── Page shell ── */
   .mobile-page-main {
     padding-left: 1rem !important;
@@ -19,34 +25,112 @@
     padding-bottom: 0.75rem !important;
   }
 
-  header.glass-panel > div {
-    grid-template-columns: minmax(0, 1fr) auto !important;
-    gap: 0.75rem !important;
+  header.glass-panel .header-shell {
+    display: grid !important;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto !important;
+    grid-template-rows: auto !important;
+    gap: 0.5rem !important;
+    align-items: center !important;
   }
 
-  header.glass-panel h1 {
+  header.glass-panel .header-brand {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    flex-shrink: 0;
+  }
+
+  header.glass-panel .header-shell > div:nth-child(2) {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  header.glass-panel .header-actions-slot {
+    grid-column: 2;
+    grid-row: 1;
+    flex-wrap: nowrap !important;
+    justify-content: flex-end !important;
+    gap: 0.375rem !important;
+    padding-top: 0;
+    border-top: none;
+    min-width: 0;
+  }
+
+  header.glass-panel .header-actions-slot--page-toolbar {
+    grid-column: 2;
+    grid-row: 1;
+    flex-wrap: nowrap !important;
+    justify-content: flex-end !important;
+    padding-top: 0;
+    border-top: none;
+    min-width: 0;
+  }
+
+  header.glass-panel .header-logout-btn {
+    display: none !important;
+  }
+
+  header.glass-panel .header-user-name {
+    display: none !important;
+  }
+
+  header.glass-panel .header-status {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.375rem !important;
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 0.6875rem !important;
+  }
+
+  header.glass-panel .header-status .h-2\.5 {
+    row-start: auto !important;
+  }
+
+  header.glass-panel .header-brand h1 {
     font-size: 1rem !important;
+    line-height: 1.2 !important;
+    white-space: nowrap;
   }
 
   header.glass-panel p.text-xs {
     display: none;
   }
 
-  header.glass-panel .flex.items-center.gap-3 > div:last-child p {
+  header.glass-panel .header-brand > div:last-child p {
     display: none;
   }
 
-  header.glass-panel .flex.items-center.justify-end {
-    gap: 0.5rem !important;
+  header.glass-panel .header-actions-slot button:not(.header-toolbar-btn),
+  header.glass-panel .header-actions-slot a:not(.header-toolbar-btn) {
+    min-height: 2.25rem;
+    min-width: 0;
+    padding-left: 0.625rem !important;
+    padding-right: 0.625rem !important;
+    font-size: 0.75rem !important;
   }
 
-  header.glass-panel .flex.items-center.justify-end button,
-  header.glass-panel .flex.items-center.justify-end a {
-    min-height: 2.75rem;
-    min-width: 2.75rem;
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-    font-size: 0.75rem !important;
+  header.glass-panel .header-clear-btn {
+    flex-shrink: 0;
+  }
+
+  header.glass-panel .header-toolbar-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 1;
+    min-width: 0;
+    width: 7rem !important;
+    height: 2.25rem !important;
+    min-height: 2.25rem !important;
+    max-height: 2.25rem !important;
+    padding: 0.2rem 0.35rem !important;
+    font-size: 0.625rem !important;
+    line-height: 1.1 !important;
+    text-align: center;
+    white-space: normal;
+    overflow: hidden;
   }
 
   /* ── Mobile nav drawer ── */
@@ -65,6 +149,7 @@
     border: 1px solid rgba(0, 247, 255, 0.35);
     background: rgba(0, 247, 255, 0.08);
     color: #00f7ff;
+    touch-action: manipulation;
   }
 
   .mobile-nav__bars,
@@ -191,7 +276,7 @@
   }
 
   .dashboard-panel-slot--plates {
-    min-height: 22rem !important;
+    min-height: auto !important;
   }
 
   .dashboard-panel-slot--side {
@@ -215,6 +300,256 @@
     min-height: 12rem !important;
     height: auto !important;
     max-height: none !important;
+  }
+
+  .dashboard-panel-slot > * {
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Confidence heatmap — chart footprint matches desktop compact layout */
+  .dashboard-panel-slot:has(.confidence-heatmap-panel) {
+    min-height: auto !important;
+  }
+
+  .confidence-heatmap-panel {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+  }
+
+  .confidence-heatmap-panel header p {
+    white-space: normal !important;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  /* ── Video input panel ── */
+  .video-input-cyberpunk {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    grid-template-rows: auto auto auto minmax(7.5rem, 10rem) auto auto !important;
+    gap: 0.5rem !important;
+    padding: 1rem !important;
+  }
+
+  .video-input-cyberpunk:not(:has(.video-input-cyberpunk__preview--results)) {
+    grid-template-rows: auto auto auto minmax(7.5rem, 10rem) auto auto !important;
+  }
+
+  .video-input-cyberpunk:has(.video-input-cyberpunk__preview--results) {
+    grid-template-rows: auto auto auto minmax(7.5rem, 10rem) auto auto !important;
+  }
+
+  .video-panel__toolbar {
+    margin-top: 0 !important;
+    height: auto !important;
+    align-items: stretch !important;
+  }
+
+  .video-panel__toolbar > * {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .video-input-cyberpunk__upload {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0.5rem 0.625rem !important;
+    gap: 0.5rem !important;
+  }
+
+  .video-input-cyberpunk__choose-btn {
+    min-height: 0 !important;
+    height: auto !important;
+    align-self: center;
+    padding: 0.35rem 0.65rem !important;
+    font-size: 0.6rem !important;
+    line-height: 1.2;
+  }
+
+  .video-input-cyberpunk__filename {
+    font-size: 0.6875rem !important;
+    align-self: center;
+  }
+
+  .video-panel__stage {
+    min-height: 7.5rem !important;
+    max-height: 10rem !important;
+    height: auto !important;
+  }
+
+  .video-panel__stage-label,
+  .video-panel__stage-label.video-input-cyberpunk__preview-label {
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+  }
+
+  .video-input-cyberpunk__load-btn,
+  .video-input-cyberpunk__remove-btn,
+  .video-input-cyberpunk__btn-group button {
+    min-height: 2.25rem !important;
+    font-size: 0.7rem !important;
+  }
+
+  .video-panel__actions--results {
+    transform: none !important;
+  }
+
+  /* ── Dashboard: detected plates (match desktop header layout) ── */
+  .detected-plates-section.h-full,
+  .detected-plates-section.max-h-full {
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .detected-plates-section .plate-header-actions {
+    position: absolute !important;
+    top: 1.25rem;
+    left: auto !important;
+    right: 1.25rem !important;
+    z-index: 2;
+    margin-bottom: 0;
+    flex-wrap: nowrap;
+    gap: 0;
+    justify-content: flex-end;
+  }
+
+  .detected-plates-section .plate-header-actions--idle,
+  .detected-plates-section .plate-header-actions--open {
+    right: 1.25rem !important;
+    left: auto !important;
+  }
+
+  .detected-plates-section > .shrink-0 > .mb-5.flex.items-start {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .detected-plates-section > .shrink-0 > .mb-5.flex.items-start > div:first-child {
+    min-width: 0;
+    flex: 1 1 auto;
+    padding-right: 4.75rem;
+  }
+
+  .detected-plates-section .section-title {
+    line-height: 1.25;
+  }
+
+  .detected-plates-section .plate-header-vehicles-badge {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.6875rem !important;
+  }
+
+  .detected-plates-section .plate-header-action-btn {
+    padding: 0.375rem 0.625rem !important;
+    font-size: 0.625rem !important;
+  }
+
+  .detected-plates-section .flex.min-h-0.flex-1.items-center.justify-center {
+    min-height: 9rem;
+    flex: 0 1 auto !important;
+  }
+
+  /* ── Dashboard: suspicious vehicles (match desktop proportions) ── */
+  .dashboard-panel-slot:has(.suspicious-vehicles-section) {
+    min-height: auto !important;
+  }
+
+  .suspicious-vehicles-section.\!h-full,
+  .suspicious-vehicles-section.h-full,
+  .suspicious-vehicles-section.\!max-h-full,
+  .suspicious-vehicles-section.max-h-full {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  .suspicious-vehicles-section header p {
+    white-space: normal !important;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .suspicious-vehicles-section .suspicious-vehicles-scroll {
+    flex: 0 1 auto !important;
+    height: auto !important;
+    max-height: 14rem;
+  }
+
+  .suspicious-vehicles-section .suspicious-vehicles-scroll.flex.items-center.justify-center {
+    min-height: 5rem;
+    max-height: none;
+  }
+
+  /* ── Repeat analysis metrics (dashboard boxes) ── */
+  .repeat-metrics-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  .repeat-metrics-grid > * {
+    min-height: 4.5rem !important;
+    max-height: none !important;
+  }
+
+  /* ── Peak traffic donut + legend (analytics) ── */
+  .peak-traffic-donut-row {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1rem !important;
+  }
+
+  .peak-traffic-donut-row > div:first-child {
+    margin-left: 0 !important;
+  }
+
+  .peak-traffic-donut-row .flex.min-w-0 {
+    width: 100% !important;
+    flex: none !important;
+    justify-content: center !important;
+  }
+
+  .peak-traffic-donut-row .w-fit.min-w-\[148px\] {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 16rem;
+  }
+
+  /* ── Repeat bar chart (analytics) ── */
+  .repeat-bar-chart-layout {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .repeat-bar-chart-layout > .ml-auto {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 0.75rem !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .repeat-bar-chart-layout .ml-10,
+  .repeat-bar-chart-layout .ml-8,
+  .repeat-bar-chart-layout .sm\:ml-12,
+  .repeat-bar-chart-layout .sm\:ml-14 {
+    margin-left: 0.5rem !important;
+  }
+
+  .repeat-bar-chart-layout .flex.gap-4,
+  .repeat-bar-chart-layout .flex.gap-6 {
+    gap: 0.75rem !important;
+  }
+
+  .repeat-bar-chart-shell {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 
   /* ── Detection log page ── */
@@ -272,34 +607,81 @@
   }
 
   /* ── Tables ── */
-  .glass-panel .overflow-x-auto {
+  .detection-log-scroll-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    max-width: 100%;
+  }
+
+  .detection-log-panel table {
+    min-width: 52rem !important;
+    width: max-content;
+  }
+
+  .detection-log-panel th,
+  .detection-log-panel td {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    font-size: 0.7rem !important;
+    white-space: nowrap;
+  }
+
+  .detection-log-panel .detection-log-body-scroll {
+    overflow-x: visible !important;
+  }
+
+  .glass-panel .overflow-x-auto:not(.detection-log-scroll-wrap) {
     -webkit-overflow-scrolling: touch;
   }
 
-  .glass-panel table {
+  .glass-panel table:not(.detection-log-panel table) {
     min-width: 44rem;
   }
 
-  .glass-panel th,
-  .glass-panel td {
+  .glass-panel th:not(.detection-log-panel th),
+  .glass-panel td:not(.detection-log-panel td) {
     padding-left: 0.625rem !important;
     padding-right: 0.625rem !important;
     font-size: 0.75rem !important;
   }
 
+  /* ── Vehicle catalog cards ── */
+  .vehicle-catalog-card {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .vehicle-catalog-card .font-mono.text-\[1\.375rem\] {
+    font-size: 1.125rem !important;
+    padding-right: 1.25rem;
+  }
+
   /* ── Vehicle modal ── */
   .vehicle-modal-overlay {
-    padding: 0.75rem !important;
-    align-items: flex-end !important;
+    padding: 0.5rem !important;
+    padding-top: max(0.5rem, env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px)) !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
   }
 
   .vehicle-modal-overlay__panel,
   .vehicle-modal-card {
     width: 100% !important;
     max-width: 100% !important;
-    max-height: 92dvh !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 1rem) !important;
     overflow-y: auto !important;
-    border-radius: 1rem 1rem 0 0 !important;
+    border-radius: 1rem !important;
+  }
+
+  .vehicle-modal-card h2 {
+    font-size: 1.35rem !important;
+  }
+
+  .vehicle-modal-card .relative.z-10 {
+    max-width: 100% !important;
   }
 
   .neural-satellite,
@@ -326,10 +708,51 @@
     width: 100% !important;
     max-width: 100% !important;
     padding: 1.25rem !important;
+    overflow: hidden;
+  }
+
+  .anpr-access-portal__subtitle {
+    white-space: normal !important;
+    line-height: 1.45 !important;
+    font-size: 0.875rem !important;
+    padding: 0 0.25rem;
+    overflow-wrap: break-word;
+  }
+
+  .anpr-access-portal__toggle-text {
+    font-size: 0.875rem !important;
+    line-height: 1.45 !important;
+    padding: 0 0.25rem;
+  }
+
+  /* ── Aurasite brand overlay (logo tap) ── */
+  .aurasite-brand-overlay {
+    padding: 1rem !important;
+  }
+
+  .aurasite-brand-overlay__panel {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .aurasite-brand-overlay__title {
+    font-size: 1.75rem !important;
+    letter-spacing: 0.1em !important;
+  }
+
+  .aurasite-brand-overlay__tagline {
+    white-space: normal !important;
+    width: 100%;
+    max-width: 100%;
+    font-size: 0.8125rem !important;
+    line-height: 1.5 !important;
+    padding: 0 0.25rem;
+    overflow-wrap: break-word;
   }
 
   /* ── Touch targets ── */
-  button,
+  button:not(.header-toolbar-btn):not(.mobile-nav__trigger):not(.video-input-cyberpunk__choose-btn),
   a.rounded-md,
   .glass-panel label,
   input,
@@ -338,12 +761,18 @@
   }
 
   /* ── Page titles ── */
-  .mobile-page-title h2 {
+  .mobile-page-title h2,
+  .page-title {
     font-size: 1.35rem !important;
     line-height: 1.2 !important;
   }
 
   .mobile-page-title p {
     font-size: 0.8rem !important;
+  }
+
+  /* ── KPI cards ── */
+  .glass-panel.rounded-xl.p-5 .font-orbitron.text-3xl {
+    font-size: 1.75rem !important;
   }
 }

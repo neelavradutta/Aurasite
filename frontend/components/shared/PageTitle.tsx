@@ -9,7 +9,7 @@ type PageTitleProps = {
 
 export default function PageTitle({ title, subtitle, className = '', children }: PageTitleProps) {
   return (
-    <div className={className}>
+    <div className={`mobile-page-title ${className}`.trim()}>
       <div className="flex w-full flex-wrap items-center gap-3">
         <h2 className="page-title text-[1.75rem] text-white sm:text-3xl">{title}</h2>
         {children}

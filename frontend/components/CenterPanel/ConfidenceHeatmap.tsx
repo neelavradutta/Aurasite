@@ -85,7 +85,7 @@ export default function ConfidenceHeatmap({
 }) {
   return (
     <Card
-      className={`flex h-full min-h-0 max-h-full flex-col ${compact ? '!p-5' : '!p-3'} overflow-hidden ${className}`.trim()}
+      className={`confidence-heatmap-panel flex h-full min-h-0 max-h-full flex-col ${compact ? '!p-5' : '!p-3'} overflow-hidden ${className}`.trim()}
     >
       <header className="mb-3 shrink-0">
         <h3 className="section-title">Confidence Heatmap</h3>
@@ -94,9 +94,17 @@ export default function ConfidenceHeatmap({
         </p>
       </header>
       {data.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center text-center">
-          <p className="text-sm text-slate-500">No confidence metrics yet</p>
-        </div>
+        compact ? (
+          <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-visible">
+            <div className="flex h-[18rem] w-[18rem] shrink-0 items-center justify-center sm:h-[19rem] sm:w-[19rem] xl:h-auto xl:w-auto xl:min-h-0 xl:flex-1">
+              <p className="text-center text-sm text-slate-500">No confidence metrics yet</p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-1 flex-col items-center justify-center text-center">
+            <p className="text-sm text-slate-500">No confidence metrics yet</p>
+          </div>
+        )
       ) : compact ? (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-visible">
           <div className="h-[18rem] w-[18rem] shrink-0 overflow-visible sm:h-[19rem] sm:w-[19rem]">

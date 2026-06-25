@@ -33,7 +33,7 @@ function AppShell({ Component, pageProps }: AppProps) {
 
 export default function App(props: AppProps) {
   return (
-    <div className="scanlines min-h-screen">
+    <div className="min-h-screen">
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="icon" href="/favicon.png" type="image/png" />

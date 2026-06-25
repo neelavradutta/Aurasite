@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuthStore } from '@/store/authStore';
 
 const navItems = [
@@ -11,10 +12,23 @@ const navItems = [
   { href: '/live', label: 'Live' },
 ];
 
+const SWIPE_CLOSE_PX = 56;
+const TAP_MOVE_PX = 10;
+
 export default function MobileNav() {
   const router = useRouter();
   const { token, user, logout } = useAuthStore();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const triggerTouchRef = useRef({ x: 0, y: 0, moved: false });
+
+  const closeMenu = useCallback(() => setOpen(false), []);
+  const openMenu = useCallback(() => setOpen(true), []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setOpen(false);
@@ -29,6 +43,114 @@ export default function MobileNav() {
     };
   }, [open]);
 
+  function handleSwipeTouchStart(event: React.TouchEvent) {
+    const touch = event.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function handleSwipeTouchEnd(event: React.TouchEvent) {
+    if (!touchStartRef.current) return;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+
+    if (dx >= SWIPE_CLOSE_PX && Math.abs(dx) > Math.abs(dy) * 1.15) {
+      closeMenu();
+    }
+  }
+
+  function handleSwipeTouchCancel() {
+    touchStartRef.current = null;
+  }
+
+  function handleTriggerTouchStart(event: React.TouchEvent) {
+    const touch = event.touches[0];
+    triggerTouchRef.current = { x: touch.clientX, y: touch.clientY, moved: false };
+  }
+
+  function handleTriggerTouchMove(event: React.TouchEvent) {
+    const touch = event.touches[0];
+    const dx = Math.abs(touch.clientX - triggerTouchRef.current.x);
+    const dy = Math.abs(touch.clientY - triggerTouchRef.current.y);
+    if (dx > TAP_MOVE_PX || dy > TAP_MOVE_PX) {
+      triggerTouchRef.current.moved = true;
+    }
+  }
+
+  function handleTriggerClick() {
+    if (triggerTouchRef.current.moved) return;
+    if (open) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  }
+
+  const swipeHandlers = {
+    onTouchStart: handleSwipeTouchStart,
+    onTouchEnd: handleSwipeTouchEnd,
+    onTouchCancel: handleSwipeTouchCancel,
+  };
+
+  const overlay =
+    mounted && open
+      ? createPortal(
+          <>
+            <button
+              type="button"
+              className="mobile-nav__backdrop"
+              aria-label="Close menu"
+              onClick={closeMenu}
+              {...swipeHandlers}
+            />
+            <nav
+              className="mobile-nav__drawer mobile-nav__drawer--open"
+              aria-hidden={false}
+              {...swipeHandlers}
+            >
+              <p className="mobile-nav__title font-orbitron">Navigate</p>
+              <div className="mobile-nav__links">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`mobile-nav__link${
+                      router.pathname === item.href ? ' mobile-nav__link--active' : ''
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mobile-nav__footer">
+                {token && user?.name ? (
+                  <p className="mobile-nav__user">{user.name.replace(/^System\s+/i, '')}</p>
+                ) : null}
+                {token ? (
+                  <button
+                    type="button"
+                    className="mobile-nav__logout"
+                    onClick={() => {
+                      logout();
+                      void router.push('/login');
+                    }}
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <Link href="/login" className="mobile-nav__link mobile-nav__link--active">
+                    Login
+                  </Link>
+                )}
+              </div>
+            </nav>
+          </>,
+          document.body
+        )
+      : null;
+
   return (
     <div className="mobile-nav lg:hidden">
       <button
@@ -36,61 +158,13 @@ export default function MobileNav() {
         className="mobile-nav__trigger"
         aria-expanded={open}
         aria-label={open ? 'Close menu' : 'Open menu'}
-        onClick={() => setOpen((value) => !value)}
+        onClick={handleTriggerClick}
+        onTouchStart={handleTriggerTouchStart}
+        onTouchMove={handleTriggerTouchMove}
       >
         <span className="mobile-nav__bars" aria-hidden />
       </button>
-
-      {open ? (
-        <button
-          type="button"
-          className="mobile-nav__backdrop"
-          aria-label="Close menu"
-          onClick={() => setOpen(false)}
-        />
-      ) : null}
-
-      <nav
-        className={`mobile-nav__drawer${open ? ' mobile-nav__drawer--open' : ''}`}
-        aria-hidden={!open}
-      >
-        <p className="mobile-nav__title font-orbitron">Navigate</p>
-        <div className="mobile-nav__links">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`mobile-nav__link${
-                router.pathname === item.href ? ' mobile-nav__link--active' : ''
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-
-        <div className="mobile-nav__footer">
-          {token && user?.name ? (
-            <p className="mobile-nav__user">{user.name.replace(/^System\s+/i, '')}</p>
-          ) : null}
-          {token ? (
-            <button
-              type="button"
-              className="mobile-nav__logout"
-              onClick={() => {
-                logout();
-                void router.push('/login');
-              }}
-            >
-              Logout
-            </button>
-          ) : (
-            <Link href="/login" className="mobile-nav__link mobile-nav__link--active">
-              Login
-            </Link>
-          )}
-        </div>
-      </nav>
+      {overlay}
     </div>
   );
 }

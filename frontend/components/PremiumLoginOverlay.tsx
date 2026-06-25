@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 type OverlayPhase = 'loading' | 'result' | 'complete';
@@ -190,38 +190,6 @@ function RadialWaves() {
   );
 }
 
-function CornerAccents() {
-  const cornerStyles = useMemo(
-    () => [
-      { top: 0, left: 0, bottom: 'auto', right: 'auto' },
-      { top: 0, left: 'auto', bottom: 'auto', right: 0 },
-      { top: 'auto', left: 0, bottom: 0, right: 'auto' },
-      { top: 'auto', left: 'auto', bottom: 0, right: 0 },
-    ],
-    []
-  );
-
-  return (
-    <>
-      {cornerStyles.map((style, corner) => (
-        <motion.div
-          key={corner}
-          className="absolute h-36 w-36 border-l border-t border-cyan-500/30"
-          style={style}
-          animate={{
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{
-            duration: 3,
-            delay: corner * 0.2,
-            repeat: Infinity,
-          }}
-        />
-      ))}
-    </>
-  );
-}
-
 function AuthenticatingOverlay({
   progress,
   particles,
@@ -333,8 +301,6 @@ function SuccessOverlay({ particles }: { particles: Particle[] }) {
           <SequentialDots tone="success" />
         </motion.div>
       </div>
-
-      <CornerAccents />
     </motion.div>
   );
 }
@@ -409,8 +375,6 @@ function DeniedOverlay({ particles }: { particles: Particle[] }) {
           <SequentialDots tone="denied" />
         </motion.div>
       </div>
-
-      <CornerAccents />
     </motion.div>
   );
 }

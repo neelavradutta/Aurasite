@@ -238,7 +238,7 @@ export default function LivePage() {
             variant="secondary"
             onClick={handleExportLiveReport}
             disabled={exportingLive || plateHistory.length === 0}
-            className="inline-flex h-9 shrink-0 items-center justify-center px-3 py-0"
+            className="header-toolbar-btn"
           >
             {exportingLive ? 'Exporting...' : 'Export Live Report'}
           </Button>
