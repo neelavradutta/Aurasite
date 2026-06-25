@@ -2,8 +2,11 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const DEFAULT_CORS_ORIGIN =
+  'http://localhost:3001,https://aurasitee.vercel.app';
+
 function parseCorsOrigin(): string | string[] {
-  const raw = process.env.CORS_ORIGIN || 'http://localhost:3001';
+  const raw = process.env.CORS_ORIGIN || DEFAULT_CORS_ORIGIN;
   const origins = raw.split(',').map((origin) => origin.trim()).filter(Boolean);
   return origins.length <= 1 ? (origins[0] ?? 'http://localhost:3001') : origins;
 }
