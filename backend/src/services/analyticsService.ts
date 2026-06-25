@@ -145,7 +145,6 @@ function buildVehicleExportRow(
     record.registration_date ? formatDateTime(record.registration_date) : ''
   );
   row['First Detected'] = cell(formatDateTime(record.first_detected_timestamp));
-  row['Last Detected'] = cell(formatDateTime(record.last_detected_timestamp));
   row['Last Seen'] = cell(formatDateTime(record.last_detected_timestamp));
   row['Violation Count'] = cell(record.violation_count);
   row['Is Suspicious'] = vehicle?.is_suspicious ? 'Yes' : vehicle ? 'No' : '';
