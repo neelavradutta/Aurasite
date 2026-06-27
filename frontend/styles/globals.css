@@ -2598,7 +2598,7 @@ body {
 
 .video-panel__actions--results {
   overflow: visible;
-  transform: translateY(-1rem);
+  transform: translateY(-1.1rem);
 }
 
 .video-input-cyberpunk:not(:has(.video-input-cyberpunk__preview--results)) {
