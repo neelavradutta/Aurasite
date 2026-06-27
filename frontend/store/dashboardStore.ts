@@ -5,6 +5,7 @@ import { Detection } from '@/types/detection';
 import { Vehicle } from '@/types/vehicle';
 
 import { Alert, AnalyticsSummary } from '@/types/analytics';
+import { VehicleSpeedReading } from '@/utils/speedEstimation';
 
 import { clearAllSessionData } from '@/services/api';
 import { useVideoUploadStore } from '@/store/videoUploadStore';
@@ -52,6 +53,9 @@ interface DashboardState {
 
   sessionVideoSource: string | null;
 
+  /** Cached speed chart rows — survives tab switches until session reset. */
+  vehicleSpeedReadings: VehicleSpeedReading[];
+
   setSummary: (summary: AnalyticsSummary) => void;
 
   setDetections: (detections: Detection[]) => void;
@@ -69,6 +73,8 @@ interface DashboardState {
   setSelectedPlate: (detection: Detection | null) => void;
 
   setSessionVideoSource: (videoSource: string | null) => void;
+
+  setVehicleSpeedReadings: (readings: VehicleSpeedReading[]) => void;
 
   bumpDetectionsVersion: () => void;
 
@@ -107,6 +113,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   detectionsVersion: 1,
 
   sessionVideoSource: null,
+
+  vehicleSpeedReadings: [],
 
   setSummary: (summary) => set({ summary }),
 
@@ -153,6 +161,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   setSelectedPlate: (selectedPlate) => set({ selectedPlate }),
 
   setSessionVideoSource: (sessionVideoSource) => set({ sessionVideoSource }),
+
+  setVehicleSpeedReadings: (vehicleSpeedReadings) => set({ vehicleSpeedReadings }),
 
   bumpDetectionsVersion: () =>
     set((state) => ({
@@ -237,6 +247,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
 
       detections: [],
 
+      vehicleSpeedReadings: [],
+
       selectedPlate: null,
 
       sessionVideoSource: videoSource,
@@ -283,6 +295,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
       selectedPlate: null,
 
       sessionVideoSource: null,
+
+      vehicleSpeedReadings: [],
 
       sessionVersion: state.sessionVersion + 1,
 

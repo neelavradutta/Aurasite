@@ -23,12 +23,40 @@ import {
 } from '@/utils/sessionAnalytics';
 
 import { computeSuspiciousVehicles } from '@/utils/suspiciousVehicles';
-import { computeVehicleSpeeds, VehicleSpeedReading } from '@/utils/speedEstimation';
+import { computeVehicleSpeeds, VehicleSpeedReading, CameraLocation } from '@/utils/speedEstimation';
 import { computeParkingOccupancy } from '@/utils/parkingOccupancy';
 import { ParkingOccupancyResult } from '@/types/analytics';
 import { useCameraLocations } from '@/hooks/useCameraLocations';
 import { fetchDetections } from '@/services/api';
 import { Detection } from '@/types/detection';
+
+
+
+function mergeScopedDetections(
+  detections: Detection[],
+  peakTrafficDetections: Detection[],
+  sessionVideoSource: string | null
+): Detection[] {
+  const byId = new Map<number, Detection>();
+  for (const row of [...detections, ...peakTrafficDetections]) {
+    if (!sessionVideoSource || row.video_source === sessionVideoSource) {
+      byId.set(row.id, row);
+    }
+  }
+  return [...byId.values()];
+}
+
+function computeSpeedReadings(
+  detections: Detection[],
+  peakTrafficDetections: Detection[],
+  sessionVideoSource: string | null,
+  cameraLocations: CameraLocation[]
+): VehicleSpeedReading[] {
+  return computeVehicleSpeeds(
+    mergeScopedDetections(detections, peakTrafficDetections, sessionVideoSource),
+    cameraLocations
+  );
+}
 
 
 
@@ -39,8 +67,10 @@ export function useAnalytics(maxCapacity = 400) {
     peakTrafficDetections,
     sessionVideoSource,
     sessionVersion,
+    vehicleSpeedReadings,
     setSummary,
     setPeakTrafficDetections,
+    setVehicleSpeedReadings,
   } = useDashboardStore();
 
   const [traffic, setTraffic] = useState<TrafficHour[]>([]);
@@ -52,8 +82,6 @@ export function useAnalytics(maxCapacity = 400) {
   const [frequent, setFrequent] = useState<Vehicle[]>([]);
 
   const [suspicious, setSuspicious] = useState<Vehicle[]>([]);
-
-  const [speeds, setSpeeds] = useState<VehicleSpeedReading[]>([]);
 
   const [parking, setParking] = useState<ParkingOccupancyResult>(() =>
     computeParkingOccupancy([], maxCapacity)
@@ -127,14 +155,24 @@ export function useAnalytics(maxCapacity = 400) {
   useEffect(() => {
     let cancelled = false;
 
-    // New video upload clears session detections — reset speeds immediately.
-    if (detections.length === 0) {
-      setSpeeds([]);
+    const primed = computeSpeedReadings(
+      detections,
+      peakTrafficDetections,
+      sessionVideoSource,
+      cameraLocations
+    );
+    if (primed.length > 0) {
+      setVehicleSpeedReadings(primed);
     }
 
     async function loadSpeeds() {
       if (detections.length === 0) {
-        if (!sessionVideoSource) return;
+        if (!sessionVideoSource) {
+          if (primed.length === 0) {
+            setVehicleSpeedReadings([]);
+          }
+          return;
+        }
 
         try {
           const res = await fetchDetections({
@@ -145,9 +183,9 @@ export function useAnalytics(maxCapacity = 400) {
           const apiRows = ((res.data as Detection[]) || []).filter(
             (row) => row.video_source === sessionVideoSource
           );
-          setSpeeds(computeVehicleSpeeds(apiRows, cameraLocations));
+          setVehicleSpeedReadings(computeVehicleSpeeds(apiRows, cameraLocations));
         } catch {
-          if (!cancelled) setSpeeds([]);
+          if (!cancelled && primed.length === 0) setVehicleSpeedReadings([]);
         }
         return;
       }
@@ -171,13 +209,12 @@ export function useAnalytics(maxCapacity = 400) {
         for (const row of apiRows) {
           byId.set(row.id, row);
         }
-        setSpeeds(computeVehicleSpeeds([...byId.values()], cameraLocations));
+        setVehicleSpeedReadings(computeVehicleSpeeds([...byId.values()], cameraLocations));
       } catch {
         if (!cancelled) {
-          const scoped = sessionVideoSource
-            ? detections.filter((row) => row.video_source === sessionVideoSource)
-            : detections;
-          setSpeeds(computeVehicleSpeeds(scoped, cameraLocations));
+          setVehicleSpeedReadings(
+            computeSpeedReadings(detections, peakTrafficDetections, sessionVideoSource, cameraLocations)
+          );
         }
       }
     }
@@ -187,11 +224,27 @@ export function useAnalytics(maxCapacity = 400) {
     return () => {
       cancelled = true;
     };
-  }, [detections, cameraLocations, sessionVideoSource, sessionVersion]);
+  }, [
+    detections,
+    peakTrafficDetections,
+    cameraLocations,
+    sessionVideoSource,
+    sessionVersion,
+    setVehicleSpeedReadings,
+  ]);
 
 
 
-  return { traffic, confidence, repeat, frequent, suspicious, speeds, parking, loading };
+  return {
+    traffic,
+    confidence,
+    repeat,
+    frequent,
+    suspicious,
+    speeds: vehicleSpeedReadings,
+    parking,
+    loading,
+  };
 
 }
 

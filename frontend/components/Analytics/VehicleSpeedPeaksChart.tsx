@@ -225,6 +225,10 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
   const colors = cream ? BROWN_CREAM : null;
   const animationKey = useChartAnimationKey(`vehicle-speed-peaks-${cream ? 'cream' : 'cyber'}`);
   const points = useMemo(() => buildChartPoints(readings), [readings]);
+  const chartMountKey = useMemo(() => {
+    if (readings.length === 0) return animationKey;
+    return readings.map((reading) => `${reading.detection_id}:${reading.speed_kmh}`).join('|');
+  }, [readings, animationKey]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ left: number; top: number } | null>(null);
   const chartRef = useRef<HTMLDivElement>(null);
@@ -248,17 +252,17 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
     updatePosition();
     window.addEventListener('resize', updatePosition);
     return () => window.removeEventListener('resize', updatePosition);
-  }, [hoveredPoint, animationKey]);
+  }, [hoveredPoint, chartMountKey]);
 
   if (points.length === 0) return null;
 
   const polyline = pointsToPolyline(points);
   const fillPath = pointsToFillPath(points);
   const labelStagger = points.length > 1 ? 2.5 / points.length : 0;
-  const chartId = animationKey.replace(/[^a-zA-Z0-9-_]/g, '');
+  const chartId = chartMountKey.replace(/[^a-zA-Z0-9-_]/g, '');
 
   return (
-    <div key={animationKey} className="vehicle-speed-peaks h-full min-h-0">
+    <div key={chartMountKey} className="vehicle-speed-peaks h-full min-h-0">
       <div ref={chartRef} className="vehicle-speed-peaks__chart">
         <svg
           ref={svgRef}

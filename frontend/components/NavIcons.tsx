@@ -186,6 +186,7 @@ export function PeakTrafficPanelIcon({ className = PANEL_ICON_CLASS }: IconProps
 
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
+      <g transform="translate(11.65 10.3) scale(1.3) translate(-11.65 -10.3)">
       <path
         d="M4.35 11.05A7.85 7.85 0 0 1 5.75 6.35A7.85 7.85 0 0 1 10.95 3.35A7.85 7.85 0 0 1 16.55 4.95A7.85 7.85 0 0 1 18.95 8.55"
         stroke="currentColor"
@@ -217,6 +218,7 @@ export function PeakTrafficPanelIcon({ className = PANEL_ICON_CLASS }: IconProps
       {peakTrafficBar(9.25, 4.75, PEAK_TRAFFIC_BAR_OPACITIES[2])}
       {peakTrafficBar(11.4, 6.35, PEAK_TRAFFIC_BAR_OPACITIES[3])}
       {peakTrafficBar(13.55, 11.5, PEAK_TRAFFIC_BAR_OPACITIES[4])}
+      </g>
     </svg>
   );
 }

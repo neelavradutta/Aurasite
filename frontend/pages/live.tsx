@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useRouter } from 'next/router';
 import Header from '@/components/Header';
 import PageTitle from '@/components/shared/PageTitle';
+import PanelEmptyState from '@/components/shared/PanelEmptyState';
 import Button from '@/components/shared/Button';
 import { ExportHeaderIcon } from '@/components/NavIcons';
 import TabSwitcher from '@/components/shared/TabSwitcher';
@@ -467,9 +468,7 @@ export default function LivePage() {
 
             <div className="mt-5 flex min-h-0 flex-1 flex-col">
               {plateHistory.length === 0 ? (
-                <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-white/10 px-6 py-8 text-center text-sm text-slate-500">
-                  No plates detected yet.
-                </div>
+                <PanelEmptyState message="No plates detected yet." fill className="w-full" />
               ) : (
                 <div
                   className="live-history-scroll live-history-panel space-y-3 overflow-y-auto overscroll-contain pr-1 [scrollbar-color:rgba(0,247,255,0.45)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-cyber-cyan/45"
