@@ -127,6 +127,18 @@
   box-shadow: 0 0 10px rgba(185, 128, 79, 0.35);
 }
 
+[data-theme='brown-cream'] .fiery-speed-card-interactive[data-hovered='true'],
+[data-theme='brown-cream'] .fiery-speed-card-interactive:hover {
+  animation: none;
+  border-color: rgba(185, 128, 79, 0.85);
+  box-shadow:
+    0 0 18px rgba(122, 75, 34, 0.42),
+    0 0 36px rgba(185, 128, 79, 0.28),
+    0 0 28px rgba(185, 128, 79, 0.22),
+    inset 0 0 16px rgba(122, 75, 34, 0.12) !important;
+  transform: scale(1.015);
+}
+
 [data-theme='brown-cream'] .vehicle-speed-peaks__line {
   stroke: var(--cream-brown-primary);
 }
@@ -309,7 +321,7 @@
   color: var(--cream-error);
 }
 
-[data-theme='brown-cream'] .vehicle-modal-action:hover:not(:disabled) {
+[data-theme='brown-cream'] .vehicle-modal-action:hover:not(:disabled):not(.vehicle-modal-action-flag) {
   box-shadow: var(--cream-shadow-sm);
 }
 
@@ -323,6 +335,47 @@
 [data-theme='brown-cream'] .detection-log-row--highlight {
   background: rgba(122, 75, 34, 0.06);
   box-shadow: inset 0 0 0 1px rgba(122, 75, 34, 0.15);
+}
+
+[data-theme='brown-cream'] .detection-log-row--selected {
+  background: rgba(122, 75, 34, 0.08);
+  box-shadow: inset 0 3px 0 0 rgba(122, 75, 34, 0.55);
+}
+
+[data-theme='brown-cream'] .detection-log-row-interactive[data-hovered='true'],
+[data-theme='brown-cream'] .detection-log-row-interactive:hover {
+  background: rgba(122, 75, 34, 0.08);
+  box-shadow:
+    inset 0 3px 0 0 rgba(122, 75, 34, 0.5),
+    inset 0 0 0 1px rgba(122, 75, 34, 0.35),
+    inset 0 0 18px rgba(185, 128, 79, 0.1);
+}
+
+[data-theme='brown-cream'] .detection-log-row-interactive.detection-log-row--highlight[data-hovered='true'],
+[data-theme='brown-cream'] .detection-log-row-interactive.detection-log-row--highlight:hover {
+  background: rgba(122, 75, 34, 0.1);
+  box-shadow:
+    inset 0 3px 0 0 rgba(122, 75, 34, 0.58),
+    inset 0 0 0 1px rgba(122, 75, 34, 0.4),
+    inset 0 0 20px rgba(185, 128, 79, 0.12);
+}
+
+[data-theme='brown-cream'] .detection-log-row-interactive.detection-log-row--selected[data-hovered='true'],
+[data-theme='brown-cream'] .detection-log-row-interactive.detection-log-row--selected:hover {
+  background: rgba(122, 75, 34, 0.12);
+  box-shadow:
+    inset 0 3px 0 0 rgba(122, 75, 34, 0.65),
+    inset 0 0 0 1px rgba(122, 75, 34, 0.45),
+    inset 0 0 20px rgba(185, 128, 79, 0.14);
+}
+
+[data-theme='brown-cream'] .detection-log-row-interactive.detection-log-row--highlight-primary[data-hovered='true'],
+[data-theme='brown-cream'] .detection-log-row-interactive.detection-log-row--highlight-primary:hover {
+  background: rgba(122, 75, 34, 0.14);
+  box-shadow:
+    inset 0 3px 0 0 rgba(122, 75, 34, 0.7),
+    inset 0 0 0 1px rgba(122, 75, 34, 0.48),
+    inset 0 0 22px rgba(185, 128, 79, 0.16);
 }
 
 [data-theme='brown-cream'] .detection-log-row--highlight-primary {
@@ -588,6 +641,12 @@
   filter: drop-shadow(0 2px 8px rgba(122, 75, 34, 0.25));
 }
 
+[data-theme='brown-cream'] .aurasite-icon-trigger__icon {
+  box-shadow:
+    0 0 0 1.5px #7a4b22,
+    0 2px 8px rgba(122, 75, 34, 0.18);
+}
+
 [data-theme='brown-cream'] .plate-card-ring::before {
   background: conic-gradient(from 0deg, #7a4b22, #b9804f, #d8b07a, #7a4b22);
   opacity: 0.35;
@@ -618,6 +677,161 @@
 [data-theme='brown-cream'] .video-results-cyberpunk__video-card--selected {
   border-color: rgba(122, 75, 34, 0.45);
   background: #f1e3d3;
+}
+
+/* Panel & KPI icons — white like cyberpunk (override global text-white remap) */
+[data-theme='brown-cream'] .glass-panel .bg-white\/10.text-white,
+[data-theme='brown-cream'] .bg-white\/10.text-white {
+  background-color: rgba(98, 59, 26, 0.14) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .glass-panel .bg-white\/10.text-white svg,
+[data-theme='brown-cream'] .bg-white\/10.text-white svg {
+  color: #ffffff !important;
+}
+
+/* Flag vehicle — status-colored controls (match cyberpunk semantics, cream palette) */
+[data-theme='brown-cream'] .vehicle-modal-action-flag.border-cyber-green\/45 {
+  border-color: rgba(92, 157, 85, 0.45) !important;
+  background: rgba(92, 157, 85, 0.1) !important;
+  color: #5c9d55 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action-flag.border-cyber-green\/45:hover:not(:disabled) {
+  border-color: rgba(92, 157, 85, 0.65) !important;
+  background: rgba(92, 157, 85, 0.15) !important;
+  color: #4a7d44 !important;
+  box-shadow: 0 0 14px rgba(92, 157, 85, 0.18) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action-flag.border-red-500\/45 {
+  border-color: rgba(195, 90, 69, 0.45) !important;
+  background: rgba(195, 90, 69, 0.1) !important;
+  color: #c35a45 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action-flag.border-red-500\/45:hover:not(:disabled) {
+  border-color: rgba(195, 90, 69, 0.65) !important;
+  background: rgba(195, 90, 69, 0.15) !important;
+  color: #a64839 !important;
+  box-shadow: 0 0 14px rgba(195, 90, 69, 0.18) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action-flag.border-white\/30 {
+  border-color: rgba(122, 75, 34, 0.35) !important;
+  background: rgba(255, 253, 249, 0.92) !important;
+  color: #5c4433 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action-flag.border-white\/30:hover:not(:disabled) {
+  border-color: rgba(122, 75, 34, 0.5) !important;
+  background: #f8f3eb !important;
+  color: #4a2b12 !important;
+  box-shadow: 0 0 14px rgba(122, 75, 34, 0.1) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action-flag.border-yellow-400\/45 {
+  border-color: rgba(210, 154, 53, 0.45) !important;
+  background: rgba(210, 154, 53, 0.1) !important;
+  color: #d29a35 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action-flag.border-yellow-400\/45:hover:not(:disabled) {
+  border-color: rgba(210, 154, 53, 0.65) !important;
+  background: rgba(210, 154, 53, 0.15) !important;
+  color: #b8842a !important;
+  box-shadow: 0 0 14px rgba(210, 154, 53, 0.18) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-status-dropdown .bg-\[\#0a1028\] {
+  background: var(--cream-bg-card) !important;
+  border-color: var(--cream-border) !important;
+  box-shadow: var(--cream-shadow-md) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-status-dropdown button.text-cyber-green {
+  background: transparent !important;
+  color: #5c9d55 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-status-dropdown button.text-red-500 {
+  background: transparent !important;
+  color: #c35a45 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-status-dropdown button.text-yellow-400 {
+  background: transparent !important;
+  color: #d29a35 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-status-dropdown button.text-white {
+  background: transparent !important;
+  color: #5c4433 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-status-dropdown button.hover\:bg-cyber-green\/10:hover {
+  background: rgba(92, 157, 85, 0.12) !important;
+  color: #4a7d44 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-status-dropdown button.hover\:bg-red-500\/10:hover {
+  background: rgba(195, 90, 69, 0.1) !important;
+  color: #a64839 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-status-dropdown button.hover\:bg-yellow-400\/10:hover {
+  background: rgba(210, 154, 53, 0.1) !important;
+  color: #b8842a !important;
+}
+
+[data-theme='brown-cream'] .vehicle-status-dropdown button.hover\:bg-white\/10:hover {
+  background: rgba(122, 75, 34, 0.08) !important;
+  color: #4a2b12 !important;
+}
+
+/* Global brown scrollbars — override inline cyan scrollbar utilities */
+[data-theme='brown-cream'],
+[data-theme='brown-cream'] * {
+  scrollbar-color: var(--cream-brown-secondary) #f4e8db !important;
+}
+
+[data-theme='brown-cream'] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme='brown-cream'] ::-webkit-scrollbar-track {
+  background: #f4e8db !important;
+}
+
+[data-theme='brown-cream'] ::-webkit-scrollbar-thumb {
+  background: var(--cream-brown-secondary) !important;
+  border-radius: 9999px;
+}
+
+[data-theme='brown-cream'] ::-webkit-scrollbar-thumb:hover {
+  background: var(--cream-brown-hover) !important;
+}
+
+[data-theme='brown-cream'] .detection-log-body-scroll,
+[data-theme='brown-cream'] [data-plate-grid-scroll],
+[data-theme='brown-cream'] .live-history-scroll,
+[data-theme='brown-cream'] .suspicious-vehicles-scroll,
+[data-theme='brown-cream'] .video-uploads-scroll {
+  scrollbar-color: var(--cream-brown-secondary) #f4e8db !important;
+}
+
+[data-theme='brown-cream'] .detection-log-body-scroll::-webkit-scrollbar-thumb,
+[data-theme='brown-cream'] [data-plate-grid-scroll]::-webkit-scrollbar-thumb,
+[data-theme='brown-cream'] .live-history-scroll::-webkit-scrollbar-thumb,
+[data-theme='brown-cream'] .suspicious-vehicles-scroll::-webkit-scrollbar-thumb,
+[data-theme='brown-cream'] .video-uploads-scroll::-webkit-scrollbar-thumb {
+  background: var(--cream-brown-secondary) !important;
 }
 
 /* btn styles moved to buttons.css */

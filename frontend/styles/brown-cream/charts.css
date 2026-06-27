@@ -73,6 +73,40 @@
   text-shadow: none !important;
 }
 
+[data-theme='brown-cream'] .repeat-analytics-bar-interactive--cyan:hover .repeat-analytics-bar-shell-cyan {
+  box-shadow:
+    0 0 14px rgba(122, 75, 34, 0.42),
+    0 0 28px rgba(122, 75, 34, 0.2),
+    inset 0 0 14px rgba(122, 75, 34, 0.12);
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-interactive--magenta:hover .repeat-analytics-bar-shell-magenta {
+  box-shadow:
+    0 0 14px rgba(195, 90, 69, 0.42),
+    0 0 28px rgba(195, 90, 69, 0.2),
+    inset 0 0 14px rgba(195, 90, 69, 0.12);
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-interactive--cyan:hover .repeat-analytics-bar-fill-cyan {
+  filter: drop-shadow(0 0 8px rgba(185, 128, 79, 0.55));
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-interactive--magenta:hover .repeat-analytics-bar-fill-magenta {
+  filter: drop-shadow(0 0 8px rgba(195, 90, 69, 0.55));
+}
+
+[data-theme='brown-cream'] .repeat-analytics-most-active-interactive:hover .repeat-analytics-most-active-box {
+  box-shadow:
+    0 0 14px rgba(122, 75, 34, 0.38),
+    0 0 24px rgba(122, 75, 34, 0.18),
+    inset 0 0 10px rgba(122, 75, 34, 0.1);
+}
+
+[data-theme='brown-cream'] .repeat-analytics-most-active-interactive:hover .repeat-analytics-most-active-plate,
+[data-theme='brown-cream'] .repeat-analytics-most-active-interactive:hover .repeat-analytics-most-active-label {
+  text-shadow: none;
+}
+
 [data-theme='brown-cream'] .repeat-bar-chart-layout .tracking-\[0\.14em\] {
   text-shadow: none !important;
 }
@@ -156,6 +190,17 @@
 [data-theme='brown-cream'] .frequent-vehicle-progress::after {
   mix-blend-mode: soft-light;
   opacity: 0.65;
+}
+
+[data-theme='brown-cream'] .frequent-vehicle-bar-interactive[data-hovered='true'] .frequent-vehicle-bar-shell,
+[data-theme='brown-cream'] .frequent-vehicle-bar-interactive:hover .frequent-vehicle-bar-shell {
+  border-color: color-mix(in srgb, var(--fv-shell-border) 72%, white);
+  box-shadow:
+    0 0 18px var(--fv-shell-glow),
+    0 0 36px color-mix(in srgb, var(--fv-shell-glow) 85%, transparent),
+    0 0 28px var(--fv-bar-glow),
+    inset 0 0 16px color-mix(in srgb, var(--fv-shell-glow) 55%, transparent) !important;
+  transform: scale(1.015);
 }
 
 [data-theme='brown-cream'] .suspicious-vehicles-scroll {

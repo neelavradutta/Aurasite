@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { fetchDetections } from '@/services/api';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useLiveStore } from '@/store/liveStore';
+import { isLiveVideoSource } from '@/utils/liveVideoSource';
 import {
   loadDashboardSessionSnapshot,
   loadLiveSessionSnapshot,
@@ -75,6 +76,31 @@ export function useSessionPersistence() {
       unsubscribeLive();
       if (dashboardTimer) window.clearTimeout(dashboardTimer);
       if (liveTimer) window.clearTimeout(liveTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    function refreshDashboardDetections() {
+      if (document.visibilityState !== 'visible') return;
+
+      const { sessionVideoSource, setDetections } = useDashboardStore.getState();
+      if (!sessionVideoSource || isLiveVideoSource(sessionVideoSource)) return;
+
+      void fetchDetections({ limit: 200, video_source: sessionVideoSource })
+        .then((response) => {
+          const rows = response.data || [];
+          if (rows.length > 0) {
+            setDetections(rows);
+          }
+        })
+        .catch(() => undefined);
+    }
+
+    document.addEventListener('visibilitychange', refreshDashboardDetections);
+    window.addEventListener('focus', refreshDashboardDetections);
+    return () => {
+      document.removeEventListener('visibilitychange', refreshDashboardDetections);
+      window.removeEventListener('focus', refreshDashboardDetections);
     };
   }, []);
 }

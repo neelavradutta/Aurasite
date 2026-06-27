@@ -52,9 +52,21 @@ function VehicleFrontCarGraphic({ strokeWidth = 1.5 }: { strokeWidth?: number })
 
 export function VehiclesNavIcon({ className = 'h-4 w-4 shrink-0' }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
-      <g transform="translate(12 12) scale(0.9) translate(-12 -12)">
-        <VehicleFrontCarGraphic strokeWidth={1.35} />
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <g transform="translate(12 12) scale(2.22) translate(-12 -12)">
+        <path d="M3.5 14.25V11.85L4.35 9.35L5 8.85C6.95 7.35 9.35 6.75 12 6.75C14.65 6.75 17.05 7.35 19 8.85L19.65 9.35L20.35 11.85V14.25" />
+        <path d="M20 13.75H18.25M5.75 13.75H3.5" />
+        <circle cx="8" cy="14.25" r="1.45" />
+        <circle cx="16" cy="14.25" r="1.45" />
       </g>
     </svg>
   );
@@ -65,6 +77,58 @@ export function VehiclesPanelIcon({ className = PANEL_ICON_CLASS }: IconProps) {
     <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
       <g transform="translate(12 12) scale(0.9) translate(-12 -12)">
         <VehicleFrontCarGraphic strokeWidth={1.5} />
+      </g>
+    </svg>
+  );
+}
+
+export function MostFrequentVehiclesPanelIcon({ className = PANEL_ICON_CLASS }: IconProps) {
+  const cx = 12;
+  const cy = 11.75;
+
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
+      <g transform="translate(12 12) scale(1.15) translate(-12 -12)">
+        <circle cx={cx} cy={cy} r="4.95" stroke="currentColor" strokeWidth="1.08" fill="none" />
+        <circle cx={cx} cy={cy} r="3.35" stroke="currentColor" strokeWidth="1.08" fill="none" />
+        <circle cx={cx} cy={cy} r="1.75" stroke="currentColor" strokeWidth="1.08" fill="none" />
+        <path d="M7.35 11.75H16.65" stroke="currentColor" strokeWidth="1.08" strokeLinecap="round" />
+
+        <path
+          d="M3.95 13.05
+             V11.35
+             V9.15
+             L4.85 9
+             L5.35 9.45
+             C6.35 8.05 8.15 6.85 10.35 6.7
+             C12.55 6.55 14.75 7.25 16.55 8.45
+             C18.35 9.65 19.75 11.05 20.15 12.55"
+          stroke="currentColor"
+          strokeWidth="1.32"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+
+        <path
+          d="M20.15 12.85
+             L19.35 13.35
+             H17.65
+             Q16.35 13.35 15.75 14.55
+             Q15.15 15.75 14.55 16.05
+             H13.05
+             Q12.35 16.05 11.95 15.45
+             Q11.55 14.85 10.95 14.85
+             Q10.35 14.85 9.95 15.45
+             Q9.55 16.05 8.85 16.05
+             H7.35
+             Q6.75 15.75 6.15 14.55
+             Q5.55 13.35 4.25 13.35
+             H3.95"
+          stroke="currentColor"
+          strokeWidth="1.32"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </g>
     </svg>
   );
@@ -641,7 +705,7 @@ export function StarDetailIcon({ className = 'h-3.5 w-3.5 shrink-0' }: IconProps
   );
 }
 
-export function ExportHeaderIcon({ className = 'h-3.5 w-3.5 shrink-0' }: IconProps) {
+export function ExportHeaderIcon({ className = 'h-6 w-6 shrink-0' }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
       <path

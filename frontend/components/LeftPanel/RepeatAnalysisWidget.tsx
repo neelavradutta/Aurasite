@@ -251,20 +251,20 @@ function MostActivePlateColumn({ plate }: { plate: string }) {
   const cream = isCreamTheme(useThemeStore((state) => state.theme));
 
   return (
-    <div className="flex min-w-[11rem] shrink-0 flex-col items-center gap-2">
+    <div className="repeat-analytics-most-active-interactive flex min-w-[11rem] shrink-0 flex-col items-center gap-2">
       <div className="h-[1.25rem] w-full shrink-0 sm:h-[1.5rem]" aria-hidden />
 
       <div className="flex h-56 w-full min-w-[11rem] max-w-[12rem] flex-col items-center justify-center gap-2">
-        <div className="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg border border-[#00d4ff] bg-[rgba(0,212,255,0.1)] px-4 sm:h-[4.25rem]">
+        <div className="repeat-analytics-most-active-box relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg border border-[#00d4ff] bg-[rgba(0,212,255,0.1)] px-4 sm:h-[4.25rem]">
           <p
-            className="w-full truncate text-center font-orbitron text-base font-bold leading-none tracking-wide text-[#00d4ff] sm:text-lg"
+            className="repeat-analytics-most-active-plate w-full truncate text-center font-orbitron text-base font-bold leading-none tracking-wide text-[#00d4ff] sm:text-lg"
             style={{ textShadow: cream ? 'none' : '0 0 8px rgba(0, 212, 255, 0.55)' }}
           >
             {plate}
           </p>
         </div>
 
-        <p className="w-full truncate text-center text-xs font-bold uppercase tracking-[0.14em] text-[#00d4ff]">
+        <p className="repeat-analytics-most-active-label w-full truncate text-center text-xs font-bold uppercase tracking-[0.14em] text-[#00d4ff]">
           Most Active
         </p>
       </div>
@@ -303,7 +303,11 @@ function AnalyticsBarColumn({
       : '0 0 8px rgba(255, 0, 110, 0.55)';
 
   return (
-    <div className="flex w-[4.75rem] shrink-0 flex-col items-center sm:w-[5.25rem]">
+    <div
+      className={`repeat-analytics-bar-interactive flex w-[4.75rem] shrink-0 flex-col items-center sm:w-[5.25rem] ${
+        isCyan ? 'repeat-analytics-bar-interactive--cyan' : 'repeat-analytics-bar-interactive--magenta'
+      }`}
+    >
       <div
         className={`relative h-44 w-full overflow-hidden rounded-none border-[3px] border-b-0 bg-[rgba(0,0,0,0.15)] sm:h-48 ${
           isCyan
@@ -322,7 +326,7 @@ function AnalyticsBarColumn({
         )}
         {value > 0 && (
           <span
-            className="pointer-events-none absolute inset-x-0 top-3 z-10 text-center font-orbitron text-base font-bold leading-none sm:text-lg"
+            className="repeat-analytics-bar-value pointer-events-none absolute inset-x-0 top-3 z-10 text-center font-orbitron text-base font-bold leading-none sm:text-lg"
             style={{ color: barColor, textShadow: valueShadow }}
           >
             {value}

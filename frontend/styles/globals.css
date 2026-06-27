@@ -365,6 +365,26 @@ body {
   background: rgba(0, 0, 0, 0.2);
   border: 2px solid rgba(255, 140, 0, 0.55);
   animation: fiery-box-glow 2s ease-in-out infinite;
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.fiery-speed-card-interactive {
+  cursor: default;
+}
+
+.fiery-speed-card-interactive[data-hovered='true'],
+.fiery-speed-card-interactive:hover {
+  animation: none;
+  border-color: rgba(255, 175, 0, 0.95);
+  box-shadow:
+    0 0 18px rgba(255, 140, 0, 0.65),
+    0 0 36px rgba(255, 100, 0, 0.45),
+    0 0 28px rgba(255, 90, 0, 0.35),
+    inset 0 0 16px rgba(255, 120, 0, 0.15) !important;
+  transform: scale(1.015);
 }
 
 .fiery-speed-card::before {
@@ -1376,6 +1396,55 @@ body {
   box-shadow: inset 0 0 0 1px rgba(0, 247, 255, 0.22);
 }
 
+.detection-log-row--selected {
+  background: rgba(0, 247, 255, 0.1);
+  box-shadow: inset 0 3px 0 0 rgba(0, 255, 255, 0.8);
+}
+
+.detection-log-row-interactive {
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.detection-log-row-interactive[data-hovered='true'],
+.detection-log-row-interactive:hover {
+  position: relative;
+  z-index: 2;
+  background: rgba(0, 247, 255, 0.08);
+  box-shadow:
+    inset 0 3px 0 0 rgba(0, 255, 255, 0.65),
+    inset 0 0 0 1px rgba(0, 247, 255, 0.45),
+    inset 0 0 18px rgba(0, 247, 255, 0.12);
+}
+
+.detection-log-row-interactive.detection-log-row--highlight[data-hovered='true'],
+.detection-log-row-interactive.detection-log-row--highlight:hover {
+  background: rgba(0, 247, 255, 0.12);
+  box-shadow:
+    inset 0 3px 0 0 rgba(0, 255, 255, 0.7),
+    inset 0 0 0 1px rgba(0, 247, 255, 0.5),
+    inset 0 0 20px rgba(0, 247, 255, 0.14);
+}
+
+.detection-log-row-interactive.detection-log-row--selected[data-hovered='true'],
+.detection-log-row-interactive.detection-log-row--selected:hover {
+  background: rgba(0, 247, 255, 0.14);
+  box-shadow:
+    inset 0 3px 0 0 rgba(0, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(0, 247, 255, 0.55),
+    inset 0 0 20px rgba(0, 247, 255, 0.16);
+}
+
+.detection-log-row-interactive.detection-log-row--highlight-primary[data-hovered='true'],
+.detection-log-row-interactive.detection-log-row--highlight-primary:hover {
+  background: rgba(0, 247, 255, 0.16);
+  box-shadow:
+    inset 0 3px 0 0 rgba(0, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(0, 247, 255, 0.55),
+    inset 0 0 22px rgba(0, 247, 255, 0.18);
+}
+
 .detection-log-row--highlight-primary {
   background: rgba(0, 247, 255, 0.14);
   box-shadow:
@@ -1834,6 +1903,7 @@ body {
     0 0 10px rgba(0, 229, 255, 0.35),
     0 0 22px rgba(0, 229, 255, 0.15),
     inset 0 0 10px rgba(0, 229, 255, 0.08);
+  transition: box-shadow 0.3s ease;
 }
 
 .repeat-analytics-bar-shell-magenta {
@@ -1841,6 +1911,56 @@ body {
     0 0 10px rgba(255, 0, 110, 0.35),
     0 0 22px rgba(255, 0, 110, 0.15),
     inset 0 0 10px rgba(255, 0, 110, 0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+.repeat-analytics-bar-interactive {
+  cursor: default;
+}
+
+.repeat-analytics-bar-interactive--cyan:hover .repeat-analytics-bar-shell-cyan {
+  box-shadow:
+    0 0 14px rgba(0, 229, 255, 0.65),
+    0 0 28px rgba(0, 229, 255, 0.35),
+    inset 0 0 14px rgba(0, 229, 255, 0.15);
+}
+
+.repeat-analytics-bar-interactive--cyan:hover .repeat-analytics-bar-fill-cyan {
+  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.65));
+}
+
+.repeat-analytics-bar-interactive--magenta:hover .repeat-analytics-bar-shell-magenta {
+  box-shadow:
+    0 0 14px rgba(255, 0, 110, 0.65),
+    0 0 28px rgba(255, 0, 110, 0.35),
+    inset 0 0 14px rgba(255, 0, 110, 0.15);
+}
+
+.repeat-analytics-bar-interactive--magenta:hover .repeat-analytics-bar-fill-magenta {
+  filter: drop-shadow(0 0 8px rgba(255, 0, 110, 0.65));
+}
+
+.repeat-analytics-most-active-interactive {
+  cursor: default;
+}
+
+.repeat-analytics-most-active-box {
+  transition: box-shadow 0.3s ease;
+}
+
+.repeat-analytics-most-active-interactive:hover .repeat-analytics-most-active-box {
+  box-shadow:
+    0 0 12px rgba(0, 212, 255, 0.65),
+    0 0 24px rgba(0, 212, 255, 0.35),
+    inset 0 0 12px rgba(0, 212, 255, 0.12);
+}
+
+.repeat-analytics-most-active-interactive:hover .repeat-analytics-most-active-plate {
+  text-shadow: 0 0 14px rgba(0, 212, 255, 0.75);
+}
+
+.repeat-analytics-most-active-interactive:hover .repeat-analytics-most-active-label {
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.55);
 }
 
 @keyframes repeat-bar-wave-scroll {
@@ -1883,6 +2003,7 @@ body {
   height: 0;
   border-radius: 0;
   background: #00e5ff;
+  transition: filter 0.3s ease;
   animation:
     repeat-bar-fill-up 2s ease-out forwards,
     repeat-bar-neon-glow-cyan 2.4s ease-in-out infinite;
@@ -1897,6 +2018,7 @@ body {
   height: 0;
   border-radius: 0;
   background: #ff006e;
+  transition: filter 0.3s ease;
   animation:
     repeat-bar-fill-up 2s ease-out forwards,
     repeat-bar-neon-glow-magenta 2.4s ease-in-out infinite;
@@ -1919,6 +2041,26 @@ body {
     0 0 10px var(--fv-shell-glow),
     0 0 20px color-mix(in srgb, var(--fv-shell-glow) 45%, transparent),
     inset 0 0 8px color-mix(in srgb, var(--fv-shell-glow) 25%, transparent);
+  transition:
+    box-shadow 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.frequent-vehicle-bar-interactive {
+  cursor: default;
+  border-radius: 0.5rem;
+}
+
+.frequent-vehicle-bar-interactive[data-hovered='true'] .frequent-vehicle-bar-shell,
+.frequent-vehicle-bar-interactive:hover .frequent-vehicle-bar-shell {
+  border-color: color-mix(in srgb, var(--fv-shell-border) 72%, white);
+  box-shadow:
+    0 0 18px var(--fv-shell-glow),
+    0 0 36px color-mix(in srgb, var(--fv-shell-glow) 85%, transparent),
+    0 0 28px var(--fv-bar-glow),
+    inset 0 0 16px color-mix(in srgb, var(--fv-shell-glow) 55%, transparent) !important;
+  transform: scale(1.015);
 }
 
 .frequent-vehicle-progress {
@@ -1931,6 +2073,7 @@ body {
   box-shadow: 0 0 14px var(--fv-bar-glow);
   animation: frequent-vehicle-slide 1.6s ease-out forwards;
   animation-delay: var(--bar-delay, 0ms);
+  transition: box-shadow 0.3s ease;
 }
 
 .frequent-vehicle-progress::after {

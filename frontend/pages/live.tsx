@@ -7,11 +7,11 @@ import Button from '@/components/shared/Button';
 import { ExportHeaderIcon } from '@/components/NavIcons';
 import TabSwitcher from '@/components/shared/TabSwitcher';
 import StatusBadge from '@/components/shared/StatusBadge';
-import { LiveDetectionFrame } from '@/services/api';
+import DetectionSnapshotImage from '@/components/DetectionSnapshotImage';
+import { LiveDetectionFrame, downloadLiveReport, fetchDetectionSnapshotBlob } from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
 import { useLiveDetection, useLiveCameraVideo } from '@/hooks/useLiveDetection';
-import { downloadLiveReport } from '@/services/api';
-import { getLiveSnapshotSrc } from '@/utils/liveVideoSource';
+import { getLiveSnapshotInlineSrc, hasLiveSnapshot } from '@/utils/liveVideoSource';
 
 const LIVE_HISTORY_VISIBLE = 5;
 /** 5 cards (5.5rem each) + 4 gaps (space-y-3) */
@@ -31,11 +31,26 @@ function formatOverlayVehicleLine(
   return `Vehicle - ${vehicle}`;
 }
 
-function downloadLiveSnapshot(item: LiveDetectionFrame, snapshotSrc: string): void {
+async function downloadLiveSnapshot(item: LiveDetectionFrame): Promise<void> {
+  const inline = getLiveSnapshotInlineSrc(item);
+  const filename = `plate-${item.plate_number || item.frame_id || 'snapshot'}.jpg`;
+
+  if (inline) {
+    const link = document.createElement('a');
+    link.href = inline;
+    link.download = filename;
+    link.click();
+    return;
+  }
+
+  if (!item.detection_id) return;
+
+  const blob = await fetchDetectionSnapshotBlob(item.detection_id);
   const link = document.createElement('a');
-  link.href = snapshotSrc;
-  link.download = `plate-${item.plate_number || item.frame_id || 'snapshot'}.jpg`;
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
   link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 export default function LivePage() {
@@ -229,7 +244,8 @@ export default function LivePage() {
     });
   }
 
-  const previewSnapshotSrc = previewItem ? getLiveSnapshotSrc(previewItem) : null;
+  const previewInlineSrc = previewItem ? getLiveSnapshotInlineSrc(previewItem) : null;
+  const previewHasSnapshot = previewItem ? hasLiveSnapshot(previewItem) : false;
 
   return (
     <div className="min-h-screen">
@@ -526,10 +542,11 @@ export default function LivePage() {
                 </div>
 
                 <div className="overflow-hidden rounded-xl border-2 border-black bg-black/40">
-                  {previewSnapshotSrc ? (
-                    <img
-                      src={previewSnapshotSrc}
-                      alt={`Vehicle snapshot ${previewItem.plate_number}`}
+                  {previewHasSnapshot && previewItem ? (
+                    <DetectionSnapshotImage
+                      detectionId={previewItem.detection_id ?? undefined}
+                      inlineSrc={previewInlineSrc}
+                      plateNumber={previewItem.plate_number}
                       className="max-h-[420px] w-full border border-black object-contain"
                     />
                   ) : (
@@ -542,10 +559,10 @@ export default function LivePage() {
                 <div className="mt-4 flex justify-end">
                   <button
                     type="button"
-                    disabled={!previewSnapshotSrc}
+                    disabled={!previewHasSnapshot}
                     onClick={() => {
-                      if (previewSnapshotSrc) {
-                        downloadLiveSnapshot(previewItem, previewSnapshotSrc);
+                      if (previewItem) {
+                        void downloadLiveSnapshot(previewItem).catch(() => undefined);
                       }
                     }}
                     className="rounded-md border border-cyber-cyan/50 bg-cyber-cyan/10 px-4 py-2 text-sm text-cyber-cyan transition hover:bg-cyber-cyan/20 disabled:cursor-not-allowed disabled:opacity-50"

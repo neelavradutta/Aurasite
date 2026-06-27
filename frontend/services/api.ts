@@ -399,13 +399,27 @@ export function getDetectionSnapshotUrl(detectionId: number): string {
   return `${API_BASE_URL}/api/v1/detections/${detectionId}/snapshot`;
 }
 
+export async function fetchDetectionSnapshotBlob(detectionId: number): Promise<Blob> {
+  const token = getSessionItem<string | null>('auth_token', null);
+  const headers: HeadersInit = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(getDetectionSnapshotUrl(detectionId), {
+    headers,
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    throw new Error('snapshot unavailable');
+  }
+  return response.blob();
+}
+
 export async function downloadDetectionSnapshot(detection: Detection): Promise<void> {
   if (!detection.frame_image_path) return;
 
-  const response = await fetch(getDetectionSnapshotUrl(detection.id));
-  if (!response.ok) throw new Error('Download failed');
-
-  const blob = await response.blob();
+  const blob = await fetchDetectionSnapshotBlob(detection.id);
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
   link.download = `plate-${detection.plate_number || detection.id}.jpg`;

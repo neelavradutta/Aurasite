@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useState } from 'react';
 import Card from '@/components/shared/Card';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import { SpeedometerPanelIcon } from '@/components/NavIcons';
@@ -21,21 +22,28 @@ function SpeedCard({
   compact = false,
   fillRow = false,
   barHeightClass = '',
+  interactive = false,
 }: {
   reading: VehicleSpeedReading;
   compact?: boolean;
   fillRow?: boolean;
   barHeightClass?: string;
+  interactive?: boolean;
 }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div
       className={`fiery-speed-card flex min-w-0 items-center justify-between gap-2 rounded-xl ${
-        compact ? 'px-2.5 py-2' : 'px-3 py-2.5'
-      } ${
+        interactive ? 'fiery-speed-card-interactive' : ''
+      } ${compact ? 'px-2.5 py-2' : 'px-3 py-2.5'} ${
         fillRow
           ? 'h-full min-h-0'
           : barHeightClass || (compact ? 'h-[2.125rem] shrink-0' : '')
       }`}
+      data-hovered={interactive && hovered ? 'true' : undefined}
+      onMouseEnter={() => interactive && setHovered(true)}
+      onMouseLeave={() => interactive && setHovered(false)}
     >
       <p
         className={`fiery-speed-text min-w-0 flex-1 truncate font-orbitron font-bold leading-none ${
@@ -70,6 +78,7 @@ function DashboardSpeedList({ readings }: { readings: VehicleSpeedReading[] }) {
             reading={reading}
             compact
             fillRow
+            interactive
           />
         ))}
       </div>
@@ -87,6 +96,7 @@ function DashboardSpeedList({ readings }: { readings: VehicleSpeedReading[] }) {
           reading={reading}
           compact
           barHeightClass={barHeightClass}
+          interactive
         />
       ))}
     </div>

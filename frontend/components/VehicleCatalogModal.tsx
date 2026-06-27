@@ -3,9 +3,9 @@ import { createPortal } from 'react-dom';
 import MarqueeText from '@/components/shared/MarqueeText';
 import VehicleStatusBadge from '@/components/VehicleStatusBadge';
 import VehicleNeuralShell, { EditableValue } from '@/components/VehicleNeuralOverlays';
+import DetectionSnapshotImage from '@/components/DetectionSnapshotImage';
 import { updateVehicle } from '@/services/api';
 import { Vehicle, VehicleDetectionSummary, VehicleStatus } from '@/types/vehicle';
-import { getDetectionSnapshotUrl } from '@/services/api';
 import {
   formatDetectionCount,
   getVehicleLocationHint,
@@ -232,8 +232,7 @@ export default function VehicleCatalogModal({
   const otherStatuses = getOtherStatuses(currentStatus);
   const locationHint = getVehicleLocationHint(displayVehicle) || 'Camera GPS pending';
   const latestDetection = timeline[0];
-  const snapshotUrl =
-    latestDetection?.frame_image_path ? getDetectionSnapshotUrl(latestDetection.id) : null;
+  const hasSnapshot = Boolean(latestDetection?.frame_image_path);
 
   return createPortal(
     <div
@@ -297,10 +296,10 @@ export default function VehicleCatalogModal({
               <section className="modal-stagger-2 shrink-0">
                 <p className="relative z-10 mb-2 text-xs uppercase tracking-[0.14em] text-[#6B7A8F]">Car Snapshot</p>
                 <div className="overflow-hidden rounded-lg border border-white/10 bg-black/25">
-                  {snapshotUrl ? (
-                    <img
-                      src={snapshotUrl}
-                      alt={`Car snapshot ${displayVehicle.plate_number}`}
+                  {hasSnapshot && latestDetection ? (
+                    <DetectionSnapshotImage
+                      detectionId={latestDetection.id}
+                      plateNumber={displayVehicle.plate_number}
                       className="h-44 w-full bg-black/40 object-cover object-bottom"
                     />
                   ) : (

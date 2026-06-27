@@ -1,35 +1,57 @@
-import { useEffect, useState } from 'react';
-import { getDetectionSnapshotUrl } from '@/services/api';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { fetchDetectionSnapshotBlob } from '@/services/api';
 
 interface Props {
-  detectionId: number;
+  detectionId?: number;
+  inlineSrc?: string | null;
   plateNumber?: string | null;
   className?: string;
 }
 
 export default function DetectionSnapshotImage({
   detectionId,
+  inlineSrc,
   plateNumber,
   className,
 }: Props) {
   const [src, setSrc] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
+  const objectUrlRef = useRef<string | null>(null);
+
+  const revokeObjectUrl = useCallback(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
-    let objectUrl: string | null = null;
 
     async function loadSnapshot() {
+      if (inlineSrc) {
+        setFailed(false);
+        revokeObjectUrl();
+        setSrc(inlineSrc);
+        return;
+      }
+
+      if (!detectionId) {
+        setFailed(true);
+        setSrc(null);
+        revokeObjectUrl();
+        return;
+      }
+
       setFailed(false);
       setSrc(null);
+      revokeObjectUrl();
 
       try {
-        const response = await fetch(getDetectionSnapshotUrl(detectionId));
-        if (!response.ok) throw new Error('snapshot unavailable');
-        const blob = await response.blob();
+        const blob = await fetchDetectionSnapshotBlob(detectionId);
         if (cancelled) return;
-        objectUrl = URL.createObjectURL(blob);
-        setSrc(objectUrl);
+        objectUrlRef.current = URL.createObjectURL(blob);
+        setSrc(objectUrlRef.current);
       } catch {
         if (!cancelled) setFailed(true);
       }
@@ -37,11 +59,21 @@ export default function DetectionSnapshotImage({
 
     void loadSnapshot();
 
+    function handleVisibilityChange() {
+      if (document.visibilityState !== 'visible' || cancelled) return;
+      void loadSnapshot();
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+
     return () => {
       cancelled = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+      revokeObjectUrl();
     };
-  }, [detectionId]);
+  }, [detectionId, inlineSrc, revokeObjectUrl]);
 
   if (failed || !src) {
     return (

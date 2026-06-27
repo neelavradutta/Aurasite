@@ -78,13 +78,23 @@
 
 /* KPI icon boxes */
 [data-theme='brown-cream'] .kpi-icon-box {
-  background-color: #f4e6d7 !important;
-  border-color: #e8d8c5 !important;
+  background-color: rgba(98, 59, 26, 0.14) !important;
+  border-color: rgba(122, 75, 34, 0.22) !important;
 }
 
 [data-theme='brown-cream'] .kpi-icon-box .text-white,
 [data-theme='brown-cream'] .kpi-icon-box svg {
-  color: #7a4b22 !important;
+  color: #ffffff !important;
+}
+
+/* Panel & KPI icon boxes — white icons like cyberpunk default */
+[data-theme='brown-cream'] .bg-white\/10.text-white {
+  background-color: rgba(98, 59, 26, 0.14) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .bg-white\/10.text-white svg {
+  color: #ffffff !important;
 }
 
 /* Header nav active pill */
@@ -374,8 +384,13 @@
 }
 
 [data-theme='brown-cream'] .border-cyber-green\/40,
+[data-theme='brown-cream'] .border-cyber-green\/45,
 [data-theme='brown-cream'] .hover\:border-cyber-green\/70:hover {
   border-color: rgba(92, 157, 85, 0.4) !important;
+}
+
+[data-theme='brown-cream'] .border-cyber-green\/45 {
+  border-color: rgba(92, 157, 85, 0.45) !important;
 }
 
 [data-theme='brown-cream'] .border-cyber-purple\/30 {

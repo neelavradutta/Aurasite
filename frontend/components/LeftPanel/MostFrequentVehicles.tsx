@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import { useState } from 'react';
 import { Vehicle } from '@/types/vehicle';
 import { getVehicleTypeIcon, resolveVehicleType } from '@/utils/vehicleCardDisplay';
-import { PANEL_ICON_CLASS, VehiclesPanelIcon } from '@/components/NavIcons';
+import { MostFrequentVehiclesPanelIcon, PANEL_ICON_CLASS } from '@/components/NavIcons';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import Card from '../shared/Card';
 import Badge from '../shared/Badge';
@@ -51,7 +52,7 @@ export default function MostFrequentVehicles({
         } ${className}`}
       >
         <PanelIconHeader
-          icon={<VehiclesPanelIcon className={PANEL_ICON_CLASS} />}
+          icon={<MostFrequentVehiclesPanelIcon className={PANEL_ICON_CLASS} />}
           title="Most Frequent Vehicles"
           subtitle="Plates seen most often in recent detections."
           iconBg="bg-white/10"
@@ -72,6 +73,7 @@ export default function MostFrequentVehicles({
                 rank={index + 1}
                 maxHits={maxHits}
                 delay={index * 120}
+                interactive
               />
             ))
           )}
@@ -97,7 +99,7 @@ export default function MostFrequentVehicles({
       } ${className}`.trim()}
     >
       <PanelIconHeader
-        icon={<VehiclesPanelIcon className={PANEL_ICON_CLASS} />}
+        icon={<MostFrequentVehiclesPanelIcon className={PANEL_ICON_CLASS} />}
         title="Most Frequent Vehicles"
         subtitle="Plates seen most often in recent detections."
         iconBg="bg-white/10"
@@ -183,18 +185,28 @@ function FrequentVehicleBar({
   rank,
   maxHits,
   delay,
+  interactive = false,
 }: {
   vehicle: Vehicle;
   rank: number;
   maxHits: number;
   delay: number;
+  interactive?: boolean;
 }) {
+  const [hovered, setHovered] = useState(false);
   const widthPct = Math.max((vehicle.detection_count / maxHits) * 100, 8);
   const toneClass = `frequent-vehicle-tone-${Math.min(rank, 5)}`;
   const vehicleIcon = getVehicleTypeIcon(resolveVehicleType(vehicle.vehicle_type));
 
   return (
-    <div className={`flex flex-col gap-1.5 ${toneClass}`}>
+    <div
+      className={`flex flex-col gap-1.5 ${toneClass}${
+        interactive ? ' frequent-vehicle-bar-interactive' : ''
+      }`}
+      data-hovered={interactive && hovered ? 'true' : undefined}
+      onMouseEnter={() => interactive && setHovered(true)}
+      onMouseLeave={() => interactive && setHovered(false)}
+    >
       <div className="flex items-center justify-between gap-3">
         <p className="fv-plate-label truncate font-orbitron text-sm font-bold tracking-wide">
           {vehicle.plate_number}

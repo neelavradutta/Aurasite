@@ -172,9 +172,10 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
 
       context.lineWidth = 1.5;
       circuits.forEach((circuit) => {
-        const pulseAlpha = circuit.alpha * (1 + 0.4 * Math.sin(time * 2 + circuit.phase));
+        const baseAlpha = cream ? circuit.alpha * 2.5 : circuit.alpha;
+        const pulseAlpha = baseAlpha * (1 + 0.4 * Math.sin(time * 2 + circuit.phase));
         context.strokeStyle = cream
-          ? `rgba(122, 75, 34, ${pulseAlpha})`
+          ? `rgba(74, 43, 18, ${Math.min(pulseAlpha, 0.45)})`
           : `rgba(0, 180, 255, ${pulseAlpha})`;
         context.beginPath();
         context.moveTo(circuit.points[0].x, circuit.points[0].y);
@@ -184,31 +185,37 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
         context.stroke();
       });
 
-      context.globalCompositeOperation = 'screen';
+      context.globalCompositeOperation = cream ? 'source-over' : 'screen';
       particles.forEach((particle) => {
         particle.update();
         particle.draw(context);
       });
+      context.globalCompositeOperation = 'source-over';
 
       const grad = context.createLinearGradient(cx - 130, cy - 130, cx + 130, cy + 130);
       grad.addColorStop(0, palette.iconRingStart);
       grad.addColorStop(0.4, palette.iconRingMid);
       grad.addColorStop(1, palette.iconRingEnd);
 
-      const passes = [
-        { blur: 45, opacity: 0.25, width: 14 },
-        { blur: 20, opacity: 0.45, width: 8 },
-        { blur: 8, opacity: 0.75, width: 4 },
-        { blur: 2, opacity: 1.0, width: 2 },
-      ];
+      const passes = cream
+        ? [
+            { blur: 8, opacity: 0.35, width: 8 },
+            { blur: 0, opacity: 1, width: 3.5 },
+          ]
+        : [
+            { blur: 45, opacity: 0.25, width: 14 },
+            { blur: 20, opacity: 0.45, width: 8 },
+            { blur: 8, opacity: 0.75, width: 4 },
+            { blur: 2, opacity: 1.0, width: 2 },
+          ];
       const pulseIntensity = 1 + 0.05 * Math.sin(time * 2.5);
 
       passes.forEach((pass) => {
         context.save();
         context.strokeStyle = grad;
         context.globalAlpha = pass.opacity;
-        context.shadowColor = palette.iconShadow;
-        context.shadowBlur = pass.blur * pulseIntensity;
+        context.shadowColor = cream ? 'transparent' : palette.iconShadow;
+        context.shadowBlur = cream ? 0 : pass.blur * pulseIntensity;
         context.lineWidth = (pass.width + 2) * 1.1;
         context.beginPath();
         context.arc(cx, cy, 125, 0, Math.PI * 2);

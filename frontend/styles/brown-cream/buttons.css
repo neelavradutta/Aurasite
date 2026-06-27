@@ -328,14 +328,14 @@
   box-shadow: 0 6px 22px rgba(74, 43, 18, 0.34) !important;
 }
 
-/* Vehicle modal actions */
-[data-theme='brown-cream'] .vehicle-modal-action {
+/* Vehicle modal actions — solid brown for edit/history; flag keeps status colors */
+[data-theme='brown-cream'] .vehicle-modal-action:not(.vehicle-modal-action-flag) {
   border-color: var(--cream-btn-solid) !important;
   color: #ffffff !important;
   background: var(--cream-btn-solid) !important;
 }
 
-[data-theme='brown-cream'] .vehicle-modal-action:hover:not(:disabled) {
+[data-theme='brown-cream'] .vehicle-modal-action:not(.vehicle-modal-action-flag):hover:not(:disabled) {
   border-color: var(--cream-btn-solid-hover) !important;
   background: var(--cream-btn-solid-hover) !important;
   box-shadow: var(--cream-shadow-sm) !important;

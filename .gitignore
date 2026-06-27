@@ -37,6 +37,7 @@ npm-debug.log*
 # IDE
 .idea/
 .vscode/
+.cursor/
 *.swp
 .DS_Store
 

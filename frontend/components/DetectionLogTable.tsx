@@ -53,6 +53,7 @@ export default function DetectionLogTable({
 }: Props) {
   const { setSelectedPlate } = useDashboardStore();
   const [internalSelectedIds, setInternalSelectedIds] = useState<number[]>([]);
+  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
   const isControlledSelection = selectedDetectionIds !== undefined;
   const activeSelectedIds = useMemo(
     () => new Set(isControlledSelection ? selectedDetectionIds ?? [] : internalSelectedIds),
@@ -236,6 +237,9 @@ export default function DetectionLogTable({
                       key={detection.id}
                       data-detection-id={detection.id}
                       data-plate-key={plateKey || undefined}
+                      data-hovered={!isExiting && hoveredRowId === detection.id ? 'true' : undefined}
+                      onMouseEnter={() => !isExiting && setHoveredRowId(detection.id)}
+                      onMouseLeave={() => setHoveredRowId(null)}
                       onAnimationEnd={(animationEvent) => {
                         if (animationEvent.animationName !== 'detection-log-row-exit') return;
                         if (!isExiting) return;
@@ -245,7 +249,7 @@ export default function DetectionLogTable({
                       className={`border-t border-white/5 transition ${
                         isExiting
                           ? 'detection-log-row--exit pointer-events-none'
-                          : 'cursor-pointer'
+                          : 'detection-log-row-interactive cursor-pointer'
                       } ${
                         isExiting
                           ? ''
@@ -254,8 +258,8 @@ export default function DetectionLogTable({
                             : isPlateHighlight
                               ? 'detection-log-row--highlight'
                               : isSelected
-                                ? 'bg-cyber-cyan/10 shadow-[inset_0_3px_0_0_rgba(0,255,255,0.8)]'
-                                : 'hover:bg-white/[0.03]'
+                                ? 'detection-log-row--selected'
+                                : ''
                       }`}
                     >
                       {columns.map((column) => (

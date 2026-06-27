@@ -72,7 +72,9 @@ export function loadDashboardSessionSnapshot(): DashboardSessionSnapshot | null 
     clearAllSessionPersistence();
     return null;
   }
-  return getSessionItem<DashboardSessionSnapshot | null>(DASHBOARD_KEY, null);
+  const snapshot = getSessionItem<DashboardSessionSnapshot | null>(DASHBOARD_KEY, null);
+  if (snapshot) touchSessionMeta();
+  return snapshot;
 }
 
 export function persistDashboardSessionSnapshot(snapshot: DashboardSessionSnapshot): void {
@@ -85,11 +87,27 @@ export function loadLiveSessionSnapshot(): LiveSessionSnapshot | null {
     clearAllSessionPersistence();
     return null;
   }
-  return getSessionItem<LiveSessionSnapshot | null>(LIVE_KEY, null);
+  const snapshot = getSessionItem<LiveSessionSnapshot | null>(LIVE_KEY, null);
+  if (snapshot) touchSessionMeta();
+  return snapshot;
+}
+
+function slimLiveFrame(frame: LiveDetectionFrame | null): LiveDetectionFrame | null {
+  if (!frame) return null;
+  if (!frame.detection_id) return frame;
+  return {
+    ...frame,
+    dashboard_image_base64: null,
+    plate_image_base64: null,
+  };
 }
 
 export function persistLiveSessionSnapshot(snapshot: LiveSessionSnapshot): void {
-  setSessionItem(LIVE_KEY, snapshot);
+  setSessionItem(LIVE_KEY, {
+    ...snapshot,
+    lastResult: slimLiveFrame(snapshot.lastResult),
+    plateHistory: snapshot.plateHistory.map((entry) => slimLiveFrame(entry) ?? entry),
+  });
   touchSessionMeta();
 }
 
@@ -98,7 +116,9 @@ export function loadDetectionsPageCache(): DetectionsPageCache | null {
     clearAllSessionPersistence();
     return null;
   }
-  return getSessionItem<DetectionsPageCache | null>(DETECTIONS_PAGE_KEY, null);
+  const cache = getSessionItem<DetectionsPageCache | null>(DETECTIONS_PAGE_KEY, null);
+  if (cache) touchSessionMeta();
+  return cache;
 }
 
 export function persistDetectionsPageCache(cache: DetectionsPageCache): void {
