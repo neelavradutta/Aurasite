@@ -14,6 +14,7 @@ import {
 import { formatHourSlot } from '@/utils/timeFormat';
 import { selectTopTrafficIntervals } from '@/utils/sessionAnalytics';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import PanelEmptyState from '@/components/shared/PanelEmptyState';
 import { PeakTrafficPanelIcon } from '@/components/NavIcons';
 
 export const PEAK_TRAFFIC_HOURS_ANCHOR = 'peak-traffic-hours';
@@ -151,9 +152,7 @@ export default function PeakTrafficChart({
       {variant === 'table' ? (
         <div className={`flex flex-1 flex-col ${isLarge ? 'space-y-3.5' : 'space-y-3'}`}>
           {topTableIntervals.length === 0 ? (
-            <div className="flex min-h-[8.5rem] items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-4">
-              <p className="text-sm text-slate-500">No traffic data in the last 24h</p>
-            </div>
+            <PanelEmptyState message="No traffic data in the last 24h" fill />
           ) : (
             topTableIntervals.map((interval) => (
               <div

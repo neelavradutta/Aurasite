@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { RepeatAnalysis } from '@/types/analytics';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import PanelEmptyState from '@/components/shared/PanelEmptyState';
 import { useThemeStore } from '@/store/themeStore';
 import { getUiPalette, isCreamTheme } from '@/theme/themeColors';
 import {
@@ -43,6 +44,7 @@ export default function RepeatAnalysisWidget({
   const repeat = data?.repeat_vehicles ?? 0;
 
   const mostActiveValue = data?.most_active_plate ?? '--';
+  const isEmpty = unique === 0 && repeat === 0;
 
   const panel = (
     <section
@@ -63,7 +65,13 @@ export default function RepeatAnalysisWidget({
 
 
 
-      {variant === 'bars' ? (
+      {isEmpty ? (
+        <PanelEmptyState
+          message="No repeat vehicle data yet"
+          fill
+          className={variant === 'boxes' && fillHeight ? 'mt-auto' : variant === 'bars' ? 'min-h-[10rem]' : undefined}
+        />
+      ) : variant === 'bars' ? (
 
         <>
           <RepeatBarChart

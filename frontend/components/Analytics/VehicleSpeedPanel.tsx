@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import Card from '@/components/shared/Card';
+import PanelEmptyState from '@/components/shared/PanelEmptyState';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import { SpeedometerPanelIcon } from '@/components/NavIcons';
 import VehicleSpeedPeaksChart from '@/components/Analytics/VehicleSpeedPeaksChart';
@@ -128,13 +129,16 @@ export default function VehicleSpeedPanel({
       <PanelIconHeader
         icon={<SpeedometerPanelIcon />}
         title="Vehicle Speed"
+        subtitle={isDashboard ? undefined : 'Speed estimates from recent detections.'}
         iconBg="bg-white/10"
         iconColor="text-white"
       />
       {visible.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center text-center">
-          <p className="text-sm text-slate-500">No speed estimates yet.</p>
-        </div>
+        <PanelEmptyState
+          message="No speed estimates yet."
+          fill
+          className={isDashboard ? 'mt-1' : 'min-h-[19.5rem]'}
+        />
       ) : isDashboard ? (
         <DashboardSpeedList readings={visible} />
       ) : (

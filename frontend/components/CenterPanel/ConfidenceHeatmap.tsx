@@ -2,6 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, TooltipProps } from 'recharts';
 import Card from '../shared/Card';
+import PanelEmptyState from '../shared/PanelEmptyState';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import { AnalyticsNavIcon, PANEL_ICON_CLASS } from '@/components/NavIcons';
 import { ConfidenceBand } from '@/types/analytics';
@@ -107,9 +108,11 @@ export default function ConfidenceHeatmap({
         iconColor="text-white"
       />
       {data.length === 0 ? (
-        <div className="flex min-h-0 flex-1 items-center justify-center">
-          <p className="text-center text-sm text-slate-500">No confidence metrics yet</p>
-        </div>
+        <PanelEmptyState
+          message="No confidence metrics yet"
+          fill={compact}
+          className={compact ? undefined : 'h-64'}
+        />
       ) : compact ? (
         <div className="flex min-h-0 flex-1 w-full flex-col items-center justify-center overflow-hidden">
           <div className="aspect-square w-full min-h-0 max-h-[calc(100%-2.25rem)] max-w-[min(100%,17.5rem)] flex-1">

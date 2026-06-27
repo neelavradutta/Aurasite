@@ -4,6 +4,7 @@ import { Vehicle } from '@/types/vehicle';
 import { getVehicleTypeIcon, resolveVehicleType } from '@/utils/vehicleCardDisplay';
 import { MostFrequentVehiclesPanelIcon, PANEL_ICON_CLASS } from '@/components/NavIcons';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import PanelEmptyState from '@/components/shared/PanelEmptyState';
 import Card from '../shared/Card';
 import Badge from '../shared/Badge';
 
@@ -62,9 +63,7 @@ export default function MostFrequentVehicles({
 
         <div className="flex min-h-0 flex-1 flex-col gap-3">
           {sorted.length === 0 ? (
-            <div className="flex min-h-[10rem] flex-1 items-center justify-center px-4 py-8">
-              <p className="text-center text-sm text-slate-500">No vehicle data yet</p>
-            </div>
+            <PanelEmptyState message="No vehicle data yet" fill />
           ) : (
             sorted.map((vehicle, index) => (
               <FrequentVehicleBar
@@ -112,9 +111,7 @@ export default function MostFrequentVehicles({
         } ${sorted.length > 0 ? (isLarge ? 'justify-center space-y-3.5' : 'justify-center space-y-3') : ''}`}
       >
         {sorted.length === 0 ? (
-          <div className="flex min-h-0 flex-1 items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-4 py-8">
-            <p className="text-center text-sm text-slate-500">No vehicle data yet</p>
-          </div>
+          <PanelEmptyState message="No vehicle data yet" fill />
         ) : null}
         {sorted.map((vehicle, index) =>
           platesOnly ? (

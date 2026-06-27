@@ -331,6 +331,11 @@
   color: #7a4b22 !important;
 }
 
+[data-theme='brown-cream'] .panel-empty-state {
+  border-color: rgba(122, 75, 34, 0.22);
+  background: rgba(122, 75, 34, 0.06);
+}
+
 /* Detection log */
 [data-theme='brown-cream'] .detection-log-row--highlight {
   background: rgba(122, 75, 34, 0.06);

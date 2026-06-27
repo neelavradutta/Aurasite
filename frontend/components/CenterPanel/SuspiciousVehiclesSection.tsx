@@ -1,6 +1,7 @@
 import { Vehicle } from '@/types/vehicle';
 import { SuspiciousVehiclesPanelIcon } from '@/components/NavIcons';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import PanelEmptyState from '@/components/shared/PanelEmptyState';
 import Card from '../shared/Card';
 
 /** Scroll viewport: 5 rows × 4rem + 4 gaps × 0.5rem; dashboard card total height is 27.5rem. */
@@ -34,11 +35,7 @@ export default function SuspiciousVehiclesSection({
       <div
         className={`suspicious-vehicles-scroll min-h-0 overflow-y-auto overflow-x-hidden pr-1 ${
           fillHeight ? 'flex-1' : 'shrink-0'
-        } ${
-          vehicles.length === 0
-            ? 'flex items-center justify-center'
-            : ''
-        }`}
+        } ${vehicles.length === 0 ? 'flex flex-col' : ''}`}
         style={
           fillHeight
             ? undefined
@@ -49,7 +46,7 @@ export default function SuspiciousVehiclesSection({
         }
       >
         {vehicles.length === 0 ? (
-          <p className="text-center text-sm text-slate-500">No suspicious vehicles flagged</p>
+          <PanelEmptyState message="No suspicious vehicles flagged" fill className="w-full" />
         ) : (
           <ul className="space-y-2">
             {vehicles.map((vehicle) => (
