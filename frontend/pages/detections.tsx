@@ -249,7 +249,7 @@ export default function DetectionsPage() {
           </Button>
         }
       />
-      <main className="mobile-page-main mx-auto max-w-[1920px] space-y-6 px-6 py-6">
+      <main className="detection-log-page-main mobile-page-main mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         <PageTitle title="Detection Log" subtitle={subtitle} className="xl:hidden" />
         <div className="mobile-detection-toolbar xl:hidden">
           <DetectionFilterBar
