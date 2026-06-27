@@ -5,6 +5,7 @@ import PageTitle from '@/components/shared/PageTitle';
 import DetectionLogTable from '@/components/DetectionLogTable';
 import DetectionFilterBar from '@/components/DetectionFilterBar';
 import Button from '@/components/shared/Button';
+import { ExportHeaderIcon } from '@/components/NavIcons';
 import { deleteDetection, fetchDetections, formatApiError } from '@/services/api';
 import { getSocket } from '@/services/socket';
 import { Detection } from '@/types/detection';
@@ -241,8 +242,9 @@ export default function DetectionsPage() {
           <Button
             variant="secondary"
             onClick={handleExportCsv}
-            className="header-toolbar-btn"
+            className="header-toolbar-btn inline-flex items-center justify-center gap-1.5"
           >
+            <ExportHeaderIcon />
             Export Detection Report
           </Button>
         }

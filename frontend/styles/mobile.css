@@ -772,7 +772,7 @@
   }
 
   /* ── KPI cards ── */
-  .glass-panel.rounded-xl.p-5 .font-orbitron.text-3xl {
-    font-size: 1.75rem !important;
+  .glass-panel.rounded-xl.p-5 .font-orbitron.text-2xl {
+    font-size: 1.375rem !important;
   }
 }

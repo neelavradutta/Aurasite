@@ -1,5 +1,12 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { RepeatAnalysis } from '@/types/analytics';
+import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import {
+  OwnerDetailIcon,
+  RepeatAnalysisPanelIcon,
+  StarDetailIcon,
+} from '@/components/NavIcons';
 
 export const REPEAT_VEHICLE_ANALYSIS_ANCHOR = 'repeat-vehicle-analysis';
 
@@ -45,11 +52,12 @@ export default function RepeatAnalysisWidget({
       } ${href ? '' : className}`}
     >
 
-      <header className={`shrink-0 ${compact ? 'mb-2' : 'mb-3'}`}>
-
-        <h3 className="section-title">Repeat Vehicle Analysis</h3>
-
-      </header>
+      <PanelIconHeader
+        icon={<RepeatAnalysisPanelIcon />}
+        title="Repeat Vehicle Analysis"
+        iconBg="bg-white/10"
+        iconColor="text-white"
+      />
 
 
 
@@ -72,9 +80,15 @@ export default function RepeatAnalysisWidget({
               : ' shrink-0'
           }`}
         >
-          <Metric label="Unique" value={unique} tall={fillHeight} compact={compact} />
-          <Metric label="Repeat" value={repeat} tall={fillHeight} compact={compact} />
-          <Metric label="Most Active" value={mostActiveValue} tall={fillHeight} compact={compact} />
+          <Metric label="Unique" value={unique} icon={<OwnerDetailIcon />} tall={fillHeight} compact={compact} />
+          <Metric
+            label="Repeat"
+            value={repeat}
+            icon={<RepeatAnalysisPanelIcon className="h-3.5 w-3.5 shrink-0" />}
+            tall={fillHeight}
+            compact={compact}
+          />
+          <Metric label="Most Active" value={mostActiveValue} icon={<StarDetailIcon />} tall={fillHeight} compact={compact} />
         </div>
 
       )}
@@ -308,12 +322,14 @@ function AnalyticsBarColumn({
 function Metric({
   label,
   value,
+  icon,
   compact = false,
   tall = false,
   narrow = false,
 }: {
   label: string;
   value: string | number;
+  icon?: ReactNode;
   compact?: boolean;
   tall?: boolean;
   narrow?: boolean;
@@ -330,6 +346,7 @@ function Metric({
           : 'min-h-[64px] py-2'
       }`}
     >
+      {icon ? <div className="mb-1.5 text-white">{icon}</div> : null}
       <p
         className={`w-full truncate uppercase tracking-[0.14em] text-slate-500 ${
           narrow ? 'text-[9px]' : 'text-[10px]'

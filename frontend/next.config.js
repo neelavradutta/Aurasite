@@ -3,7 +3,18 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   images: {
-    domains: ['localhost', 'aurasite.onrender.com'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'aurasite.onrender.com',
+        pathname: '/**',
+      },
+    ],
   },
 };
 

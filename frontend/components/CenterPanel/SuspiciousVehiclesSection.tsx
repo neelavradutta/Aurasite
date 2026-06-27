@@ -1,4 +1,6 @@
 import { Vehicle } from '@/types/vehicle';
+import { SuspiciousVehiclesPanelIcon } from '@/components/NavIcons';
+import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import Card from '../shared/Card';
 
 /** Scroll viewport: 5 rows × 4rem + 4 gaps × 0.5rem; dashboard card total height is 27.5rem. */
@@ -22,12 +24,13 @@ export default function SuspiciousVehiclesSection({
 
   return (
     <Card className={`suspicious-vehicles-section ${cardClass} ${className}`.trim()}>
-      <header className="mb-3 shrink-0">
-        <h3 className="section-title">Suspicious Vehicles</h3>
-        <p className="mt-0.5 w-full truncate text-[10px] text-nowrap text-slate-500">
-          Plates flagged for review from recent detections.
-        </p>
-      </header>
+      <PanelIconHeader
+        icon={<SuspiciousVehiclesPanelIcon />}
+        title="Suspicious Vehicles"
+        subtitle="Plates flagged for review from recent detections."
+        iconBg="bg-white/10"
+        iconColor="text-white"
+      />
       <div
         className={`suspicious-vehicles-scroll min-h-0 overflow-y-auto overflow-x-hidden pr-1 ${
           fillHeight ? 'flex-1' : 'shrink-0'

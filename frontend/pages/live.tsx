@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import Header from '@/components/Header';
 import PageTitle from '@/components/shared/PageTitle';
 import Button from '@/components/shared/Button';
+import { ExportHeaderIcon } from '@/components/NavIcons';
 import TabSwitcher from '@/components/shared/TabSwitcher';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { LiveDetectionFrame } from '@/services/api';
@@ -238,8 +239,9 @@ export default function LivePage() {
             variant="secondary"
             onClick={handleExportLiveReport}
             disabled={exportingLive || plateHistory.length === 0}
-            className="header-toolbar-btn"
+            className="header-toolbar-btn inline-flex items-center justify-center gap-1.5"
           >
+            <ExportHeaderIcon />
             {exportingLive ? 'Exporting...' : 'Export Live Report'}
           </Button>
         }

@@ -7,6 +7,7 @@ import { useSocket } from '@/hooks/useSocket';
 import AurasiteBrandOverlay from '@/components/AurasiteBrandOverlay';
 import AurasiteIconTrigger from '@/components/AurasiteIconTrigger';
 import MobileNav from '@/components/MobileNav';
+import { ClearNavIcon, LogoutNavIcon, navItemIcons } from '@/components/NavIcons';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard' },
@@ -14,7 +15,7 @@ const navItems = [
   { href: '/vehicles', label: 'Vehicles' },
   { href: '/analytics', label: 'Analytics' },
   { href: '/live', label: 'Live' },
-];
+] as const;
 
 interface HeaderProps {
   detectionToolbar?: ReactNode;
@@ -75,19 +76,23 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
 
         <div className="flex items-center justify-center">
           <nav className="hidden items-center gap-1 lg:flex">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`rounded-md px-3 py-2 text-sm transition ${
-                  router.pathname === item.href
-                    ? 'bg-cyber-cyan/15 text-cyber-cyan shadow-neon'
-                    : 'text-slate-300 hover:bg-white/5 hover:text-cyber-cyan'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const Icon = navItemIcons[item.href];
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm transition ${
+                    router.pathname === item.href
+                      ? 'bg-cyber-cyan/15 text-cyber-cyan shadow-neon'
+                      : 'text-slate-300 hover:bg-white/5 hover:text-cyber-cyan'
+                  }`}
+                >
+                  <Icon className="h-4 w-4 shrink-0 text-white" />
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
           <MobileNav />
         </div>
@@ -124,9 +129,10 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
                   type="button"
                   onClick={handleClear}
                   disabled={clearing}
-                  className="header-clear-btn inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-cyan/40 px-3 text-sm text-cyber-cyan transition hover:bg-cyber-cyan/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="header-clear-btn inline-flex h-9 min-w-[6rem] items-center justify-center gap-1.5 rounded-md border border-cyber-cyan/40 px-3 text-sm text-cyber-cyan transition hover:bg-cyber-cyan/10 disabled:cursor-not-allowed disabled:opacity-50"
                   title="Clear all detections, vehicles, and alerts"
                 >
+                  <ClearNavIcon className="h-4 w-4 shrink-0 text-white" />
                   {clearing ? 'Clearing...' : 'Clear'}
                 </button>
               )}
@@ -136,8 +142,9 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
                     logout();
                     router.push('/login');
                   }}
-                  className="header-logout-btn inline-flex h-9 min-w-[6rem] items-center justify-center rounded-md border border-cyber-pink/30 px-3 text-sm text-cyber-pink transition hover:bg-cyber-pink/10"
+                  className="header-logout-btn inline-flex h-9 min-w-[6rem] items-center justify-center gap-1.5 rounded-md border border-cyber-pink/30 px-3 text-sm text-cyber-pink transition hover:bg-cyber-pink/10"
                 >
+                  <LogoutNavIcon className="h-4 w-4 shrink-0 text-white" />
                   Logout
                 </button>
               ) : (

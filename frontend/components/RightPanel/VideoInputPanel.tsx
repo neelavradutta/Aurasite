@@ -11,6 +11,8 @@ import { getMediaKind, isImageFile, isImageFileName, MEDIA_FILE_ACCEPT } from '@
 import VideoPreviewOverlay from '@/components/RightPanel/VideoPreviewOverlay';
 import ImageIcon from '@/components/ImageIcon';
 import VideoIcon from '@/components/VideoIcon';
+import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import { VideoInputPanelIcon } from '@/components/NavIcons';
 
 
 
@@ -296,7 +298,13 @@ export default function VideoInputPanel({
 
         ) : (
 
-          <h3 className="video-input-cyberpunk__title">Video Input</h3>
+          <PanelIconHeader
+            icon={<VideoInputPanelIcon />}
+            title="Video Input"
+            titleClassName="video-input-cyberpunk__title"
+            useSectionTitle={false}
+            className="!mb-0"
+          />
 
         )}
 

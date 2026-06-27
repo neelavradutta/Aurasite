@@ -2,6 +2,8 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, TooltipProps } from 'recharts';
 import Card from '../shared/Card';
+import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import { AnalyticsNavIcon, PANEL_ICON_CLASS } from '@/components/NavIcons';
 import { ConfidenceBand } from '@/types/analytics';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
 
@@ -87,32 +89,25 @@ export default function ConfidenceHeatmap({
     <Card
       className={`confidence-heatmap-panel flex h-full min-h-0 max-h-full flex-col ${compact ? '!p-5' : '!p-3'} overflow-hidden ${className}`.trim()}
     >
-      <header className="mb-3 shrink-0">
-        <h3 className="section-title">Confidence Heatmap</h3>
-        <p className="mt-0.5 w-full truncate text-[10px] text-nowrap text-slate-500">
-          Share of detections grouped by confidence level.
-        </p>
-      </header>
+      <PanelIconHeader
+        icon={<AnalyticsNavIcon className={PANEL_ICON_CLASS} />}
+        title="Confidence Heatmap"
+        subtitle="Share of detections grouped by confidence level."
+        iconBg="bg-white/10"
+        iconColor="text-white"
+      />
       {data.length === 0 ? (
-        compact ? (
-          <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-visible">
-            <div className="flex h-[18rem] w-[18rem] shrink-0 items-center justify-center sm:h-[19rem] sm:w-[19rem] xl:h-auto xl:w-auto xl:min-h-0 xl:flex-1">
-              <p className="text-center text-sm text-slate-500">No confidence metrics yet</p>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-1 flex-col items-center justify-center text-center">
-            <p className="text-sm text-slate-500">No confidence metrics yet</p>
-          </div>
-        )
+        <div className="flex min-h-0 flex-1 items-center justify-center">
+          <p className="text-center text-sm text-slate-500">No confidence metrics yet</p>
+        </div>
       ) : compact ? (
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-visible">
-          <div className="h-[18rem] w-[18rem] shrink-0 overflow-visible sm:h-[19rem] sm:w-[19rem]">
+        <div className="flex min-h-0 flex-1 w-full flex-col items-center justify-center overflow-hidden">
+          <div className="aspect-square w-full min-h-0 max-h-[calc(100%-2.25rem)] max-w-[min(100%,17.5rem)] flex-1">
             <ResponsiveContainer width="100%" height="100%">
               <AnimatedConfidencePie data={data} compact />
             </ResponsiveContainer>
           </div>
-          <ul className="mt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5">
+          <ul className="mt-2 flex shrink-0 flex-wrap items-center justify-center gap-x-4 gap-y-1">
             {data.map((band, index) => (
               <li key={band.band} className="flex items-center gap-2 text-sm text-slate-300">
                 <span

@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { useLiveDisplayVideo } from '@/hooks/useLiveDetection';
+import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import { LiveFeedPanelIcon } from '@/components/NavIcons';
 
 export default function LiveFeedLaunchCard() {
   const { videoRef, running, mode, previewSrc, requesting, cameraPreviewActive } = useLiveDisplayVideo();
@@ -13,7 +15,11 @@ export default function LiveFeedLaunchCard() {
       className="glass-panel group relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/5 p-5 transition hover:border-cyber-cyan/30 hover:bg-white/[0.03]"
     >
       <div className="relative flex items-center justify-between gap-3">
-        <h3 className="section-title">Live Feed</h3>
+        <PanelIconHeader
+          icon={<LiveFeedPanelIcon />}
+          title="Live Feed"
+          className="!mb-0 min-w-0"
+        />
         {isActive ? (
           <span className="inline-flex h-[1.375rem] shrink-0 items-center rounded border border-cyber-cyan/40 bg-black/60 px-2 font-orbitron text-base uppercase tracking-wider text-cyber-cyan">
             {requesting ? 'Analyzing' : 'Live'}

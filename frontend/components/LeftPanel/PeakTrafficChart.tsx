@@ -6,6 +6,8 @@ import { TrafficHour } from '@/types/analytics';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
 import { formatHourSlot } from '@/utils/timeFormat';
 import { selectTopTrafficIntervals } from '@/utils/sessionAnalytics';
+import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import { AnalyticsNavIcon, PANEL_ICON_CLASS } from '@/components/NavIcons';
 
 export const PEAK_TRAFFIC_HOURS_ANCHOR = 'peak-traffic-hours';
 
@@ -128,10 +130,13 @@ export default function PeakTrafficChart({
         href ? 'transition hover:border-cyber-cyan/30 hover:bg-white/[0.03]' : ''
       } ${href ? '' : className}`}
     >
-      <h3 className="section-title">Peak Traffic Hours</h3>
-      <p className="mt-0.5 mb-3 w-full truncate text-[10px] text-nowrap text-slate-500">
-        Grouped by hour for the busiest time slots.
-      </p>
+      <PanelIconHeader
+        icon={<AnalyticsNavIcon className={PANEL_ICON_CLASS} />}
+        title="Peak Traffic Hours"
+        subtitle="Grouped by hour for the busiest time slots."
+        iconBg="bg-white/10"
+        iconColor="text-white"
+      />
 
       {variant === 'table' ? (
         <div className={`flex flex-1 flex-col ${isLarge ? 'space-y-3.5' : 'space-y-3'}`}>

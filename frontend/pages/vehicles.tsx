@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Header from '@/components/Header';
 import PageTitle from '@/components/shared/PageTitle';
 import Button from '@/components/shared/Button';
+import { ExportHeaderIcon } from '@/components/NavIcons';
 import VehicleCatalogCard from '@/components/VehicleCatalogCard';
 import VehicleCatalogModal from '@/components/VehicleCatalogModal';
 import {
@@ -293,8 +294,9 @@ export default function VehiclesPage() {
             variant="secondary"
             onClick={handleExportCatalog}
             disabled={exportingCatalog}
-            className="header-toolbar-btn"
+            className="header-toolbar-btn inline-flex items-center justify-center gap-1.5"
           >
+            <ExportHeaderIcon />
             {exportingCatalog ? 'Exporting...' : 'Export Vehicles Report'}
           </Button>
         }

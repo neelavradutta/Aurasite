@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import Card from '@/components/shared/Card';
+import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import { SpeedometerPanelIcon } from '@/components/NavIcons';
 import VehicleSpeedPeaksChart from '@/components/Analytics/VehicleSpeedPeaksChart';
 import { VehicleSpeedReading } from '@/utils/speedEstimation';
 export const VEHICLE_SPEED_ANCHOR = 'vehicle-speed';
@@ -104,16 +106,21 @@ export default function VehicleSpeedPanel({
 
   const panel = (
     <Card
-      title="Vehicle Speed"
       id={sectionId}
       className={`${
         fillHeight || isDashboard
           ? 'flex h-full min-h-0 max-h-full flex-col overflow-hidden !pb-2'
           : 'flex h-full min-h-[22rem] flex-col overflow-hidden'
-      } ${isDashboard ? 'px-3.5 pt-3' : '!p-3'} h-full min-h-0 [&_h3]:!mb-1 ${
+      } ${isDashboard ? 'px-3.5 pt-3' : '!p-3'} h-full min-h-0 ${
         href ? 'transition hover:border-cyber-cyan/30 hover:bg-white/[0.03]' : ''
       } ${sectionId ? 'scroll-mt-24' : ''} ${href ? '' : className}`.trim()}
     >
+      <PanelIconHeader
+        icon={<SpeedometerPanelIcon />}
+        title="Vehicle Speed"
+        iconBg="bg-white/10"
+        iconColor="text-white"
+      />
       {visible.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center text-center">
           <p className="text-sm text-slate-500">No speed estimates yet.</p>

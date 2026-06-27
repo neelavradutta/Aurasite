@@ -3,6 +3,8 @@ import { useRouter } from 'next/router';
 import { Detection } from '@/types/detection';
 import { Vehicle, VehicleStatus } from '@/types/vehicle';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { PANEL_ICON_CLASS, VehiclesPanelIcon } from '@/components/NavIcons';
+import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import {
   fetchVehicleById,
   searchVehiclesByPlate,
@@ -330,15 +332,17 @@ export default function PlateCardsGrid({
             </div>
           ) : null}
 
-          <div className="mb-5 flex items-start justify-between gap-3">
-            <div>
-              <h3 className="section-title">Detected License Plates</h3>
-              {!selectToPreview ? (
-                <p className="mt-1 text-xs text-slate-500">
-                  Click any plate card to preview the snapshot and download it.
-                </p>
-              ) : null}
-            </div>
+          <div className="mb-5 flex items-center justify-between gap-3">
+            <PanelIconHeader
+              icon={<VehiclesPanelIcon className={PANEL_ICON_CLASS} />}
+              title="Detected License Plates"
+              subtitle={
+                !selectToPreview
+                  ? 'Click any plate card to preview the snapshot and download it.'
+                  : undefined
+              }
+              className="!mb-0 min-w-0 flex-1"
+            />
 
             {!selectToPreview ? (
               <span className="rounded-full border border-cyber-cyan/30 bg-cyber-cyan/10 px-4 py-1.5 text-xs text-cyber-cyan">

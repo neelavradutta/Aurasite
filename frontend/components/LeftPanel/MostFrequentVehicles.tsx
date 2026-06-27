@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Vehicle } from '@/types/vehicle';
 import { getVehicleTypeIcon, resolveVehicleType } from '@/utils/vehicleCardDisplay';
+import { PANEL_ICON_CLASS, VehiclesPanelIcon } from '@/components/NavIcons';
+import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import Card from '../shared/Card';
 import Badge from '../shared/Badge';
 
@@ -48,12 +50,14 @@ export default function MostFrequentVehicles({
           sectionId ? 'scroll-mt-24' : ''
         } ${className}`}
       >
-        <header className="mb-3 shrink-0">
-          <h3 className="section-title">Most Frequent Vehicles</h3>
-          <p className="mt-0.5 w-full truncate text-[10px] text-nowrap text-slate-500">
-            Plates seen most often in recent detections.
-          </p>
-        </header>
+        <PanelIconHeader
+          icon={<VehiclesPanelIcon className={PANEL_ICON_CLASS} />}
+          title="Most Frequent Vehicles"
+          subtitle="Plates seen most often in recent detections."
+          iconBg="bg-white/10"
+          iconColor="text-white"
+          titleClassName="!tracking-[0.02em]"
+        />
 
         <div className="flex min-h-0 flex-1 flex-col gap-3">
           {sorted.length === 0 ? (
@@ -92,12 +96,14 @@ export default function MostFrequentVehicles({
         href ? 'transition hover:border-cyber-cyan/30 hover:bg-white/[0.03]' : ''
       } ${className}`.trim()}
     >
-      <header className="mb-3 shrink-0">
-        <h3 className="section-title">Most Frequent Vehicles</h3>
-        <p className="mt-0.5 w-full truncate text-[10px] text-nowrap text-slate-500">
-          Plates seen most often in recent detections.
-        </p>
-      </header>
+      <PanelIconHeader
+        icon={<VehiclesPanelIcon className={PANEL_ICON_CLASS} />}
+        title="Most Frequent Vehicles"
+        subtitle="Plates seen most often in recent detections."
+        iconBg="bg-white/10"
+        iconColor="text-white"
+        titleClassName="!tracking-[0.02em]"
+      />
       <div
         className={`${
           fillHeight ? 'flex min-h-0 flex-1 flex-col' : ''

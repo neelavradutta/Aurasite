@@ -556,7 +556,7 @@ export function useLiveSessionKeepAlive() {
 /** Binds the shared camera stream to a local <video> element. */
 export function useLiveCameraVideo() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const cleanupRef = useRef<(() => void) | undefined>();
+  const cleanupRef = useRef<(() => void) | undefined>(undefined);
   const cameraPreviewActive = useLiveStore((state) => state.cameraPreviewActive);
   const previewStreamTick = useLiveStore((state) => state.previewStreamTick);
 

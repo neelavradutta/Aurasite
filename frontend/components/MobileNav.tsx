@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuthStore } from '@/store/authStore';
+import { LogoutNavIcon, navItemIcons } from '@/components/NavIcons';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard' },
@@ -10,7 +11,7 @@ const navItems = [
   { href: '/vehicles', label: 'Vehicles' },
   { href: '/analytics', label: 'Analytics' },
   { href: '/live', label: 'Live' },
-];
+] as const;
 
 const SWIPE_CLOSE_PX = 56;
 const TAP_MOVE_PX = 10;
@@ -111,17 +112,21 @@ export default function MobileNav() {
             >
               <p className="mobile-nav__title font-orbitron">Navigate</p>
               <div className="mobile-nav__links">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`mobile-nav__link${
-                      router.pathname === item.href ? ' mobile-nav__link--active' : ''
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {navItems.map((item) => {
+                  const Icon = navItemIcons[item.href];
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`mobile-nav__link gap-1.5${
+                        router.pathname === item.href ? ' mobile-nav__link--active' : ''
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 shrink-0 text-white" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
               </div>
 
               <div className="mobile-nav__footer">
@@ -131,12 +136,13 @@ export default function MobileNav() {
                 {token ? (
                   <button
                     type="button"
-                    className="mobile-nav__logout"
+                    className="mobile-nav__logout inline-flex items-center justify-center gap-1.5"
                     onClick={() => {
                       logout();
                       void router.push('/login');
                     }}
                   >
+                    <LogoutNavIcon className="h-4 w-4 shrink-0 text-white" />
                     Logout
                   </button>
                 ) : (
