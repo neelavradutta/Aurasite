@@ -4,6 +4,8 @@ interface IconProps {
 
 /** Panel header icons (h-8 box) — not used for KPI cards or nav tabs. */
 export const PANEL_ICON_CLASS = 'h-6 w-6 shrink-0';
+/** Larger panel header icon — fills the expanded h-12 icon box. */
+export const PANEL_ICON_LARGE_CLASS = 'h-11 w-11 shrink-0';
 
 export function DashboardNavIcon({ className = 'h-4 w-4 shrink-0' }: IconProps) {
   return (
@@ -77,48 +79,128 @@ export function AnalyticsNavIcon({ className = 'h-4 w-4 shrink-0' }: IconProps) 
   );
 }
 
+const PEAK_TRAFFIC_BAR_WIDTH = 1.65;
+const PEAK_TRAFFIC_BAR_RX = PEAK_TRAFFIC_BAR_WIDTH / 2;
+const PEAK_TRAFFIC_BAR_BASE = 17.25;
+const PEAK_TRAFFIC_BAR_OPACITIES = [0.42, 0.55, 0.68, 0.82, 1] as const;
+
+function peakTrafficBar(x: number, height: number, opacity: number) {
+  return (
+    <rect
+      x={x}
+      y={PEAK_TRAFFIC_BAR_BASE - height}
+      width={PEAK_TRAFFIC_BAR_WIDTH}
+      height={height}
+      rx={PEAK_TRAFFIC_BAR_RX}
+      fill="currentColor"
+      fillOpacity={opacity}
+    />
+  );
+}
+
+export function PeakTrafficPanelIcon({ className = PANEL_ICON_CLASS }: IconProps) {
+  const cx = 12;
+  const cy = 10.45;
+  const tick = (angleDeg: number, length = 0.95) => {
+    const rad = ((angleDeg - 90) * Math.PI) / 180;
+    const inner = 6.55;
+    const outer = inner + length;
+    const x1 = cx + inner * Math.cos(rad);
+    const y1 = cy + inner * Math.sin(rad);
+    const x2 = cx + outer * Math.cos(rad);
+    const y2 = cy + outer * Math.sin(rad);
+    return (
+      <path
+        key={angleDeg}
+        d={`M${x1.toFixed(2)} ${y1.toFixed(2)}L${x2.toFixed(2)} ${y2.toFixed(2)}`}
+        stroke="currentColor"
+        strokeWidth="1.05"
+        strokeLinecap="round"
+      />
+    );
+  };
+
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
+      <path
+        d="M4.35 11.05A7.85 7.85 0 0 1 5.75 6.35A7.85 7.85 0 0 1 10.95 3.35A7.85 7.85 0 0 1 16.55 4.95A7.85 7.85 0 0 1 18.95 8.55"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M18.35 11.35A7.85 7.85 0 0 1 16.85 15.15A7.85 7.85 0 0 1 13.15 17.55"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        fill="none"
+      />
+
+      {[270, 300, 330, 0, 30, 60, 90, 210, 240].map((angle) => tick(angle))}
+
+      <circle cx={cx} cy={cy} r="0.52" fill="currentColor" />
+      <path d={`M${cx} ${cy}V4.85`} stroke="currentColor" strokeWidth="1.05" strokeLinecap="round" />
+      <path
+        d={`M${cx} ${cy}L15.45 13.05`}
+        stroke="currentColor"
+        strokeWidth="1.05"
+        strokeLinecap="round"
+      />
+
+      {peakTrafficBar(4.95, 2.05, PEAK_TRAFFIC_BAR_OPACITIES[0])}
+      {peakTrafficBar(7.1, 3.35, PEAK_TRAFFIC_BAR_OPACITIES[1])}
+      {peakTrafficBar(9.25, 4.75, PEAK_TRAFFIC_BAR_OPACITIES[2])}
+      {peakTrafficBar(11.4, 6.35, PEAK_TRAFFIC_BAR_OPACITIES[3])}
+      {peakTrafficBar(13.55, 11.5, PEAK_TRAFFIC_BAR_OPACITIES[4])}
+    </svg>
+  );
+}
+
 const LIVE_FEED_ACCENT = '#ef4444';
 
 export function LiveFeedPanelIcon({ className = PANEL_ICON_CLASS }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
-      <rect x="1.75" y="9" width="13.5" height="6" rx="1.25" stroke="currentColor" strokeWidth="1.35" />
-      <path
-        d="M15.25 9v6l3.75-3-3.75-3z"
-        stroke="currentColor"
-        strokeWidth="1.35"
-        strokeLinejoin="round"
-      />
-      <circle cx="4.5" cy="12" r="1.1" fill={LIVE_FEED_ACCENT} />
-      <text
-        x="6.45"
-        y="12.05"
-        fill="currentColor"
-        fontSize="2.85"
-        fontWeight="700"
-        fontFamily="system-ui, sans-serif"
-        dominantBaseline="middle"
-      >
-        LIVE
-      </text>
-      <path
-        d="M18.6 10.55A1.45 1.45 0 0 1 18.6 13.45"
-        stroke={LIVE_FEED_ACCENT}
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M18.6 8.95A2.55 2.55 0 0 1 18.6 14.05"
-        stroke={LIVE_FEED_ACCENT}
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M18.6 7.35A3.65 3.65 0 0 1 18.6 15.65"
-        stroke={LIVE_FEED_ACCENT}
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
+      <g transform="translate(12 12) scale(1.12) translate(-12 -12)">
+        <rect x="1.75" y="9" width="13.5" height="6" rx="1.25" stroke="currentColor" strokeWidth="1.35" />
+        <path
+          d="M15.25 9v6l3.75-3-3.75-3z"
+          stroke="currentColor"
+          strokeWidth="1.35"
+          strokeLinejoin="round"
+        />
+        <circle cx="4.5" cy="12" r="1.1" fill={LIVE_FEED_ACCENT} />
+        <text
+          x="6.45"
+          y="12.05"
+          fill="currentColor"
+          fontSize="2.85"
+          fontWeight="700"
+          fontFamily="system-ui, sans-serif"
+          dominantBaseline="middle"
+        >
+          LIVE
+        </text>
+        <path
+          d="M18.6 10.55A1.45 1.45 0 0 1 18.6 13.45"
+          stroke={LIVE_FEED_ACCENT}
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M18.6 8.95A2.55 2.55 0 0 1 18.6 14.05"
+          stroke={LIVE_FEED_ACCENT}
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M18.6 7.35A3.65 3.65 0 0 1 18.6 15.65"
+          stroke={LIVE_FEED_ACCENT}
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+      </g>
     </svg>
   );
 }
@@ -131,6 +213,27 @@ export function LiveNavIcon({ className = 'h-4 w-4 shrink-0' }: IconProps) {
       <circle cx="12" cy="12" r="2" />
       <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function DayModeNavIcon({ className = 'h-4 w-4 shrink-0' }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function NightModeNavIcon({ className = 'h-4 w-4 shrink-0' }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path
+        d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -188,33 +291,40 @@ export function UsersKpiIcon({ className = 'h-5 w-5 shrink-0' }: IconProps) {
 }
 
 export function AvgConfidenceKpiIcon({ className = 'h-5 w-5 shrink-0' }: IconProps) {
+  const ringStroke = 1.25;
+  const innerStroke = 1.3;
+
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
-      <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <g stroke="currentColor" strokeWidth={ringStroke} strokeLinecap="round" fill="none">
         <path d="M12 2A10 10 0 0 1 21.76 9.24" />
         <path d="M21.76 9.24A10 10 0 0 1 12 22" opacity="0.3" />
         <path d="M12 22A10 10 0 0 1 2.24 14.76" opacity="0.3" />
         <path d="M2.24 14.76A10 10 0 0 1 12 2" opacity="0.3" />
       </g>
-      <path
-        d="M12 6.35l4.35 0.9v3.45c0 0-1.5 3.75-4.35 4.95-2.85-1.2-4.35-4.95-4.35-4.95V7.25L12 6.35z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9.65 11.65l1.4 1.4 3.05-3.05"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <g transform="translate(12 12) scale(1.12) translate(-12 -11)">
+        <path
+          d="M12 6.35l4.35 0.9v3.45c0 0-1.5 3.75-4.35 4.95-2.85-1.2-4.35-4.95-4.35-4.95V7.25L12 6.35z"
+          stroke="currentColor"
+          strokeWidth={innerStroke}
+          strokeLinejoin="round"
+          fill="none"
+        />
+        <path
+          d="M9.65 11.65l1.4 1.4 3.05-3.05"
+          stroke="currentColor"
+          strokeWidth={innerStroke}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
       <text
-        x="12"
-        y="16.85"
-        textAnchor="middle"
+        x="19.55"
+        y="22.75"
+        textAnchor="start"
+        dominantBaseline="middle"
         fill="currentColor"
-        fontSize="4.5"
+        fontSize="4.35"
         fontWeight="700"
         fontFamily="system-ui, sans-serif"
       >
@@ -271,11 +381,87 @@ export function VideoInputPanelIcon({ className = PANEL_ICON_CLASS }: IconProps)
   );
 }
 
-export function LicensePlatePanelIcon({ className = PANEL_ICON_CLASS }: IconProps) {
+export function SelectedPlatePanelIcon({ className = PANEL_ICON_CLASS }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
       <rect x="3" y="7" width="18" height="10" rx="2" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M7 11h2M15 11h2M11 11h2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+const PLATE_SCAN_CYAN = '#00f7ff';
+
+export function LicensePlatePanelIcon({ className = PANEL_ICON_CLASS }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
+      <g transform="translate(12 12) scale(1.06) translate(-12 -12)">
+        <rect x="3.35" y="6.85" width="17.3" height="10.3" rx="1.55" stroke="currentColor" strokeWidth="1.32" />
+
+        <path
+          d="M5.55 8.45h2.35M5.55 8.45v2.2M18.1 8.45h-2.35M18.1 8.45v2.2M5.55 15.55h2.35M5.55 15.55v-2.2M18.1 15.55h-2.35M18.1 15.55v-2.2"
+          stroke="currentColor"
+          strokeWidth="0.82"
+          strokeLinecap="round"
+          opacity="0.62"
+        />
+        <path
+          d="M6.35 8.35h3.55M14.1 8.35h3.55M6.35 15.65h3.55M14.1 15.65h3.55"
+          stroke="currentColor"
+          strokeWidth="0.72"
+          strokeLinecap="round"
+          opacity="0.45"
+        />
+
+        <path d="M10.55 7.15 13.45 7.15 12.95 8.05 11.05 8.05Z" fill={PLATE_SCAN_CYAN} />
+        <circle cx="14.15" cy="7.45" r="0.28" fill={PLATE_SCAN_CYAN} />
+        <circle cx="14.75" cy="7.45" r="0.28" fill={PLATE_SCAN_CYAN} />
+        <circle cx="15.35" cy="7.45" r="0.28" fill={PLATE_SCAN_CYAN} />
+
+        <path
+          d="M10.55 16.85 13.45 16.85 12.95 15.95 11.05 15.95Z"
+          fill="currentColor"
+          fillOpacity="0.42"
+        />
+        <circle cx="14.15" cy="16.55" r="0.28" fill="currentColor" fillOpacity="0.42" />
+
+        <text
+          x="12"
+          y="12.08"
+          textAnchor="middle"
+          fill="currentColor"
+          fontSize="3.35"
+          fontWeight="700"
+          fontFamily="system-ui, -apple-system, sans-serif"
+          dominantBaseline="middle"
+          letterSpacing="0.04"
+        >
+          DL-P-24
+        </text>
+
+        <line
+          x1="1.65"
+          y1="12"
+          x2="22.35"
+          y2="12"
+          stroke={PLATE_SCAN_CYAN}
+          strokeWidth="2.6"
+          strokeOpacity="0.2"
+          strokeLinecap="round"
+        />
+        <line
+          x1="1.65"
+          y1="12"
+          x2="22.35"
+          y2="12"
+          stroke={PLATE_SCAN_CYAN}
+          strokeWidth="0.78"
+          strokeLinecap="round"
+        />
+        <circle cx="1.65" cy="12" r="0.42" fill={PLATE_SCAN_CYAN} />
+        <circle cx="22.35" cy="12" r="0.42" fill={PLATE_SCAN_CYAN} />
+        <path d="M2.35 11.55h0.85M20.8 11.55h0.85" stroke={PLATE_SCAN_CYAN} strokeWidth="0.72" strokeLinecap="round" />
+      </g>
     </svg>
   );
 }
@@ -314,6 +500,106 @@ export function RupeeDetailIcon({ className = 'h-3.5 w-3.5 shrink-0' }: IconProp
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+const PARKING_GAUGE_R = 6.55;
+const PARKING_GAUGE_C = 2 * Math.PI * PARKING_GAUGE_R;
+const PARKING_GAUGE_FILLED = (PARKING_GAUGE_C * 0.78).toFixed(2);
+const PARKING_GAUGE_EMPTY = (PARKING_GAUGE_C * 0.22).toFixed(2);
+
+export function ParkingOccupancyPanelIcon({ className = PANEL_ICON_CLASS }: IconProps) {
+  const gaugeCx = 12;
+  const gaugeCy = 11.85;
+
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
+      <path
+        d="M12 2.55 18.75 4.35 19.65 15.55Q19.45 18.95 12 21.15 4.55 18.95 4.35 15.55L5.25 4.35Z"
+        stroke="currentColor"
+        strokeWidth="1.05"
+        strokeLinejoin="round"
+      />
+
+      <circle
+        cx={gaugeCx}
+        cy={gaugeCy}
+        r={PARKING_GAUGE_R}
+        stroke="currentColor"
+        strokeWidth="0.72"
+        strokeOpacity="0.38"
+        fill="none"
+      />
+      <circle
+        cx={gaugeCx}
+        cy={gaugeCy}
+        r={PARKING_GAUGE_R}
+        stroke="currentColor"
+        strokeWidth="2.35"
+        strokeLinecap="round"
+        fill="none"
+        strokeDasharray={`${PARKING_GAUGE_FILLED} ${PARKING_GAUGE_EMPTY}`}
+        transform={`rotate(128 ${gaugeCx} ${gaugeCy})`}
+      />
+
+      <path
+        d="M9.45 10.35V16"
+        stroke="currentColor"
+        strokeWidth="0.82"
+        strokeLinecap="round"
+      />
+      <path
+        d="M14.55 10.35V16"
+        stroke="currentColor"
+        strokeWidth="0.82"
+        strokeLinecap="round"
+      />
+
+      <text
+        x="8.05"
+        y="12.05"
+        fill="currentColor"
+        fontSize="4.35"
+        fontWeight="700"
+        fontFamily="system-ui, -apple-system, sans-serif"
+        dominantBaseline="middle"
+      >
+        P
+      </text>
+
+      <rect
+        x="10.05"
+        y="12.05"
+        width="3.9"
+        height="4.55"
+        rx="0.72"
+        stroke="currentColor"
+        strokeWidth="0.78"
+        fill="currentColor"
+        fillOpacity="0.18"
+      />
+      <path
+        d="M10.45 12.35h2.95"
+        stroke="currentColor"
+        strokeWidth="0.62"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10.45 15.95h2.95"
+        stroke="currentColor"
+        strokeWidth="0.62"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10.45 13.85h2.95"
+        stroke="currentColor"
+        strokeWidth="0.52"
+        strokeLinecap="round"
+        opacity="0.72"
+      />
+      <rect x="9.82" y="12.95" width="0.62" height="0.95" rx="0.18" fill="currentColor" />
+      <rect x="13.56" y="12.95" width="0.62" height="0.95" rx="0.18" fill="currentColor" />
     </svg>
   );
 }

@@ -1,0 +1,92 @@
+/* Video input + results panels — brown-cream color overrides only. */
+
+[data-theme='brown-cream'] .video-input-cyberpunk__upload {
+  border-color: #ddc8b4;
+  background: rgba(244, 230, 215, 0.35);
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__upload::before {
+  background: linear-gradient(135deg, #b9804f, #d8b07a, #b9804f);
+  opacity: 0;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__filename {
+  color: #5c4433;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__preview-label {
+  color: #7a4b22;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__preview-status--idle {
+  color: #8e7868;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__preview-status--ready {
+  color: #5c9d55;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__preview-status--processing {
+  color: #b9804f;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__preview {
+  border-color: #e8d8c5;
+  background: linear-gradient(135deg, rgba(244, 230, 215, 0.45), rgba(252, 247, 241, 0.85));
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__header {
+  background: linear-gradient(90deg, #7a4b22 0%, #b9804f 45%, #7a4b22 90%);
+  filter: none;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__header-badge {
+  border-color: #7a4b22;
+  background: rgba(122, 75, 34, 0.1);
+  color: #7a4b22;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__stat-box {
+  background: rgba(244, 230, 215, 0.45);
+  border-color: #e8d8c5;
+  animation: none;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__stat-num {
+  color: #7a4b22;
+  text-shadow: none;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__stat-label {
+  color: #8e7868;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__videos-title {
+  color: #7a4b22;
+  text-shadow: none;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__video-name {
+  color: #4a2b12;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__video-size {
+  color: #8e7868;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__video-card:hover {
+  border-color: rgba(122, 75, 34, 0.35);
+  box-shadow: var(--cream-shadow-sm);
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__video-remove {
+  border-color: rgba(195, 90, 69, 0.35);
+  color: #c35a45;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__video-remove:hover,
+[data-theme='brown-cream'] .video-results-cyberpunk__video-remove:focus-visible {
+  border-color: #c35a45;
+  background: rgba(195, 90, 69, 0.08);
+  box-shadow: none;
+}

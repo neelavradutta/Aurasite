@@ -6,8 +6,11 @@ import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import { AnalyticsNavIcon, PANEL_ICON_CLASS } from '@/components/NavIcons';
 import { ConfidenceBand } from '@/types/analytics';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
+import { useThemeStore } from '@/store/themeStore';
+import { BROWN_CREAM_CHART_COLORS, CYBERPUNK_CHART_COLORS } from '@/theme/chartColors';
 
-const COLORS = ['#84ff00', '#00f7ff', '#d946ef', '#ff006e'];
+const DARK_CHART_COLORS = [...CYBERPUNK_CHART_COLORS];
+const CREAM_CHART_COLORS = [...BROWN_CREAM_CHART_COLORS];
 
 function HeatmapTooltip({ active, payload }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null;
@@ -30,13 +33,17 @@ function AnimatedConfidencePie({
   compact,
   width,
   height,
+  colors,
+  themeKey,
 }: {
   data: ConfidenceBand[];
   compact: boolean;
   width?: number;
   height?: number;
+  colors: string[];
+  themeKey: string;
 }) {
-  const animationKey = useChartAnimationKey('confidence-heatmap-pie');
+  const animationKey = useChartAnimationKey(`confidence-heatmap-pie-${themeKey}`);
 
   return (
     <div key={animationKey} className="pie-chart-sweep h-full w-full overflow-visible">
@@ -57,7 +64,7 @@ function AnimatedConfidencePie({
           isAnimationActive={false}
         >
           {data.map((_, index) => (
-            <Cell key={index} fill={COLORS[index % COLORS.length]} stroke="transparent" />
+            <Cell key={index} fill={colors[index % colors.length]} stroke="transparent" />
           ))}
         </Pie>
         <Tooltip
@@ -85,6 +92,9 @@ export default function ConfidenceHeatmap({
   /** Tighter fit for dashboard — no extra empty space around the chart. */
   compact?: boolean;
 }) {
+  const theme = useThemeStore((state) => state.theme);
+  const colors = theme === 'brown-cream' ? CREAM_CHART_COLORS : DARK_CHART_COLORS;
+
   return (
     <Card
       className={`confidence-heatmap-panel flex h-full min-h-0 max-h-full flex-col ${compact ? '!p-5' : '!p-3'} overflow-hidden ${className}`.trim()}
@@ -104,7 +114,7 @@ export default function ConfidenceHeatmap({
         <div className="flex min-h-0 flex-1 w-full flex-col items-center justify-center overflow-hidden">
           <div className="aspect-square w-full min-h-0 max-h-[calc(100%-2.25rem)] max-w-[min(100%,17.5rem)] flex-1">
             <ResponsiveContainer width="100%" height="100%">
-              <AnimatedConfidencePie data={data} compact />
+              <AnimatedConfidencePie data={data} compact colors={colors} themeKey={theme} />
             </ResponsiveContainer>
           </div>
           <ul className="mt-2 flex shrink-0 flex-wrap items-center justify-center gap-x-4 gap-y-1">
@@ -112,7 +122,7 @@ export default function ConfidenceHeatmap({
               <li key={band.band} className="flex items-center gap-2 text-sm text-slate-300">
                 <span
                   className="h-2.5 w-2.5 shrink-0 rounded-sm"
-                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  style={{ backgroundColor: colors[index % colors.length] }}
                 />
                 <span>{band.band}</span>
               </li>
@@ -122,7 +132,7 @@ export default function ConfidenceHeatmap({
       ) : (
         <div className="h-64 overflow-visible">
           <ResponsiveContainer width="100%" height="100%">
-            <AnimatedConfidencePie data={data} compact={false} />
+            <AnimatedConfidencePie data={data} compact={false} colors={colors} themeKey={theme} />
           </ResponsiveContainer>
         </div>
       )}

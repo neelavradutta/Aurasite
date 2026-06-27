@@ -1,0 +1,623 @@
+/* globals.css component classes — brown-cream color overrides only. */
+
+[data-theme='brown-cream'] .confidence-heatmap-tooltip {
+  background: var(--cream-bg-card) !important;
+  border-color: var(--cream-border) !important;
+  color: var(--cream-text-body) !important;
+  box-shadow: var(--cream-shadow-md) !important;
+}
+
+[data-theme='brown-cream'] .confidence-heatmap-tooltip p {
+  color: var(--cream-text-body) !important;
+}
+
+[data-theme='brown-cream'] .live-dot {
+  background: var(--cream-success) !important;
+}
+
+/* Vehicle catalog cards — keep cyberpunk plate box colors on the vehicles page */
+[data-theme='brown-cream'] .vehicle-catalog-card .text-white {
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .text-lime-50\/90 {
+  color: rgba(247, 254, 231, 0.9) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .text-red-50\/90 {
+  color: rgba(254, 242, 242, 0.9) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .text-yellow-50\/90 {
+  color: rgba(254, 252, 232, 0.9) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .text-slate-100\/85 {
+  color: rgba(241, 245, 249, 0.85) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .text-\[\#00D9FF\],
+[data-theme='brown-cream'] .vehicle-catalog-card .text-\[\#00d9ff\] {
+  color: #00d9ff !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .text-\[\#A0B0C0\] {
+  color: #a0b0c0 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .text-\[\#6B7A8F\] {
+  color: #6b7a8f !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .live-dot.bg-cyber-green,
+[data-theme='brown-cream'] .vehicle-catalog-card .bg-cyber-green.live-dot {
+  background-color: #84ff00 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .live-dot.bg-red-500,
+[data-theme='brown-cream'] .vehicle-catalog-card .bg-red-500.live-dot {
+  background-color: #ef4444 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .bg-cyber-green {
+  background-color: #84ff00 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .bg-red-500 {
+  background-color: #ef4444 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .bg-yellow-400 {
+  background-color: #facc15 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .bg-white.live-dot {
+  background-color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .shadow-\[0_0_8px_rgba\(132\,255\,0\,0\.9\)\] {
+  box-shadow: 0 0 8px rgba(132, 255, 0, 0.9) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .shadow-\[0_0_8px_rgba\(239\,68\,68\,0\.9\)\] {
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.9) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .shadow-\[0_0_8px_rgba\(255\,255\,255\,0\.75\)\] {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.75) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card .shadow-\[0_0_8px_rgba\(250\,204\,21\,0\.9\)\] {
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.9) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card.ring-offset-\[\#0a0e27\] {
+  --tw-ring-offset-color: #0a0e27 !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card.ring-cyber-cyan\/40 {
+  --tw-ring-color: rgba(0, 247, 255, 0.4) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-catalog-card.border-white\/10.bg-\[rgba\(22\,32\,72\,0\.9\)\] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(22, 32, 72, 0.9) !important;
+}
+
+[data-theme='brown-cream'] .peak-scifi-donut__ring-bg {
+  stroke: #e8d8c5;
+}
+
+[data-theme='brown-cream'] .peak-scifi-donut__segment {
+  stroke: var(--cream-brown-secondary);
+}
+
+[data-theme='brown-cream'] .fiery-speed-card::before {
+  background: radial-gradient(circle, rgba(185, 128, 79, 0.22) 0%, rgba(216, 176, 122, 0.08) 45%, transparent 72%);
+}
+
+[data-theme='brown-cream'] .fiery-speed-text,
+[data-theme='brown-cream'] .fiery-speed-value {
+  color: var(--cream-brown-primary);
+  text-shadow: none;
+}
+
+[data-theme='brown-cream'] .fiery-speed-ember {
+  background: var(--cream-brown-accent);
+  box-shadow: 0 0 10px rgba(185, 128, 79, 0.35);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__line {
+  stroke: var(--cream-brown-primary);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__fill {
+  fill: rgba(185, 128, 79, 0.2);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__glow,
+[data-theme='brown-cream'] .vehicle-speed-peaks__fill-glow,
+[data-theme='brown-cream'] .vehicle-speed-peaks__line-glow {
+  stop-color: var(--cream-brown-secondary);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip {
+  background: var(--cream-bg-card);
+  border-color: var(--cream-border);
+  color: var(--cream-text-body);
+  box-shadow: var(--cream-shadow-md);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip-plate,
+[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip-speed {
+  color: var(--cream-text-heading);
+}
+
+[data-theme='brown-cream'] .processing-loader__ring--outer {
+  border-color: rgba(122, 75, 34, 0.15);
+  border-top-color: var(--cream-brown-primary);
+  border-right-color: rgba(122, 75, 34, 0.45);
+  box-shadow:
+    0 0 22px rgba(122, 75, 34, 0.12),
+    inset 0 0 18px rgba(122, 75, 34, 0.06);
+}
+
+[data-theme='brown-cream'] .processing-loader__ring--mid {
+  border-top-color: var(--cream-brown-secondary);
+}
+
+[data-theme='brown-cream'] .processing-loader__ring--inner {
+  border-bottom-color: var(--cream-brown-primary);
+}
+
+[data-theme='brown-cream'] .processing-loader__orbit span {
+  background: var(--cream-brown-primary);
+  box-shadow: 0 0 6px rgba(122, 75, 34, 0.45);
+}
+
+[data-theme='brown-cream'] .processing-loader__orbit span:nth-child(2) {
+  background: var(--cream-error);
+}
+
+[data-theme='brown-cream'] .processing-loader__orbit span:nth-child(3) {
+  background: var(--cream-brown-secondary);
+}
+
+[data-theme='brown-cream'] .processing-loader__core {
+  background: linear-gradient(135deg, var(--cream-brown-primary) 0%, var(--cream-brown-secondary) 100%);
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__title,
+[data-theme='brown-cream'] .video-input-cyberpunk__preview-label,
+[data-theme='brown-cream'] .video-input-cyberpunk__preview-status--ready {
+  color: var(--cream-brown-primary);
+  text-shadow: none;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__preview {
+  border-color: var(--cream-border);
+  background: var(--cream-bg-nested);
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__preview::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(122, 75, 34, 0.06) 35%,
+    rgba(122, 75, 34, 0.18) 50%,
+    rgba(122, 75, 34, 0.06) 65%,
+    transparent 100%
+  );
+}
+
+[data-theme='brown-cream'] .bg-\[\#0a1028\],
+[data-theme='brown-cream'] .bg-\[\#0b1020\] {
+  background-color: var(--cream-bg-card) !important;
+}
+
+[data-theme='brown-cream'] .bg-\[\#050816\]\/80,
+[data-theme='brown-cream'] .bg-\[\#050816\]\/85 {
+  background-color: rgba(74, 43, 18, 0.28) !important;
+}
+
+[data-theme='brown-cream'] .bg-\[\#0f173a\] {
+  background-color: var(--cream-table-header) !important;
+}
+
+[data-theme='brown-cream'] .detection-log-panel thead th {
+  background-color: var(--cream-table-header) !important;
+  color: #f8f3eb !important;
+  box-shadow: inset 0 -1px 0 rgba(248, 243, 235, 0.18) !important;
+}
+
+[data-theme='brown-cream'] .detection-log-body-scroll {
+  scrollbar-color: rgba(122, 75, 34, 0.45) transparent !important;
+}
+
+[data-theme='brown-cream'] .text-\[\#00D9FF\],
+[data-theme='brown-cream'] .text-\[\#00d4ff\],
+[data-theme='brown-cream'] .text-\[\#00e5ff\] {
+  color: var(--cream-brown-primary) !important;
+}
+
+[data-theme='brown-cream'] .text-\[\#6B7A8F\] {
+  color: var(--cream-text-muted) !important;
+}
+
+[data-theme='brown-cream'] .text-\[\#A0B0C0\] {
+  color: var(--cream-text-body) !important;
+}
+
+[data-theme='brown-cream'] .border-\[\#00D9FF\]\/20,
+[data-theme='brown-cream'] .border-\[\#00D9FF\]\/25,
+[data-theme='brown-cream'] .border-\[\#00D9FF\]\/30,
+[data-theme='brown-cream'] .border-\[\#00D9FF\]\/40,
+[data-theme='brown-cream'] .border-\[\#00D9FF\]\/50,
+[data-theme='brown-cream'] .border-\[\#00d4ff\],
+[data-theme='brown-cream'] .border-\[\#00e5ff\] {
+  border-color: rgba(122, 75, 34, 0.35) !important;
+}
+
+[data-theme='brown-cream'] .bg-\[\#00D9FF\]\/10,
+[data-theme='brown-cream'] .bg-\[rgba\(0\,212\,255\,0\.1\)\] {
+  background-color: rgba(122, 75, 34, 0.1) !important;
+}
+
+[data-theme='brown-cream'] .bg-\[\#00D9FF\]\/95,
+[data-theme='brown-cream'] .bg-\[\#0a1028\]\/95 {
+  background-color: rgba(255, 253, 249, 0.95) !important;
+}
+
+[data-theme='brown-cream'] .shadow-\[0_0_36px_rgba\(0\,217\,255\,0\.1\)\],
+[data-theme='brown-cream'] .shadow-\[0_0_28px_rgba\(0\,217\,255\,0\.14\)\] {
+  box-shadow: var(--cream-shadow-md) !important;
+}
+
+[data-theme='brown-cream'] .ring-offset-\[\#0a0e27\] {
+  --tw-ring-offset-color: var(--cream-bg-primary) !important;
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-shell-cyan {
+  border-color: var(--cream-brown-primary) !important;
+  background: rgba(122, 75, 34, 0.08) !important;
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-shell-magenta {
+  border-color: var(--cream-error) !important;
+  background: rgba(195, 90, 69, 0.08) !important;
+}
+
+[data-theme='brown-cream'] .text-\[\#00d4ff\]\/45 {
+  color: rgba(122, 75, 34, 0.45) !important;
+}
+
+[data-theme='brown-cream'] .border-t.border-\[\#00d4ff\]\/50 {
+  border-top-color: rgba(122, 75, 34, 0.35) !important;
+}
+
+[data-theme='brown-cream'] .bg-cyber-green\/10 {
+  background-color: rgba(92, 157, 85, 0.12) !important;
+}
+
+[data-theme='brown-cream'] .border-cyber-green\/40 {
+  border-color: rgba(92, 157, 85, 0.4) !important;
+}
+
+[data-theme='brown-cream'] .remote-source-fade {
+  animation: none;
+  text-shadow: none;
+  color: var(--cream-error);
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action:hover:not(:disabled) {
+  box-shadow: var(--cream-shadow-sm);
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action-history-active {
+  border-color: rgba(122, 75, 34, 0.45) !important;
+  background: #f1e3d3 !important;
+  color: #7a4b22 !important;
+}
+
+/* Detection log */
+[data-theme='brown-cream'] .detection-log-row--highlight {
+  background: rgba(122, 75, 34, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(122, 75, 34, 0.15);
+}
+
+[data-theme='brown-cream'] .detection-log-row--highlight-primary {
+  background: rgba(122, 75, 34, 0.1);
+  box-shadow:
+    inset 0 3px 0 0 rgba(122, 75, 34, 0.55),
+    inset 0 0 0 1px rgba(122, 75, 34, 0.22);
+}
+
+[data-theme='brown-cream'] .detection-log-row--exit td {
+  background: rgba(195, 90, 69, 0.08);
+}
+
+@keyframes detection-row-highlight-pulse-cream {
+  0% {
+    background: rgba(122, 75, 34, 0.04);
+    box-shadow:
+      inset 0 3px 0 0 rgba(122, 75, 34, 0.25),
+      inset 0 0 0 1px rgba(122, 75, 34, 0.1);
+  }
+  45% {
+    background: rgba(122, 75, 34, 0.14);
+    box-shadow:
+      inset 0 3px 0 0 rgba(122, 75, 34, 0.65),
+      inset 0 0 0 1px rgba(122, 75, 34, 0.28);
+  }
+  100% {
+    background: rgba(122, 75, 34, 0.1);
+    box-shadow:
+      inset 0 3px 0 0 rgba(122, 75, 34, 0.55),
+      inset 0 0 0 1px rgba(122, 75, 34, 0.22);
+  }
+}
+
+[data-theme='brown-cream'] .detection-log-row--highlight-primary {
+  animation: detection-row-highlight-pulse-cream 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Neural overlays + vehicle modal satellites */
+[data-theme='brown-cream'] .neural-l-path {
+  stroke: rgba(122, 75, 34, 0.35);
+}
+
+[data-theme='brown-cream'] .neural-l-node {
+  fill: #b9804f;
+  filter: drop-shadow(0 0 4px rgba(185, 128, 79, 0.35));
+}
+
+[data-theme='brown-cream'] .neural-quality-bar {
+  background: linear-gradient(90deg, #7a4b22, #b9804f, #d8b07a);
+}
+
+[data-theme='brown-cream'] .owner-profile-editable:focus {
+  outline-color: rgba(185, 128, 79, 0.55) !important;
+}
+
+/* Processing progress */
+[data-theme='brown-cream'] .processing-progress-bar-container {
+  background: linear-gradient(180deg, #f4e8db 0%, #f8f3eb 100%);
+  box-shadow:
+    inset 0 0 8px rgba(122, 75, 34, 0.08),
+    0 0 12px rgba(122, 75, 34, 0.06);
+}
+
+[data-theme='brown-cream'] .processing-progress-bar-fill {
+  background: linear-gradient(90deg, #7a4b22, #b9804f, #d8b07a);
+}
+
+[data-theme='brown-cream'] .processing-progress-bar-fill::before,
+[data-theme='brown-cream'] .processing-progress-bar-fill::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+}
+
+[data-theme='brown-cream'] .processing-progress-bar-fill--error {
+  background: linear-gradient(90deg, #a64839, #c35a45, #e8a598);
+}
+
+/* Filter bar dropdown menu — scoped brown-cream (beats global button overrides) */
+[data-theme='brown-cream'] .detection-filter-bar .bg-\[\#0b1020\] {
+  background-color: var(--cream-bg-card) !important;
+  border-color: var(--cream-brown-primary) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .bg-\[\#332c56\],
+[data-theme='brown-cream'] .detection-filter-bar .bg-\[\#143444\],
+[data-theme='brown-cream'] .detection-filter-bar .bg-\[\#1a3d32\] {
+  background-color: var(--cream-bg-active) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .bg-\[\#332c56\]\/50,
+[data-theme='brown-cream'] .detection-filter-bar .bg-\[\#143444\]\/70,
+[data-theme='brown-cream'] .detection-filter-bar .bg-\[\#1a3d32\]\/70 {
+  background-color: var(--cream-bg-hover) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .text-\[\#a896ff\],
+[data-theme='brown-cream'] .detection-filter-bar .text-\[\#00bcd4\],
+[data-theme='brown-cream'] .detection-filter-bar .text-\[\#2ecc71\],
+[data-theme='brown-cream'] .detection-filter-bar .hover\:text-\[\#a896ff\]:hover,
+[data-theme='brown-cream'] .detection-filter-bar .hover\:text-\[\#00bcd4\]:hover,
+[data-theme='brown-cream'] .detection-filter-bar .hover\:text-\[\#2ecc71\]:hover {
+  color: var(--cream-brown-primary) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar button.text-slate-300 {
+  color: var(--cream-text-body) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .text-slate-400 {
+  color: var(--cream-text-muted) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .w-px.bg-white\/10,
+[data-theme='brown-cream'] .detection-filter-bar .border-t.border-white\/10 {
+  background-color: var(--cream-border) !important;
+  border-color: var(--cream-border) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .border-r.border-cyber-cyan\/30 {
+  border-color: var(--cream-border) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .border-2.border-cyber-cyan\/50 {
+  border-color: var(--cream-brown-primary) !important;
+  box-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .shadow-\[0_0_12px_rgba\(0\,188\,212\,0\.2\)\] {
+  box-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .border-2.border-cyber-cyan\/50 button.text-cyber-pink {
+  background: transparent !important;
+  color: var(--cream-error) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .border-2.border-cyber-cyan\/50 button.text-cyber-cyan {
+  background: transparent !important;
+  color: var(--cream-brown-primary) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .border-2.border-cyber-cyan\/50 button.text-cyber-pink:hover,
+[data-theme='brown-cream'] .detection-filter-bar .border-2.border-cyber-cyan\/50 button.hover\:bg-cyber-pink\/10:hover {
+  background: rgba(195, 90, 69, 0.1) !important;
+  color: var(--cream-error) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar .border-2.border-cyber-cyan\/50 button.text-cyber-cyan:hover,
+[data-theme='brown-cream'] .detection-filter-bar .border-2.border-cyber-cyan\/50 button.hover\:bg-cyber-cyan\/10:hover {
+  background: var(--cream-btn-outline-bg) !important;
+  color: var(--cream-brown-dark) !important;
+}
+
+/* Legacy global filter menu hex remaps (other panels) */
+[data-theme='brown-cream'] .bg-\[\#332c56\] {
+  background-color: #f1e3d3 !important;
+}
+
+[data-theme='brown-cream'] .bg-\[\#332c56\]\/50 {
+  background-color: rgba(241, 227, 211, 0.65) !important;
+}
+
+[data-theme='brown-cream'] .bg-\[\#143444\] {
+  background-color: #f4e6d7 !important;
+}
+
+[data-theme='brown-cream'] .bg-\[\#143444\]\/70 {
+  background-color: rgba(244, 230, 215, 0.75) !important;
+}
+
+[data-theme='brown-cream'] .bg-\[\#1a3d32\] {
+  background-color: #eaf5e7 !important;
+}
+
+[data-theme='brown-cream'] .bg-\[\#1a3d32\]\/70 {
+  background-color: rgba(234, 245, 231, 0.75) !important;
+}
+
+[data-theme='brown-cream'] .text-\[\#a896ff\] {
+  color: #7a4b22 !important;
+}
+
+[data-theme='brown-cream'] .text-\[\#00bcd4\],
+[data-theme='brown-cream'] .hover\:text-\[\#00bcd4\]:hover {
+  color: #a36834 !important;
+}
+
+[data-theme='brown-cream'] .text-\[\#2ecc71\],
+[data-theme='brown-cream'] .hover\:text-\[\#2ecc71\]:hover {
+  color: #5c9d55 !important;
+}
+
+[data-theme='brown-cream'] .hover\:text-\[\#a896ff\]:hover {
+  color: #623b1a !important;
+}
+
+[data-theme='brown-cream'] .border-\[\#d946ef\]\/45,
+[data-theme='brown-cream'] .border-\[\#d946ef\]\/65,
+[data-theme='brown-cream'] .border-\[\#d946ef\]\/70 {
+  border-color: rgba(185, 128, 79, 0.45) !important;
+}
+
+[data-theme='brown-cream'] .bg-\[\#d946ef\]\/12,
+[data-theme='brown-cream'] .bg-\[\#d946ef\]\/18,
+[data-theme='brown-cream'] .bg-\[\#d946ef\]\/22 {
+  background-color: rgba(185, 128, 79, 0.12) !important;
+}
+
+[data-theme='brown-cream'] .text-\[\#f0abfc\],
+[data-theme='brown-cream'] .text-\[\#fae8ff\],
+[data-theme='brown-cream'] .text-\[\#f5d0fe\],
+[data-theme='brown-cream'] .hover\:text-\[\#f5d0fe\]:hover {
+  color: #7a4b22 !important;
+}
+
+[data-theme='brown-cream'] .shadow-\[0_0_14px_rgba\(217\,70\,239\,0\.2\)\] {
+  box-shadow: var(--cream-shadow-sm) !important;
+}
+
+[data-theme='brown-cream'] .shadow-\[0_8px_24px_rgba\(0\,0\,0\,0\.45\)\],
+[data-theme='brown-cream'] .shadow-\[0_12px_32px_rgba\(0\,0\,0\,0\.45\)\] {
+  box-shadow: var(--cream-shadow-md) !important;
+}
+
+[data-theme='brown-cream'] .from-\[\#00D9FF\]\/12 {
+  --tw-gradient-from: rgba(122, 75, 34, 0.1) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(122 75 34 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+[data-theme='brown-cream'] .via-\[\#0f173a\]\/80 {
+  --tw-gradient-via: rgba(252, 247, 241, 0.95) var(--tw-gradient-via-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to);
+}
+
+[data-theme='brown-cream'] .to-\[\#d946ef\]\/10 {
+  --tw-gradient-to: rgba(216, 176, 122, 0.12) var(--tw-gradient-to-position);
+}
+
+[data-theme='brown-cream'] .border-\[\#00e5ff\],
+[data-theme='brown-cream'] .border-\[\#ff006e\] {
+  border-color: rgba(122, 75, 34, 0.45) !important;
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-shell-magenta.border-\[\#ff006e\] {
+  border-color: rgba(195, 90, 69, 0.55) !important;
+}
+
+[data-theme='brown-cream'] .bg-\[rgba\(0\,212\,255\,0\.1\)\] {
+  background-color: rgba(122, 75, 34, 0.08) !important;
+}
+
+[data-theme='brown-cream'] .bg-\[rgba\(0\,0\,0\,0\.15\)\] {
+  background-color: rgba(244, 230, 215, 0.45) !important;
+}
+
+/* Tab switcher + status badges */
+[data-theme='brown-cream'] .tab-switcher-pill {
+  box-shadow: 0 2px 8px rgba(122, 75, 34, 0.12) !important;
+}
+
+[data-theme='brown-cream'] .aurasite-icon-trigger:hover {
+  filter: drop-shadow(0 2px 8px rgba(122, 75, 34, 0.25));
+}
+
+[data-theme='brown-cream'] .plate-card-ring::before {
+  background: conic-gradient(from 0deg, #7a4b22, #b9804f, #d8b07a, #7a4b22);
+  opacity: 0.35;
+}
+
+[data-theme='brown-cream'] .plate-card-ring--selected::before {
+  opacity: 0.65;
+}
+
+[data-theme='brown-cream'] .video-uploads-scroll {
+  scrollbar-color: #b9804f #f4e8db;
+}
+
+[data-theme='brown-cream'] .video-uploads-scroll::-webkit-scrollbar-track {
+  background: #f4e8db;
+}
+
+[data-theme='brown-cream'] .video-uploads-scroll::-webkit-scrollbar-thumb {
+  background: #b9804f;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__stat-box,
+[data-theme='brown-cream'] .video-results-cyberpunk__video-card {
+  border-color: #e8d8c5;
+  background: #fffdf9;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__video-card--selected {
+  border-color: rgba(122, 75, 34, 0.45);
+  background: #f1e3d3;
+}
+
+/* btn styles moved to buttons.css */

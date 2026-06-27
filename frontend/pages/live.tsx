@@ -330,7 +330,7 @@ export default function LivePage() {
             </div>
 
             <div className="grid gap-5 p-5 lg:grid-cols-[1fr_18rem]">
-              <div className="relative min-h-[28rem] h-[28rem] overflow-hidden rounded-xl border border-cyber-cyan/20 bg-black/50">
+              <div className="live-viewport relative min-h-[28rem] h-[28rem] overflow-hidden rounded-xl border border-cyber-cyan/20 bg-black/50">
                 {mode === 'camera' ? (
                   <>
                     <video
@@ -367,7 +367,7 @@ export default function LivePage() {
                   <div className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-white/15" />
                   <div className="absolute left-0 top-3/4 h-px w-full -translate-y-1/2 bg-white/15" />
                 </div>
-                <div className="absolute left-3 top-3 z-20 rounded-full border border-cyber-cyan/40 bg-black/60 px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.14em] text-cyber-cyan">
+                <div className="live-badge-overlay absolute left-3 top-3 z-20 rounded-full border border-cyber-cyan/40 bg-black/60 px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.14em] text-cyber-cyan">
                   {requesting ? 'Analyzing' : running ? 'Live' : cameraPreviewActive ? 'Preview' : 'Idle'}
                 </div>
                 {mode === 'camera' && cameraPreviewActive && !running ? (
@@ -456,7 +456,7 @@ export default function LivePage() {
                 </div>
               ) : (
                 <div
-                  className="live-history-panel space-y-3 overflow-y-auto overscroll-contain pr-1 [scrollbar-color:rgba(0,247,255,0.45)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-cyber-cyan/45"
+                  className="live-history-scroll live-history-panel space-y-3 overflow-y-auto overscroll-contain pr-1 [scrollbar-color:rgba(0,247,255,0.45)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-cyber-cyan/45"
                   style={{ maxHeight: LIVE_HISTORY_SCROLL_MAX }}
                 >
                   {plateHistory.map((item, index) => (
@@ -471,7 +471,7 @@ export default function LivePage() {
                           openDetectionLog(item);
                         }
                       }}
-                      className="shrink-0 cursor-pointer rounded-xl border border-cyber-cyan/20 bg-black/30 p-4 transition hover:border-cyber-cyan/45 hover:bg-black/40"
+                      className="live-history-card shrink-0 cursor-pointer rounded-xl border border-cyber-cyan/20 bg-black/30 p-4 transition hover:border-cyber-cyan/45 hover:bg-black/40"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <p className="font-orbitron text-xl text-white">{item.plate_number}</p>

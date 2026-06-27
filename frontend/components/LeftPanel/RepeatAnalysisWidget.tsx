@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { RepeatAnalysis } from '@/types/analytics';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import { useThemeStore } from '@/store/themeStore';
+import { getUiPalette, isCreamTheme } from '@/theme/themeColors';
 import {
   OwnerDetailIcon,
   RepeatAnalysisPanelIcon,
@@ -220,8 +222,11 @@ function RepeatYAxisScale({ ticks }: { ticks: number[] }) {
 }
 
 function AnalyticsBarLabel({ label, tone }: { label: string; tone: 'cyan' | 'magenta' }) {
+  const theme = useThemeStore((state) => state.theme);
+  const ui = getUiPalette(theme);
   const isCyan = tone === 'cyan';
-  const labelColor = isCyan ? '#00d4ff' : '#ff006e';
+  const labelColor = isCyan ? ui.labelCyan : ui.labelMagenta;
+  const cream = isCreamTheme(theme);
 
   return (
     <div className={`flex ${REPEAT_LABEL_ROW_H} w-[4.75rem] items-start justify-center sm:w-[5.25rem]`}>
@@ -229,7 +234,9 @@ function AnalyticsBarLabel({ label, tone }: { label: string; tone: 'cyan' | 'mag
         className="mt-3 w-full truncate text-center text-xs font-bold uppercase tracking-[0.14em]"
         style={{
           color: labelColor,
-          textShadow: `0 0 8px ${isCyan ? 'rgba(0, 212, 255, 0.55)' : 'rgba(255, 0, 110, 0.55)'}`,
+          textShadow: cream
+            ? 'none'
+            : `0 0 8px ${isCyan ? 'rgba(0, 212, 255, 0.55)' : 'rgba(255, 0, 110, 0.55)'}`,
         }}
       >
         {label}
@@ -241,6 +248,8 @@ function AnalyticsBarLabel({ label, tone }: { label: string; tone: 'cyan' | 'mag
 
 
 function MostActivePlateColumn({ plate }: { plate: string }) {
+  const cream = isCreamTheme(useThemeStore((state) => state.theme));
+
   return (
     <div className="flex min-w-[11rem] shrink-0 flex-col items-center gap-2">
       <div className="h-[1.25rem] w-full shrink-0 sm:h-[1.5rem]" aria-hidden />
@@ -249,7 +258,7 @@ function MostActivePlateColumn({ plate }: { plate: string }) {
         <div className="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-lg border border-[#00d4ff] bg-[rgba(0,212,255,0.1)] px-4 sm:h-[4.25rem]">
           <p
             className="w-full truncate text-center font-orbitron text-base font-bold leading-none tracking-wide text-[#00d4ff] sm:text-lg"
-            style={{ textShadow: '0 0 8px rgba(0, 212, 255, 0.55)' }}
+            style={{ textShadow: cream ? 'none' : '0 0 8px rgba(0, 212, 255, 0.55)' }}
           >
             {plate}
           </p>
@@ -281,10 +290,17 @@ function AnalyticsBarColumn({
   tone: 'cyan' | 'magenta';
   delay?: number;
 }) {
+  const theme = useThemeStore((state) => state.theme);
+  const ui = getUiPalette(theme);
   const isCyan = tone === 'cyan';
-  const barColor = isCyan ? '#00e5ff' : '#ff006e';
+  const barColor = isCyan ? ui.barCyan : ui.barMagenta;
   const heightPct = value > 0 ? (value / max) * 100 : 0;
-  const valueShadow = isCyan ? '0 0 8px rgba(0, 229, 255, 0.55)' : '0 0 8px rgba(255, 0, 110, 0.55)';
+  const cream = isCreamTheme(theme);
+  const valueShadow = cream
+    ? 'none'
+    : isCyan
+      ? '0 0 8px rgba(0, 229, 255, 0.55)'
+      : '0 0 8px rgba(255, 0, 110, 0.55)';
 
   return (
     <div className="flex w-[4.75rem] shrink-0 flex-col items-center sm:w-[5.25rem]">
@@ -334,6 +350,8 @@ function Metric({
   tall?: boolean;
   narrow?: boolean;
 }) {
+  const cream = isCreamTheme(useThemeStore((state) => state.theme));
+
   return (
     <div
       className={`flex min-w-0 flex-col items-center justify-center self-end overflow-hidden rounded-xl border border-white/45 bg-black/20 ${
@@ -359,7 +377,7 @@ function Metric({
         className={`mt-2 w-full truncate font-orbitron font-bold leading-none text-cyber-cyan ${
           compact ? (narrow ? 'text-sm' : 'text-base sm:text-lg') : 'text-xl sm:text-2xl'
         }`}
-        style={{ textShadow: '0 0 6px rgba(0, 247, 255, 0.55)' }}
+        style={{ textShadow: cream ? 'none' : '0 0 6px rgba(0, 247, 255, 0.55)' }}
       >
         {value}
       </p>

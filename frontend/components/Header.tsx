@@ -7,7 +7,8 @@ import { useSocket } from '@/hooks/useSocket';
 import AurasiteBrandOverlay from '@/components/AurasiteBrandOverlay';
 import AurasiteIconTrigger from '@/components/AurasiteIconTrigger';
 import MobileNav from '@/components/MobileNav';
-import { ClearNavIcon, LogoutNavIcon, navItemIcons } from '@/components/NavIcons';
+import { ClearNavIcon, DayModeNavIcon, LogoutNavIcon, NightModeNavIcon, navItemIcons } from '@/components/NavIcons';
+import { useTheme } from '@/hooks/useTheme';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard' },
@@ -31,6 +32,7 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
   const { user, token, logout, hydrate } = useAuthStore();
   const [clearing, setClearing] = useState(false);
   const [brandOpen, setBrandOpen] = useState(false);
+  const { isDark, toggleTheme } = useTheme();
 
   const statusLabel = connected ? 'ONLINE' : 'OFFLINE';
   const statusActive = connected;
@@ -124,6 +126,21 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
                 />
                 <span className={token && user?.name ? 'row-start-2' : 'row-start-1'}>{statusLabel}</span>
               </div>
+              {token && isDashboard && (
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="header-night-mode-btn inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-cyber-purple/40 text-cyber-purple transition hover:bg-cyber-purple/10"
+                  title={isDark ? 'Switch to day mode' : 'Switch to night mode'}
+                  aria-label={isDark ? 'Switch to day mode' : 'Switch to night mode'}
+                >
+                  {isDark ? (
+                    <DayModeNavIcon className="h-[1.65rem] w-[1.65rem] shrink-0 text-white" />
+                  ) : (
+                    <NightModeNavIcon className="h-[1.65rem] w-[1.65rem] shrink-0 text-white" />
+                  )}
+                </button>
+              )}
               {token && (
                 <button
                   type="button"

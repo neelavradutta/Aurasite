@@ -1,0 +1,159 @@
+/* Login page + premium login overlay — brown-cream only. */
+
+[data-theme='brown-cream'] .anpr-access-portal {
+  background: linear-gradient(135deg, #f8f3eb 0%, #f5eee3 50%, #fffdf9 100%);
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__star,
+[data-theme='brown-cream'] .anpr-access-portal__particle {
+  background: #b9804f;
+  opacity: 0.35;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__grid-bg {
+  background-image:
+    linear-gradient(0deg, rgba(122, 75, 34, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122, 75, 34, 0.04) 1px, transparent 1px);
+  opacity: 0.6;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__orbit {
+  border-color: rgba(122, 75, 34, 0.12);
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__card {
+  border-color: #e8d8c5;
+  background: #fffdf9;
+  box-shadow: var(--cream-shadow-lg);
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__title {
+  color: #7a4b22;
+  text-shadow: none;
+  animation: none;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__subtitle {
+  color: #5c4433;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__label {
+  color: #4a2b12;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__input {
+  border-color: #ddc8b4;
+  background: #fffdf9;
+  color: #5c4433;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__input::placeholder {
+  color: #9e8878;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__input:hover {
+  border-color: #d6bea2;
+  background: #fffdf9;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__input:focus {
+  border-color: #a36834;
+  background: #fffdf9;
+  box-shadow: 0 0 0 2px rgba(185, 128, 79, 0.35);
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__password-toggle {
+  color: #b9804f;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__password-toggle:hover {
+  color: #7a4b22;
+  filter: none;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__error {
+  color: #c35a45;
+  text-shadow: none;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__button {
+  border-color: var(--cream-btn-solid-hover);
+  background: var(--cream-btn-solid);
+  color: #ffffff;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__button::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__button:hover:not(:disabled) {
+  border-color: var(--cream-btn-solid-active);
+  background: var(--cream-btn-solid-hover);
+  box-shadow: 0 6px 22px rgba(74, 43, 18, 0.34);
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__toggle-text,
+[data-theme='brown-cream'] .anpr-access-portal__toggle-link {
+  color: #8e7868;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__toggle-link {
+  color: #7a4b22;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__toggle-link:hover {
+  color: #623b1a;
+}
+
+/* Premium login overlay */
+[data-theme='brown-cream'] .premium-login-overlay {
+  background: radial-gradient(
+    circle 1200px at 50% 50%,
+    rgba(216, 176, 122, 0.15) 0%,
+    rgba(248, 243, 235, 0.98) 100%
+  ) !important;
+}
+
+[data-theme='brown-cream'] .premium-login-overlay--success {
+  background: radial-gradient(
+    circle 1200px at 50% 50%,
+    rgba(92, 157, 85, 0.12) 0%,
+    rgba(248, 243, 235, 1) 100%
+  ) !important;
+}
+
+[data-theme='brown-cream'] .premium-login-overlay--denied {
+  background: radial-gradient(
+    circle 1200px at 50% 50%,
+    rgba(195, 90, 69, 0.12) 0%,
+    rgba(248, 243, 235, 1) 100%
+  ) !important;
+}
+
+[data-theme='brown-cream'] .premium-login-radial-wave {
+  border-color: rgba(185, 128, 79, 0.45);
+}
+
+[data-theme='brown-cream'] .premium-login-auth-grid {
+  background-image:
+    linear-gradient(rgba(122, 75, 34, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122, 75, 34, 0.08) 1px, transparent 1px);
+}
+
+[data-theme='brown-cream'] .premium-login-overlay .bg-cyan-400 {
+  background-color: #b9804f !important;
+}
+
+[data-theme='brown-cream'] .premium-login-overlay .text-cyan-400\/70 {
+  color: rgba(122, 75, 34, 0.7) !important;
+}
+
+[data-theme='brown-cream'] .premium-login-overlay .from-cyan-400 {
+  --tw-gradient-from: #7a4b22 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(122 75 34 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+[data-theme='brown-cream'] .premium-login-overlay .to-green-400 {
+  --tw-gradient-to: #5c9d55 var(--tw-gradient-to-position);
+}

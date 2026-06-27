@@ -12,9 +12,17 @@ import {
   YAxis,
 } from 'recharts';
 import { ParkingOccupancyResult } from '@/types/analytics';
+import PanelIconHeader from '@/components/shared/PanelIconHeader';
+import { ParkingOccupancyPanelIcon } from '@/components/NavIcons';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
+import { useThemeStore } from '@/store/themeStore';
+import {
+  BROWN_CREAM_PARKING_CHART_GREEN,
+  CYBERPUNK_PARKING_CHART_GREEN,
+} from '@/theme/chartColors';
 
-const CHART_GREEN = '#7ED321';
+const CHART_GREEN_CYBER = CYBERPUNK_PARKING_CHART_GREEN;
+const CHART_GREEN_CREAM = BROWN_CREAM_PARKING_CHART_GREEN;
 const CHART_FILL_OPACITY = 0.72;
 
 interface Props {
@@ -30,7 +38,10 @@ export default function ParkingOccupancyPanel({
   onCapacityChange,
   className = '',
 }: Props) {
-  const animationKey = useChartAnimationKey('parking-occupancy');
+  const theme = useThemeStore((state) => state.theme);
+  const chartGreen = theme === 'brown-cream' ? CHART_GREEN_CREAM : CHART_GREEN_CYBER;
+  const themeKey = theme === 'brown-cream' ? 'cream' : 'cyber';
+  const animationKey = useChartAnimationKey(`parking-occupancy-${themeKey}`);
   const [capacityInput, setCapacityInput] = useState(String(maxCapacity));
 
   useEffect(() => {
@@ -68,12 +79,14 @@ export default function ParkingOccupancyPanel({
       className={`glass-panel flex min-h-[22rem] flex-col rounded-xl border border-white/5 p-4 sm:p-5 ${className}`}
     >
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="section-title">Parking Occupancy</h3>
-          <p className="mt-1 text-[13px] text-slate-400">
-            Real-time lot utilization - capacity management
-          </p>
-        </div>
+        <PanelIconHeader
+          icon={<ParkingOccupancyPanelIcon />}
+          title="Parking Occupancy"
+          subtitle="Real-time lot utilization - capacity management"
+          iconBg="bg-white/10"
+          iconColor="text-white"
+          className="!mb-0 min-w-0 flex-1"
+        />
 
         <label className="parking-capacity-control group shrink-0">
           <span className="parking-capacity-control__label">Max Capacity</span>
@@ -141,7 +154,7 @@ export default function ParkingOccupancyPanel({
               type="monotone"
               dataKey="occupancyPct"
               stroke="none"
-              fill={CHART_GREEN}
+              fill={chartGreen}
               fillOpacity={CHART_FILL_OPACITY}
               isAnimationActive
               animationDuration={2200}
@@ -150,7 +163,7 @@ export default function ParkingOccupancyPanel({
             <Line
               type="monotone"
               dataKey="occupancyPct"
-              stroke={CHART_GREEN}
+              stroke={chartGreen}
               strokeWidth={3.5}
               dot={(props) => {
                 const { cx, cy, payload } = props;
@@ -163,18 +176,18 @@ export default function ParkingOccupancyPanel({
                       x={cx}
                       y={cy - 12}
                       textAnchor="middle"
-                      fill={CHART_GREEN}
+                      fill={chartGreen}
                       fontSize={10}
                       fontWeight={600}
                       letterSpacing="0.08em"
                     >
                       PEAK
                     </text>
-                    <circle cx={cx} cy={cy} r={5} fill={CHART_GREEN} />
+                    <circle cx={cx} cy={cy} r={5} fill={chartGreen} />
                   </g>
                 );
               }}
-              activeDot={{ r: 4, fill: CHART_GREEN, stroke: CHART_GREEN }}
+              activeDot={{ r: 4, fill: chartGreen, stroke: chartGreen }}
               isAnimationActive
               animationDuration={2200}
               animationEasing="ease-out"

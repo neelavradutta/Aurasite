@@ -1,0 +1,52 @@
+/* Mobile nav + drawer — brown-cream color overrides only. */
+
+@media (max-width: 1279px) {
+  [data-theme='brown-cream'] .mobile-nav__trigger {
+    border-color: var(--cream-btn-solid);
+    background: var(--cream-btn-solid);
+    color: #ffffff;
+  }
+
+  [data-theme='brown-cream'] .mobile-nav__backdrop {
+    background: rgba(74, 43, 18, 0.28);
+  }
+
+  [data-theme='brown-cream'] .mobile-nav__drawer {
+    background: linear-gradient(180deg, #fffdf9 0%, #f8f3eb 100%);
+    border-left-color: #e8d8c5;
+    box-shadow: -12px 0 40px rgba(122, 75, 34, 0.12);
+  }
+
+  [data-theme='brown-cream'] .mobile-nav__title {
+    color: #8e7868;
+  }
+
+  [data-theme='brown-cream'] .mobile-nav__link {
+    color: #5c4433;
+  }
+
+  [data-theme='brown-cream'] .mobile-nav__link--active {
+    background: var(--cream-btn-solid);
+    color: #ffffff;
+    box-shadow: var(--cream-shadow-sm);
+  }
+
+  [data-theme='brown-cream'] .mobile-nav__footer {
+    border-top-color: #e8d8c5;
+  }
+
+  [data-theme='brown-cream'] .mobile-nav__user {
+    color: #8e7868;
+  }
+
+  [data-theme='brown-cream'] .mobile-nav__logout {
+    border-color: #a64839;
+    color: #ffffff;
+    background: #c35a45;
+  }
+
+  [data-theme='brown-cream'] .mobile-nav__logout:hover {
+    background: #a64839;
+    border-color: #8f3d32;
+  }
+}

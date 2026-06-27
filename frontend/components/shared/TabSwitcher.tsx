@@ -1,5 +1,7 @@
 import { Fragment } from 'react';
 import { motion } from 'framer-motion';
+import { useThemeStore } from '@/store/themeStore';
+import { getUiPalette } from '@/theme/themeColors';
 
 export type TabSwitcherValue = 'camera' | 'source';
 
@@ -16,14 +18,20 @@ const tabs: { id: TabSwitcherValue; label: string }[] = [
 ];
 
 export default function TabSwitcher({ value, onChange, disabled = false, className = '' }: TabSwitcherProps) {
+  const theme = useThemeStore((state) => state.theme);
+  const ui = getUiPalette(theme);
+  const isCream = theme === 'brown-cream';
+
   return (
-    <div className={`relative overflow-hidden rounded-lg border border-cyan-500/20 bg-black/30 ${className}`}>
+    <div
+      className={`tab-switcher-shell relative overflow-hidden rounded-lg border border-cyan-500/20 bg-black/30 ${className}`}
+    >
       <div className="relative flex items-center gap-0 p-0.5">
         {tabs.map((tab, index) => (
           <Fragment key={tab.id}>
             {index > 0 ? (
               <motion.div
-                className="h-6 w-px bg-gradient-to-b from-cyan-500/0 via-cyan-500/50 to-cyan-500/0"
+                className="tab-switcher-divider h-6 w-px bg-gradient-to-b from-cyan-500/0 via-cyan-500/50 to-cyan-500/0"
                 animate={{ opacity: [0.3, 0.6, 0.3] }}
                 transition={{ duration: 2, repeat: Infinity }}
               />
@@ -38,7 +46,7 @@ export default function TabSwitcher({ value, onChange, disabled = false, classNa
             >
               {value === tab.id ? (
                 <motion.div
-                  className="absolute inset-0 rounded-md bg-gradient-to-r from-cyan-500/20 to-cyan-500/10"
+                  className="tab-switcher-active-bg absolute inset-0 rounded-md bg-gradient-to-r from-cyan-500/20 to-cyan-500/10"
                   layoutId="liveModeTab"
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
@@ -46,9 +54,9 @@ export default function TabSwitcher({ value, onChange, disabled = false, classNa
               <motion.span
                 className="relative z-20 font-mono text-xs uppercase tracking-widest"
                 animate={{
-                  color: value === tab.id ? '#00ffff' : '#64748b',
+                  color: value === tab.id ? ui.tabActive : ui.tabInactive,
                   textShadow:
-                    value === tab.id ? '0 0 10px rgba(0, 255, 255, 0.5)' : '0 0 0px rgba(0, 0, 0, 0)',
+                    value === tab.id && !isCream ? ui.tabActiveShadow : '0 0 0px rgba(0, 0, 0, 0)',
                 }}
                 transition={{ duration: 0.3 }}
               >
@@ -59,14 +67,15 @@ export default function TabSwitcher({ value, onChange, disabled = false, classNa
         ))}
       </div>
       <motion.div
-        className="absolute bottom-0 h-0.5 bg-gradient-to-r from-cyan-500/0 via-cyan-500 to-cyan-500/0"
+        className="tab-switcher-indicator absolute bottom-0 h-0.5 bg-gradient-to-r from-cyan-500/0 via-cyan-500 to-cyan-500/0"
         animate={{
           width: '45%',
           left: value === 'camera' ? '4px' : 'calc(50% + 4px)',
         }}
         transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-        style={{ boxShadow: '0 0 10px rgba(0, 255, 255, 0.6)' }}
+        style={{ boxShadow: isCream ? ui.tabBarShadow : ui.tabBarShadow }}
       />
     </div>
   );
 }
+

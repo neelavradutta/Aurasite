@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 import { useDashboardStore } from '@/store/dashboardStore';
 import {
-  LicensePlatePanelIcon,
   OwnerDetailIcon,
   PaletteDetailIcon,
   RupeeDetailIcon,
+  SelectedPlatePanelIcon,
   VehiclesPanelIcon,
 } from '@/components/NavIcons';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
@@ -32,7 +32,7 @@ export default function SelectedPlatePanel() {
   return (
     <section className="glass-panel shrink-0 rounded-xl border border-white/5 p-5">
       <PanelIconHeader
-        icon={<LicensePlatePanelIcon />}
+        icon={<SelectedPlatePanelIcon />}
         title="Selected Plate"
         iconBg="bg-white/10"
         iconColor="text-white"

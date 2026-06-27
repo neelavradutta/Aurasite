@@ -1,0 +1,231 @@
+/* Chart + analytics visuals — brown-cream only. */
+
+[data-theme='brown-cream'] .repeat-bar-fill {
+  background: #b9804f;
+  box-shadow: 0 0 12px rgba(185, 128, 79, 0.25);
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-shell-cyan {
+  box-shadow:
+    0 0 8px rgba(122, 75, 34, 0.15),
+    inset 0 0 8px rgba(122, 75, 34, 0.06);
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-shell-magenta {
+  box-shadow:
+    0 0 8px rgba(195, 90, 69, 0.15),
+    inset 0 0 8px rgba(195, 90, 69, 0.06);
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-fill-cyan {
+  background: #b9804f;
+  animation:
+    repeat-bar-fill-up 2s ease-out forwards,
+    repeat-bar-neon-glow-cream 2.4s ease-in-out infinite;
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-fill-magenta {
+  background: #c35a45;
+  animation:
+    repeat-bar-fill-up 2s ease-out forwards,
+    repeat-bar-neon-glow-cream-error 2.4s ease-in-out infinite;
+}
+
+@keyframes repeat-bar-neon-glow-cream {
+  0%,
+  100% {
+    box-shadow:
+      0 0 6px rgba(185, 128, 79, 0.35),
+      inset 0 0 8px rgba(185, 128, 79, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 10px rgba(185, 128, 79, 0.5),
+      inset 0 0 12px rgba(185, 128, 79, 0.22);
+  }
+}
+
+@keyframes repeat-bar-neon-glow-cream-error {
+  0%,
+  100% {
+    box-shadow:
+      0 0 6px rgba(195, 90, 69, 0.35),
+      inset 0 0 8px rgba(195, 90, 69, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 10px rgba(195, 90, 69, 0.5),
+      inset 0 0 12px rgba(195, 90, 69, 0.22);
+  }
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-fill-cyan::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='10' viewBox='0 0 32 10'%3E%3Cpath d='M0 5 C4 10 8 0 16 5 C24 10 28 0 32 5 L32 10 L0 10 Z' fill='%23b9804f'/%3E%3C/svg%3E");
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-fill-magenta::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='10' viewBox='0 0 32 10'%3E%3Cpath d='M0 5 C4 10 8 0 16 5 C24 10 28 0 32 5 L32 10 L0 10 Z' fill='%23c35a45'/%3E%3C/svg%3E");
+}
+
+[data-theme='brown-cream'] .repeat-analytics-bar-shell-cyan span,
+[data-theme='brown-cream'] .repeat-analytics-bar-shell-magenta span {
+  color: var(--cream-text-heading) !important;
+  text-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .repeat-bar-chart-layout .tracking-\[0\.14em\] {
+  text-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .repeat-bar-chart-layout .tracking-\[0\.14em\].text-\[\#00d4ff\],
+[data-theme='brown-cream'] .repeat-bar-chart-layout p[style*='rgb(0, 212, 255)'],
+[data-theme='brown-cream'] .repeat-bar-chart-layout p[style*='#00d4ff'] {
+  color: var(--cream-brown-primary) !important;
+}
+
+[data-theme='brown-cream'] .frequent-vehicle-tone-1 {
+  --fv-label: #c35a45;
+  --fv-label-muted: #a64839;
+  --fv-shell-border: rgba(195, 90, 69, 0.55);
+  --fv-shell-bg: rgba(195, 90, 69, 0.08);
+  --fv-shell-glow: rgba(195, 90, 69, 0.2);
+  --fv-fill-start: #a64839;
+  --fv-fill-mid: #c35a45;
+  --fv-fill-end: #e8a598;
+  --fv-bar-glow: rgba(195, 90, 69, 0.3);
+  --fv-flow-soft: rgba(232, 165, 152, 0.35);
+  --fv-flow-bright: rgba(195, 90, 69, 0.75);
+}
+
+[data-theme='brown-cream'] .frequent-vehicle-tone-2 {
+  --fv-label: #b9804f;
+  --fv-label-muted: #7a4b22;
+  --fv-shell-border: rgba(185, 128, 79, 0.55);
+  --fv-shell-bg: rgba(185, 128, 79, 0.08);
+  --fv-shell-glow: rgba(185, 128, 79, 0.2);
+  --fv-fill-start: #7a4b22;
+  --fv-fill-mid: #b9804f;
+  --fv-fill-end: #d8b07a;
+  --fv-bar-glow: rgba(185, 128, 79, 0.3);
+  --fv-flow-soft: rgba(216, 176, 122, 0.35);
+  --fv-flow-bright: rgba(185, 128, 79, 0.75);
+}
+
+[data-theme='brown-cream'] .frequent-vehicle-tone-3 {
+  --fv-label: #d29a35;
+  --fv-label-muted: #a36834;
+  --fv-shell-border: rgba(210, 154, 53, 0.55);
+  --fv-shell-bg: rgba(210, 154, 53, 0.08);
+  --fv-shell-glow: rgba(210, 154, 53, 0.2);
+  --fv-fill-start: #a36834;
+  --fv-fill-mid: #d29a35;
+  --fv-fill-end: #e8ccaa;
+  --fv-bar-glow: rgba(210, 154, 53, 0.3);
+  --fv-flow-soft: rgba(232, 204, 170, 0.35);
+  --fv-flow-bright: rgba(210, 154, 53, 0.75);
+}
+
+[data-theme='brown-cream'] .frequent-vehicle-tone-4 {
+  --fv-label: #5c9d55;
+  --fv-label-muted: #4a7d44;
+  --fv-shell-border: rgba(92, 157, 85, 0.55);
+  --fv-shell-bg: rgba(92, 157, 85, 0.08);
+  --fv-shell-glow: rgba(92, 157, 85, 0.2);
+  --fv-fill-start: #4a7d44;
+  --fv-fill-mid: #5c9d55;
+  --fv-fill-end: #a8d4a3;
+  --fv-bar-glow: rgba(92, 157, 85, 0.3);
+  --fv-flow-soft: rgba(168, 212, 163, 0.35);
+  --fv-flow-bright: rgba(92, 157, 85, 0.75);
+}
+
+[data-theme='brown-cream'] .frequent-vehicle-tone-5 {
+  --fv-label: #8f6a4d;
+  --fv-label-muted: #6e5645;
+  --fv-shell-border: rgba(143, 106, 77, 0.55);
+  --fv-shell-bg: rgba(143, 106, 77, 0.08);
+  --fv-shell-glow: rgba(143, 106, 77, 0.2);
+  --fv-fill-start: #6e5645;
+  --fv-fill-mid: #8f6a4d;
+  --fv-fill-end: #c4a88a;
+  --fv-bar-glow: rgba(143, 106, 77, 0.3);
+  --fv-flow-soft: rgba(196, 168, 138, 0.35);
+  --fv-flow-bright: rgba(143, 106, 77, 0.75);
+}
+
+[data-theme='brown-cream'] .frequent-vehicle-progress::after {
+  mix-blend-mode: soft-light;
+  opacity: 0.65;
+}
+
+[data-theme='brown-cream'] .suspicious-vehicles-scroll {
+  scrollbar-color: #b9804f #f4e8db;
+}
+
+[data-theme='brown-cream'] .suspicious-vehicles-scroll::-webkit-scrollbar-track {
+  background: #f4e8db;
+  box-shadow: none;
+}
+
+[data-theme='brown-cream'] .suspicious-vehicles-scroll::-webkit-scrollbar-thumb {
+  background: #b9804f;
+}
+
+[data-theme='brown-cream'] .suspicious-vehicles-scroll::-webkit-scrollbar-thumb:hover {
+  background: #a36834;
+}
+
+[data-theme='brown-cream'] .parking-occupancy-chart .recharts-cartesian-grid-horizontal line {
+  stroke: rgba(122, 75, 34, 0.08) !important;
+}
+
+[data-theme='brown-cream'] .parking-capacity-control {
+  border-color: #ddc8b4;
+  background: #fffdf9;
+}
+
+[data-theme='brown-cream'] .parking-capacity-control:focus-within {
+  border-color: #a36834;
+  box-shadow: 0 0 0 2px rgba(185, 128, 79, 0.3);
+}
+
+[data-theme='brown-cream'] .parking-capacity-control__label {
+  color: #8e7868;
+}
+
+[data-theme='brown-cream'] .parking-capacity-control__input {
+  color: #4a2b12;
+}
+
+[data-theme='brown-cream'] .parking-capacity-control__unit {
+  color: #8e7868;
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain-glow'] stop,
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain'] stop,
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-sweep'] stop {
+  stop-color: rgba(185, 128, 79, 0.5);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain-glow'] stop[offset='0%'] {
+  stop-color: rgba(185, 128, 79, 0.55);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain'] stop[offset='0%'] {
+  stop-color: rgba(122, 75, 34, 0.65);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__dot {
+  fill: #d8b07a;
+  stroke: #fffdf9;
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__label {
+  fill: #5c4433;
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__label-box {
+  fill: #fffdf9;
+  stroke: #e8d8c5;
+}
+

@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import { useThemeStore } from '@/store/themeStore';
+import { BROWN_CREAM, isCreamTheme } from '@/theme/themeColors';
 
 const CANVAS_SIZE = 512;
 
@@ -45,7 +47,7 @@ function createCircuits(): Circuit[] {
   return circuits;
 }
 
-function createParticles(cx: number, cy: number): Particle[] {
+function createParticles(cx: number, cy: number, particleA: string, particleB: string): Particle[] {
   const particles: Particle[] = [];
   for (let i = 0; i < 50; i++) {
     const particle = {
@@ -56,7 +58,7 @@ function createParticles(cx: number, cy: number): Particle[] {
       size: 1,
       alpha: 1,
       life: 0.01,
-      color: '#00f3ff',
+      color: particleA,
       reset(cxVal: number, cyVal: number) {
         const angle = Math.random() * Math.PI * 2;
         const r = 100 + Math.random() * 40;
@@ -67,7 +69,7 @@ function createParticles(cx: number, cy: number): Particle[] {
         this.size = 2.5 + Math.random() * 4.5;
         this.alpha = 1;
         this.life = 0.006 + Math.random() * 0.012;
-        this.color = Math.random() > 0.4 ? '#00f3ff' : '#00ffaa';
+        this.color = Math.random() > 0.4 ? particleA : particleB;
       },
       update() {
         this.x += this.vx;
@@ -117,6 +119,22 @@ interface Props {
 
 export default function AurasiteIcon({ size = 44, className = '' }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const theme = useThemeStore((state) => state.theme);
+  const cream = isCreamTheme(theme);
+  const palette = cream
+    ? BROWN_CREAM
+    : {
+        iconBgInner: '#0d1330',
+        iconBgMid: '#070814',
+        iconBgOuter: '#11051c',
+        iconCircuit: 'rgba(0, 180, 255',
+        iconParticleA: '#00f3ff',
+        iconParticleB: '#00ffaa',
+        iconRingStart: '#00ffaa',
+        iconRingMid: '#00f3ff',
+        iconRingEnd: '#0044ff',
+        iconShadow: '#00f3ff',
+      };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -138,7 +156,7 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
     let frameId = 0;
 
     const circuits = createCircuits();
-    const particles = createParticles(cx, cy);
+    const particles = createParticles(cx, cy, palette.iconParticleA, palette.iconParticleB);
 
     function renderFrame() {
       if (!context) return;
@@ -146,16 +164,18 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
       time += 0.03;
 
       const bgGrad = context.createRadialGradient(cx, cy, 10, cx, cy, CANVAS_SIZE * 0.72);
-      bgGrad.addColorStop(0, '#0d1330');
-      bgGrad.addColorStop(0.5, '#070814');
-      bgGrad.addColorStop(1, '#11051c');
+      bgGrad.addColorStop(0, palette.iconBgInner);
+      bgGrad.addColorStop(0.5, palette.iconBgMid);
+      bgGrad.addColorStop(1, palette.iconBgOuter);
       context.fillStyle = bgGrad;
       context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
       context.lineWidth = 1.5;
       circuits.forEach((circuit) => {
         const pulseAlpha = circuit.alpha * (1 + 0.4 * Math.sin(time * 2 + circuit.phase));
-        context.strokeStyle = `rgba(0, 180, 255, ${pulseAlpha})`;
+        context.strokeStyle = cream
+          ? `rgba(122, 75, 34, ${pulseAlpha})`
+          : `rgba(0, 180, 255, ${pulseAlpha})`;
         context.beginPath();
         context.moveTo(circuit.points[0].x, circuit.points[0].y);
         for (let i = 1; i < circuit.points.length; i++) {
@@ -171,9 +191,9 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
       });
 
       const grad = context.createLinearGradient(cx - 130, cy - 130, cx + 130, cy + 130);
-      grad.addColorStop(0, '#00ffaa');
-      grad.addColorStop(0.4, '#00f3ff');
-      grad.addColorStop(1, '#0044ff');
+      grad.addColorStop(0, palette.iconRingStart);
+      grad.addColorStop(0.4, palette.iconRingMid);
+      grad.addColorStop(1, palette.iconRingEnd);
 
       const passes = [
         { blur: 45, opacity: 0.25, width: 14 },
@@ -187,7 +207,7 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
         context.save();
         context.strokeStyle = grad;
         context.globalAlpha = pass.opacity;
-        context.shadowColor = '#00f3ff';
+        context.shadowColor = palette.iconShadow;
         context.shadowBlur = pass.blur * pulseIntensity;
         context.lineWidth = (pass.width + 2) * 1.1;
         context.beginPath();
@@ -211,7 +231,7 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
     frameId = window.requestAnimationFrame(renderFrame);
 
     return () => window.cancelAnimationFrame(frameId);
-  }, [size]);
+  }, [size, theme]);
 
   return (
     <canvas

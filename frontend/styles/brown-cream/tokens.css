@@ -1,0 +1,63 @@
+/**
+ * Brown & cream design tokens — scoped to [data-theme='brown-cream'] only.
+ * Cyberpunk uses hardcoded values in globals.css / tailwind.config.js (untouched).
+ */
+[data-theme='brown-cream'] {
+  color-scheme: light;
+
+  --cream-bg-primary: #f8f3eb;
+  --cream-bg-card: #fffdf9;
+  --cream-bg-nested: #fcf7f1;
+  --cream-bg-soft: #f4e6d7;
+  --cream-bg-active: #f1e3d3;
+  --cream-bg-hover: #f8f3eb;
+
+  --cream-brown-primary: #7a4b22;
+  --cream-brown-secondary: #b9804f;
+  --cream-brown-accent: #d8b07a;
+  --cream-brown-hover: #a36834;
+  --cream-brown-dark: #623b1a;
+  --cream-brown-darker: #5c3b1a;
+  --cream-brown-deepest: #4a2b12;
+
+  /* Button fills — darker brown for CTAs */
+  --cream-btn-solid: #623b1a;
+  --cream-btn-solid-mid: #5c3b1a;
+  --cream-btn-solid-hover: #4a2b12;
+  --cream-btn-solid-active: #3d2310;
+  --cream-btn-secondary: #7a4b22;
+  --cream-btn-outline-bg: rgba(98, 59, 26, 0.12);
+  --cream-btn-outline-hover: #623b1a;
+
+  --cream-text-heading: #4a2b12;
+  --cream-text-body: #5c4433;
+  --cream-text-muted: #8e7868;
+  --cream-text-faint: #b8a899;
+
+  --cream-border: #e8d8c5;
+  --cream-border-hover: #d6bea2;
+  --cream-border-input: #ddc8b4;
+  --cream-border-strong: #b9804f;
+
+  --cream-success: #5c9d55;
+  --cream-warning: #d29a35;
+  --cream-error: #c35a45;
+  --cream-info: #8f6a4d;
+
+  --cream-shadow-sm: 0 4px 20px rgba(122, 75, 34, 0.08);
+  --cream-shadow-md: 0 8px 24px rgba(122, 75, 34, 0.12);
+  --cream-shadow-lg: 0 20px 60px rgba(122, 75, 34, 0.15);
+
+  --cream-chart-1: #7a4b22;
+  --cream-chart-2: #b9804f;
+  --cream-chart-3: #d8b07a;
+  --cream-chart-4: #c35a45;
+
+  /* Semantic aliases for CSS overrides */
+  --cream-nav-active-bg: #f1e3d3;
+  --cream-nav-text: #6e5645;
+  --cream-input-bg: #fffdf9;
+  --cream-table-header: #623b1a;
+  --cream-row-hover: #fbf4ec;
+  --cream-modal-backdrop: rgba(74, 43, 18, 0.3);
+}

@@ -4,40 +4,44 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { TrafficHour } from '@/types/analytics';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
+import { useThemeStore } from '@/store/themeStore';
+import {
+  BROWN_CREAM_PEAK_TRAFFIC_COLORS,
+  BROWN_CREAM_PEAK_TRAFFIC_TRACK,
+  CYBERPUNK_PEAK_TRAFFIC_COLORS,
+  CYBERPUNK_PEAK_TRAFFIC_TRACK,
+} from '@/theme/chartColors';
 import { formatHourSlot } from '@/utils/timeFormat';
 import { selectTopTrafficIntervals } from '@/utils/sessionAnalytics';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
-import { AnalyticsNavIcon, PANEL_ICON_CLASS } from '@/components/NavIcons';
+import { PeakTrafficPanelIcon } from '@/components/NavIcons';
 
 export const PEAK_TRAFFIC_HOURS_ANCHOR = 'peak-traffic-hours';
 
-const TRACK_COLOR = '#1a2140';
+const INTERVAL_COLORS_CYBER = [...CYBERPUNK_PEAK_TRAFFIC_COLORS];
+const INTERVAL_COLORS_CREAM = [...BROWN_CREAM_PEAK_TRAFFIC_COLORS];
 
-const INTERVAL_COLORS = [
-  '#00F5D4',
-  '#ffffff',
-  '#d946ef',
-  '#84ff00',
-  '#ff6b9d',
-  '#ffb347',
-  '#a78bfa',
-  '#A8714B',
-];
-
-function buildIntervalColorByHour(intervals: TrafficHour[]): Map<number, string> {
+function buildIntervalColorByHour(
+  intervals: TrafficHour[],
+  palette: readonly string[],
+): Map<number, string> {
   const chronological = [...intervals]
     .filter((item) => item.count > 0)
     .sort((a, b) => a.hour - b.hour);
 
   const colorByHour = new Map<number, string>();
   chronological.forEach((interval, rank) => {
-    colorByHour.set(interval.hour, INTERVAL_COLORS[rank % INTERVAL_COLORS.length]);
+    colorByHour.set(interval.hour, palette[rank % palette.length]);
   });
   return colorByHour;
 }
 
-function getIntervalColor(colorByHour: Map<number, string>, hour: number): string {
-  return colorByHour.get(hour) ?? INTERVAL_COLORS[0];
+function getIntervalColor(
+  colorByHour: Map<number, string>,
+  hour: number,
+  palette: readonly string[],
+): string {
+  return colorByHour.get(hour) ?? palette[0];
 }
 
 const PEAK_MAX_INTERVALS = 8;
@@ -70,13 +74,19 @@ export default function PeakTrafficChart({
   href,
   sectionId,
 }: Props) {
+  const theme = useThemeStore((state) => state.theme);
+  const intervalColors = theme === 'brown-cream' ? INTERVAL_COLORS_CREAM : INTERVAL_COLORS_CYBER;
+  const trackColor =
+    theme === 'brown-cream' ? BROWN_CREAM_PEAK_TRAFFIC_TRACK : CYBERPUNK_PEAK_TRAFFIC_TRACK;
+  const themeKey = theme === 'brown-cream' ? 'cream' : 'cyber';
+
   const isLarge = size === 'lg';
   const tableRowLimit = variant === 'table' ? 3 : limit;
   const activeIntervals = [...data]
     .filter((item) => item.count > 0)
     .sort((a, b) => a.hour - b.hour);
   const peakIntervals = trimPeakIntervals(activeIntervals, PEAK_MAX_INTERVALS);
-  const intervalColorByHour = buildIntervalColorByHour(data);
+  const intervalColorByHour = buildIntervalColorByHour(data, intervalColors);
 
   const peak =
     [...data]
@@ -98,13 +108,13 @@ export default function PeakTrafficChart({
           ...peakIntervals.map((interval) => ({
             name: formatHourSlot(interval.hour),
             value: interval.count,
-            color: getIntervalColor(intervalColorByHour, interval.hour),
+            color: getIntervalColor(intervalColorByHour, interval.hour, intervalColors),
           })),
           ...(otherCount > 0
-            ? [{ name: 'Other', value: otherCount, color: TRACK_COLOR }]
+            ? [{ name: 'Other', value: otherCount, color: trackColor }]
             : []),
         ]
-      : [{ name: 'Empty', value: 1, color: TRACK_COLOR }];
+      : [{ name: 'Empty', value: 1, color: trackColor }];
 
   const rowBoxClass = isLarge ? 'px-3.5 py-2.5' : 'px-3 py-2';
   const rowMinHeightClass =
@@ -131,7 +141,7 @@ export default function PeakTrafficChart({
       } ${href ? '' : className}`}
     >
       <PanelIconHeader
-        icon={<AnalyticsNavIcon className={PANEL_ICON_CLASS} />}
+        icon={<PeakTrafficPanelIcon />}
         title="Peak Traffic Hours"
         subtitle="Grouped by hour for the busiest time slots."
         iconBg="bg-white/10"
@@ -153,7 +163,13 @@ export default function PeakTrafficChart({
                 <div className="flex min-w-0 flex-1 items-center gap-2.5">
                   <span
                     className="h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{ backgroundColor: getIntervalColor(intervalColorByHour, interval.hour) }}
+                    style={{
+                      backgroundColor: getIntervalColor(
+                        intervalColorByHour,
+                        interval.hour,
+                        intervalColors,
+                      ),
+                    }}
                     aria-hidden
                   />
                   <p
@@ -182,6 +198,7 @@ export default function PeakTrafficChart({
             peakSlot={peakSlot}
             peakCount={peakCount}
             large={isLarge}
+            themeKey={themeKey}
           />
         </div>
       ) : (
@@ -196,12 +213,14 @@ export default function PeakTrafficChart({
               peakSlot={peakSlot}
               peakCount={peakCount}
               large={isLarge}
+              themeKey={themeKey}
             />
           </div>
           <PeakIntervalLegend
             intervals={peakIntervals}
             maxIntervalCount={maxIntervalCount}
             intervalColorByHour={intervalColorByHour}
+            intervalColors={intervalColors}
           />
         </div>
       )}
@@ -243,11 +262,13 @@ function PeakDonutChartSlot({
   peakSlot,
   peakCount,
   large = false,
+  themeKey,
 }: {
   chartData: DonutSegment[];
   peakSlot: string;
   peakCount: number;
   large?: boolean;
+  themeKey: string;
 }) {
   const layoutSize = large ? PIE_LAYOUT_SIZE.large : PIE_LAYOUT_SIZE.default;
 
@@ -265,6 +286,7 @@ function PeakDonutChartSlot({
           peakSlot={peakSlot}
           peakCount={peakCount}
           large={large}
+          themeKey={themeKey}
         />
       </div>
     </div>
@@ -276,13 +298,17 @@ function PeakDonutChart({
   peakSlot,
   peakCount,
   large = false,
+  themeKey,
 }: {
   chartData: DonutSegment[];
   peakSlot: string;
   peakCount: number;
   large?: boolean;
+  themeKey: string;
 }) {
-  const animationKey = useChartAnimationKey('peak-traffic-pie');
+  const animationKey = useChartAnimationKey(`peak-traffic-pie-${themeKey}`);
+  const isCream = themeKey === 'cream';
+  const subtextColor = isCream ? '#8e7868' : '#6c7a9c';
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const size = large ? 256 : 240;
   const inner = large ? 84 : 78;
@@ -389,7 +415,7 @@ function PeakDonutChart({
               style={{
                 color: hoveredSegment.color,
                 letterSpacing: '2px',
-                textShadow: `0 0 14px ${hoveredSegment.color}`,
+                textShadow: isCream ? 'none' : `0 0 14px ${hoveredSegment.color}`,
               }}
             >
               {formatSegmentPercent(hoveredSegment.value, total)}
@@ -398,7 +424,7 @@ function PeakDonutChart({
               className={`font-orbitron font-black uppercase ${
                 large ? 'text-[11px] tracking-[0.35em]' : 'text-[10px] tracking-[0.3em]'
               }`}
-              style={{ color: '#6c7a9c' }}
+              style={{ color: subtextColor }}
             >
               {hoveredSegment.value} vehicle{hoveredSegment.value === 1 ? '' : 's'}
             </p>
@@ -409,7 +435,10 @@ function PeakDonutChart({
               className={`font-orbitron font-black leading-tight text-cyber-cyan ${
                 large ? 'text-base sm:text-lg' : 'text-sm sm:text-base'
               }`}
-              style={{ letterSpacing: '2px', textShadow: '0 0 12px rgba(0, 255, 255, 0.6)' }}
+              style={{
+                letterSpacing: '2px',
+                textShadow: isCream ? 'none' : '0 0 12px rgba(0, 255, 255, 0.6)',
+              }}
             >
               {peakSlot}
             </p>
@@ -417,7 +446,7 @@ function PeakDonutChart({
               className={`font-orbitron font-black uppercase ${
                 large ? 'text-[11px] tracking-[0.35em]' : 'text-[10px] tracking-[0.3em]'
               }`}
-              style={{ color: '#6c7a9c' }}
+              style={{ color: subtextColor }}
             >
               {peakCount} vehicles
             </p>
@@ -445,10 +474,12 @@ function PeakIntervalLegend({
   intervals,
   maxIntervalCount,
   intervalColorByHour,
+  intervalColors,
 }: {
   intervals: TrafficHour[];
   maxIntervalCount: number;
   intervalColorByHour: Map<number, string>;
+  intervalColors: readonly string[];
 }) {
   const columns = chunkPeakIntervals(intervals, PEAK_INTERVALS_PER_COLUMN);
   const useFixedColumns = intervals.length > PEAK_INTERVALS_PER_COLUMN;
@@ -471,7 +502,7 @@ function PeakIntervalLegend({
                     key={interval.hour}
                     slot={formatHourSlot(interval.hour)}
                     sharePct={Math.round((interval.count / maxIntervalCount) * 100)}
-                    color={getIntervalColor(intervalColorByHour, interval.hour)}
+                    color={getIntervalColor(intervalColorByHour, interval.hour, intervalColors)}
                     stacked={columnIntervals.length > 1}
                     isLast={index === columnIntervals.length - 1}
                   />

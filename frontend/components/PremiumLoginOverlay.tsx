@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useThemeStore } from '@/store/themeStore';
+import { getUiPalette, isCreamTheme } from '@/theme/themeColors';
 
 type OverlayPhase = 'loading' | 'result' | 'complete';
 export type LoginOverlayOutcome = 'pending' | 'success' | 'denied';
@@ -20,15 +22,6 @@ interface Props {
   outcome: LoginOverlayOutcome;
   onComplete: (result: 'success' | 'denied') => void;
 }
-
-const OVERLAY_BG =
-  'radial-gradient(circle 1200px at 50% 50%, rgba(0, 255, 255, 0.08) 0%, rgba(10, 17, 40, 0.98) 100%)';
-
-const OVERLAY_BG_SUCCESS =
-  'radial-gradient(circle 1200px at 50% 50%, rgba(0, 255, 255, 0.05) 0%, rgba(10, 17, 40, 1) 100%)';
-
-const OVERLAY_BG_DENIED =
-  'radial-gradient(circle 1200px at 50% 50%, rgba(255, 0, 110, 0.06) 0%, rgba(10, 17, 40, 1) 100%)';
 
 function ParticleField({ particles }: { particles: Particle[] }) {
   return (
@@ -61,13 +54,13 @@ function ParticleField({ particles }: { particles: Particle[] }) {
   );
 }
 
-function SuccessCheckmark() {
+function SuccessCheckmark({ start, end }: { start: string; end: string }) {
   return (
     <svg className="h-40 w-40" viewBox="0 0 100 100">
       <defs>
         <linearGradient id="premiumLoginCheckGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#00ffff" />
-          <stop offset="100%" stopColor="#00ff88" />
+          <stop offset="0%" stopColor={start} />
+          <stop offset="100%" stopColor={end} />
         </linearGradient>
       </defs>
 
@@ -98,13 +91,13 @@ function SuccessCheckmark() {
   );
 }
 
-function DeniedMark() {
+function DeniedMark({ start, end }: { start: string; end: string }) {
   return (
     <svg className="h-40 w-40" viewBox="0 0 100 100">
       <defs>
         <linearGradient id="premiumLoginDeniedGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#ff006e" />
-          <stop offset="100%" stopColor="#ff4d8d" />
+          <stop offset="0%" stopColor={start} />
+          <stop offset="100%" stopColor={end} />
         </linearGradient>
       </defs>
 
@@ -134,13 +127,13 @@ function DeniedMark() {
   );
 }
 
-function GlitchText({ text }: { text: string }) {
+function GlitchText({ text, gradient, ghostA, ghostB }: { text: string; gradient: string; ghostA: string; ghostB: string }) {
   return (
     <div className="relative inline-block">
       <motion.div
         className="text-3xl font-bold tracking-[0.22em]"
         style={{
-          background: 'linear-gradient(90deg, #00ffff, #00aaff, #00ffff)',
+          background: gradient,
           backgroundSize: '200% 100%',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -159,7 +152,7 @@ function GlitchText({ text }: { text: string }) {
           key={i}
           className="pointer-events-none absolute inset-0 text-3xl font-bold tracking-[0.22em]"
           style={{
-            color: i === 1 ? '#00ffff' : '#00aaff',
+            color: i === 1 ? ghostA : ghostB,
             opacity: 0.5,
           }}
           animate={{
@@ -193,9 +186,23 @@ function RadialWaves() {
 function AuthenticatingOverlay({
   progress,
   particles,
+  overlayBg,
+  progressTrack,
+  progressFill,
+  progressGlow,
+  glitchGradient,
+  glitchGhostA,
+  glitchGhostB,
 }: {
   progress: number;
   particles: Particle[];
+  overlayBg: string;
+  progressTrack: string;
+  progressFill: string;
+  progressGlow: string;
+  glitchGradient: string;
+  glitchGhostA: string;
+  glitchGhostB: string;
 }) {
   const showProgress = progress < 1;
 
@@ -203,7 +210,7 @@ function AuthenticatingOverlay({
     <motion.div
       key="authenticating-overlay"
       className="premium-login-overlay premium-login-overlay--loading fixed inset-0 z-[10000] flex items-center justify-center overflow-hidden"
-      style={{ background: OVERLAY_BG }}
+      style={{ background: overlayBg }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -215,22 +222,24 @@ function AuthenticatingOverlay({
       </div>
 
       <div className="relative z-10 flex flex-col items-center gap-5 text-center">
-        <GlitchText text="AUTHENTICATING" />
+        <GlitchText
+          text="AUTHENTICATING"
+          gradient={glitchGradient}
+          ghostA={glitchGhostA}
+          ghostB={glitchGhostB}
+        />
         {showProgress ? (
           <>
             <div
               className="h-1.5 w-80 max-w-[85vw] overflow-hidden rounded-full"
-              style={{
-                background:
-                  'linear-gradient(90deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0.4), rgba(0, 255, 255, 0.2))',
-              }}
+              style={{ background: progressTrack }}
             >
               <div
                 className="h-full"
                 style={{
                   width: `${progress * 100}%`,
-                  background: 'linear-gradient(90deg, #00ffff, #00aaff)',
-                  boxShadow: '0 0 22px rgba(0, 255, 255, 0.8)',
+                  background: progressFill,
+                  boxShadow: progressGlow,
                 }}
               />
             </div>
@@ -248,12 +257,24 @@ function AuthenticatingOverlay({
   );
 }
 
-function SuccessOverlay({ particles }: { particles: Particle[] }) {
+function SuccessOverlay({
+  particles,
+  overlayBg,
+  checkStart,
+  checkEnd,
+  successGlow,
+}: {
+  particles: Particle[];
+  overlayBg: string;
+  checkStart: string;
+  checkEnd: string;
+  successGlow: string;
+}) {
   return (
     <motion.div
       key="success-overlay"
       className="premium-login-overlay premium-login-overlay--success fixed inset-0 z-[10000] flex items-center justify-center overflow-hidden"
-      style={{ background: OVERLAY_BG_SUCCESS }}
+      style={{ background: overlayBg }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -271,12 +292,10 @@ function SuccessOverlay({ particles }: { particles: Particle[] }) {
             ease: [0.34, 1.56, 0.64, 1],
           }}
         >
-          <SuccessCheckmark />
+          <SuccessCheckmark start={checkStart} end={checkEnd} />
           <motion.div
             className="absolute inset-0 rounded-full"
-            style={{
-              background: 'radial-gradient(circle, rgba(0, 255, 136, 0.4) 0%, transparent 70%)',
-            }}
+            style={{ background: successGlow }}
             animate={{
               scale: [1, 1.4, 1],
               opacity: [0.6, 0.2, 0.6],
@@ -319,12 +338,24 @@ function SequentialDots({ tone }: { tone: 'success' | 'denied' }) {
   );
 }
 
-function DeniedOverlay({ particles }: { particles: Particle[] }) {
+function DeniedOverlay({
+  particles,
+  overlayBg,
+  deniedStart,
+  deniedEnd,
+  deniedGlow,
+}: {
+  particles: Particle[];
+  overlayBg: string;
+  deniedStart: string;
+  deniedEnd: string;
+  deniedGlow: string;
+}) {
   return (
     <motion.div
       key="denied-overlay"
       className="premium-login-overlay premium-login-overlay--denied fixed inset-0 z-[10000] flex items-center justify-center overflow-hidden"
-      style={{ background: OVERLAY_BG_DENIED }}
+      style={{ background: overlayBg }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -342,12 +373,10 @@ function DeniedOverlay({ particles }: { particles: Particle[] }) {
             ease: [0.34, 1.56, 0.64, 1],
           }}
         >
-          <DeniedMark />
+          <DeniedMark start={deniedStart} end={deniedEnd} />
           <motion.div
             className="absolute inset-0 rounded-full"
-            style={{
-              background: 'radial-gradient(circle, rgba(255, 0, 110, 0.35) 0%, transparent 70%)',
-            }}
+            style={{ background: deniedGlow }}
             animate={{
               scale: [1, 1.4, 1],
               opacity: [0.6, 0.2, 0.6],
@@ -394,6 +423,9 @@ function createParticles(): Particle[] {
 }
 
 export default function PremiumLoginOverlay({ outcome, onComplete }: Props) {
+  const theme = useThemeStore((state) => state.theme);
+  const ui = getUiPalette(theme);
+  const cream = isCreamTheme(theme);
   const [phase, setPhase] = useState<OverlayPhase>('loading');
   const [progress, setProgress] = useState(0);
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -433,16 +465,52 @@ export default function PremiumLoginOverlay({ outcome, onComplete }: Props) {
     onComplete(resolvedOutcome);
   }, [phase, resolvedOutcome, onComplete]);
 
+  const progressTrack = cream
+    ? 'linear-gradient(90deg, rgba(185, 128, 79, 0.18), rgba(185, 128, 79, 0.32), rgba(185, 128, 79, 0.18))'
+    : 'linear-gradient(90deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0.4), rgba(0, 255, 255, 0.2))';
+  const progressGlow = cream ? '0 0 12px rgba(185, 128, 79, 0.35)' : '0 0 22px rgba(0, 255, 255, 0.8)';
+  const successGlow = cream
+    ? 'radial-gradient(circle, rgba(92, 157, 85, 0.28) 0%, transparent 70%)'
+    : 'radial-gradient(circle, rgba(0, 255, 136, 0.4) 0%, transparent 70%)';
+  const deniedGlow = cream
+    ? 'radial-gradient(circle, rgba(195, 90, 69, 0.28) 0%, transparent 70%)'
+    : 'radial-gradient(circle, rgba(255, 0, 110, 0.35) 0%, transparent 70%)';
+
   return (
     <AnimatePresence mode="wait">
       {phase === 'loading' ? (
-        <AuthenticatingOverlay key="auth" progress={progress} particles={particles} />
+        <AuthenticatingOverlay
+          key="auth"
+          progress={progress}
+          particles={particles}
+          overlayBg={ui.overlayLoading}
+          progressTrack={progressTrack}
+          progressFill={ui.progressGradientAlt}
+          progressGlow={progressGlow}
+          glitchGradient={ui.progressGradient}
+          glitchGhostA={ui.checkGradientStart}
+          glitchGhostB={ui.secondary}
+        />
       ) : null}
       {phase === 'result' && resolvedOutcome === 'success' ? (
-        <SuccessOverlay key="success" particles={particles} />
+        <SuccessOverlay
+          key="success"
+          particles={particles}
+          overlayBg={ui.overlaySuccess}
+          checkStart={ui.checkGradientStart}
+          checkEnd={ui.checkGradientEnd}
+          successGlow={successGlow}
+        />
       ) : null}
       {phase === 'result' && resolvedOutcome === 'denied' ? (
-        <DeniedOverlay key="denied" particles={particles} />
+        <DeniedOverlay
+          key="denied"
+          particles={particles}
+          overlayBg={ui.overlayDenied}
+          deniedStart={ui.deniedGradientStart}
+          deniedEnd={ui.deniedGradientEnd}
+          deniedGlow={deniedGlow}
+        />
       ) : null}
     </AnimatePresence>
   );

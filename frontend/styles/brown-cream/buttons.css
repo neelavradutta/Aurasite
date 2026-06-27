@@ -1,0 +1,431 @@
+/* Buttons & CTAs — darker brown fills for brown-cream theme. */
+
+/* ── Video input panel ── */
+[data-theme='brown-cream'] .video-input-cyberpunk__preview-empty {
+  color: #8e7868 !important;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__load-btn {
+  border: 1px solid var(--cream-btn-solid-hover) !important;
+  background: linear-gradient(135deg, var(--cream-btn-solid-mid) 0%, var(--cream-btn-solid) 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(74, 43, 18, 0.28) !important;
+  text-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__load-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--cream-btn-solid-hover) 0%, var(--cream-btn-solid-mid) 100%) !important;
+  border-color: var(--cream-btn-solid-active) !important;
+  box-shadow: 0 6px 22px rgba(74, 43, 18, 0.34) !important;
+  transform: translateY(-2px);
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__load-btn:disabled {
+  background: #f4e8db !important;
+  border-color: #e8d8c5 !important;
+  color: #b8a899 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__choose-btn {
+  border: 1px solid var(--cream-btn-solid-hover) !important;
+  background: linear-gradient(135deg, var(--cream-btn-solid-mid) 0%, var(--cream-btn-solid) 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(74, 43, 18, 0.28) !important;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__choose-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--cream-btn-solid-hover) 0%, var(--cream-btn-solid-mid) 100%) !important;
+  border-color: var(--cream-btn-solid-active) !important;
+  box-shadow: 0 6px 22px rgba(74, 43, 18, 0.34) !important;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__remove-btn {
+  border: 1px solid var(--cream-btn-solid) !important;
+  background: var(--cream-btn-outline-bg) !important;
+  color: var(--cream-btn-solid) !important;
+  box-shadow: var(--cream-shadow-sm) !important;
+}
+
+[data-theme='brown-cream'] .video-input-cyberpunk__remove-btn:hover:not(:disabled) {
+  background: var(--cream-btn-outline-hover) !important;
+  border-color: var(--cream-btn-solid-hover) !important;
+  color: #ffffff !important;
+  box-shadow: var(--cream-shadow-md) !important;
+}
+
+/* ── Video results panel ── */
+[data-theme='brown-cream'] .video-results-cyberpunk__btn-primary {
+  background: linear-gradient(135deg, var(--cream-btn-solid-mid) 0%, var(--cream-btn-solid) 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(74, 43, 18, 0.28) !important;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__btn-primary:hover {
+  background: linear-gradient(135deg, var(--cream-btn-solid-hover) 0%, var(--cream-btn-solid-mid) 100%) !important;
+  box-shadow: 0 6px 22px rgba(74, 43, 18, 0.34) !important;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__btn-secondary {
+  background: linear-gradient(135deg, var(--cream-btn-solid) 0%, var(--cream-btn-secondary) 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(74, 43, 18, 0.24) !important;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__btn-secondary:hover {
+  background: linear-gradient(135deg, var(--cream-btn-solid-hover) 0%, var(--cream-btn-solid) 100%) !important;
+  box-shadow: 0 6px 22px rgba(74, 43, 18, 0.3) !important;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__btn-primary::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent) !important;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__preview-panel {
+  border-color: #e8d8c5 !important;
+  background: linear-gradient(135deg, rgba(244, 230, 215, 0.45), rgba(252, 247, 241, 0.9)) !important;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__video-card {
+  border-color: #e8d8c5 !important;
+  background: #fffdf9 !important;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__video-card--selected {
+  border-color: rgba(98, 59, 26, 0.55) !important;
+  background: #f1e3d3 !important;
+  box-shadow: var(--cream-shadow-sm) !important;
+}
+
+/* ── Header action buttons — darker brown fill ── */
+[data-theme='brown-cream'] .header-clear-btn {
+  border-color: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+  background: var(--cream-btn-solid) !important;
+}
+
+[data-theme='brown-cream'] .header-clear-btn:hover:not(:disabled) {
+  background: var(--cream-btn-solid-hover) !important;
+  border-color: var(--cream-btn-solid-hover) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .header-clear-btn .text-white,
+[data-theme='brown-cream'] .header-clear-btn svg {
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .header-logout-btn {
+  border-color: #a64839 !important;
+  color: #ffffff !important;
+  background: #c35a45 !important;
+}
+
+[data-theme='brown-cream'] .header-logout-btn:hover {
+  background: #a64839 !important;
+  border-color: #8f3d32 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .header-logout-btn .text-white,
+[data-theme='brown-cream'] .header-logout-btn svg {
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .header-login-link {
+  border-color: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+  background: var(--cream-btn-solid) !important;
+}
+
+[data-theme='brown-cream'] .header-login-link:hover {
+  background: var(--cream-btn-solid-hover) !important;
+  border-color: var(--cream-btn-solid-hover) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .header-night-mode-btn {
+  border-color: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+  background: var(--cream-btn-solid-mid) !important;
+}
+
+[data-theme='brown-cream'] .header-night-mode-btn:hover {
+  background: var(--cream-btn-solid-hover) !important;
+  border-color: var(--cream-btn-solid-hover) !important;
+}
+
+[data-theme='brown-cream'] .header-night-mode-btn .text-white,
+[data-theme='brown-cream'] .header-night-mode-btn svg {
+  color: #ffffff !important;
+}
+
+/* ── Plate header action pills ── */
+[data-theme='brown-cream'] .plate-header-action-btn {
+  border-color: var(--cream-btn-solid) !important;
+  background: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .plate-header-action-btn:hover {
+  border-color: var(--cream-btn-solid-hover) !important;
+  background: var(--cream-btn-solid-hover) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .plate-header-preview-btn {
+  border-color: #a64839 !important;
+  background: #c35a45 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .plate-header-preview-btn:hover {
+  border-color: #8f3d32 !important;
+  background: #a64839 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .plate-header-vehicles-badge {
+  border-color: var(--cream-btn-solid) !important;
+  background: var(--cream-btn-outline-bg) !important;
+  color: var(--cream-btn-solid) !important;
+}
+
+/* ── Shared Tailwind button patterns — buttons/links only ── */
+[data-theme='brown-cream'] button.border-cyber-cyan\/50,
+[data-theme='brown-cream'] a.border-cyber-cyan\/50,
+[data-theme='brown-cream'] button.border-cyber-cyan\/40,
+[data-theme='brown-cream'] a.border-cyber-cyan\/40,
+[data-theme='brown-cream'] button.border-cyber-cyan\/70,
+[data-theme='brown-cream'] a.border-cyber-cyan\/70 {
+  border-color: var(--cream-btn-solid) !important;
+}
+
+[data-theme='brown-cream'] button.bg-cyber-cyan\/10,
+[data-theme='brown-cream'] a.bg-cyber-cyan\/10,
+[data-theme='brown-cream'] button.bg-cyber-cyan\/15,
+[data-theme='brown-cream'] a.bg-cyber-cyan\/15 {
+  background-color: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] button.hover\:bg-cyber-cyan\/10:hover,
+[data-theme='brown-cream'] a.hover\:bg-cyber-cyan\/10:hover,
+[data-theme='brown-cream'] button.hover\:bg-cyber-cyan\/20:hover,
+[data-theme='brown-cream'] a.hover\:bg-cyber-cyan\/20:hover {
+  background-color: var(--cream-btn-solid-hover) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] button.text-cyber-cyan,
+[data-theme='brown-cream'] a.text-cyber-cyan.border-cyber-cyan {
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .border-cyber-cyan\/50.bg-cyber-cyan\/10,
+[data-theme='brown-cream'] .border-cyber-cyan\/40.bg-cyber-cyan\/10 {
+  border-color: var(--cream-btn-solid) !important;
+  background-color: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .border-cyber-cyan\/50.bg-cyber-cyan\/10:hover,
+[data-theme='brown-cream'] .hover\:bg-cyber-cyan\/20.border-cyber-cyan\/50:hover {
+  background-color: var(--cream-btn-solid-hover) !important;
+  border-color: var(--cream-btn-solid-hover) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] button.border-cyber-purple\/50,
+[data-theme='brown-cream'] a.border-cyber-purple\/50 {
+  border-color: var(--cream-btn-solid) !important;
+}
+
+[data-theme='brown-cream'] button.bg-cyber-purple\/10,
+[data-theme='brown-cream'] a.bg-cyber-purple\/10 {
+  background-color: var(--cream-btn-solid-mid) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] button.hover\:bg-cyber-purple\/10:hover,
+[data-theme='brown-cream'] a.hover\:bg-cyber-purple\/10:hover,
+[data-theme='brown-cream'] button.hover\:bg-cyber-purple\/20:hover,
+[data-theme='brown-cream'] a.hover\:bg-cyber-purple\/20:hover {
+  background-color: var(--cream-btn-solid-hover) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] button.border-cyber-pink\/50,
+[data-theme='brown-cream'] a.border-cyber-pink\/50,
+[data-theme='brown-cream'] button.border-cyber-pink\/30,
+[data-theme='brown-cream'] a.border-cyber-pink\/30,
+[data-theme='brown-cream'] button.border-cyber-pink\/70,
+[data-theme='brown-cream'] a.border-cyber-pink\/70 {
+  border-color: #a64839 !important;
+}
+
+[data-theme='brown-cream'] button.bg-cyber-pink\/10,
+[data-theme='brown-cream'] a.bg-cyber-pink\/10 {
+  background-color: #c35a45 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] button.hover\:bg-cyber-pink\/10:hover,
+[data-theme='brown-cream'] a.hover\:bg-cyber-pink\/10:hover,
+[data-theme='brown-cream'] button.hover\:bg-cyber-pink\/20:hover,
+[data-theme='brown-cream'] a.hover\:bg-cyber-pink\/20:hover {
+  background-color: #a64839 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] button.border-cyber-green\/50,
+[data-theme='brown-cream'] a.border-cyber-green\/50 {
+  border-color: #4a7d44 !important;
+}
+
+[data-theme='brown-cream'] button.bg-cyber-green\/10,
+[data-theme='brown-cream'] a.bg-cyber-green\/10 {
+  background-color: #5c9d55 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] button.hover\:bg-cyber-green\/15:hover,
+[data-theme='brown-cream'] a.hover\:bg-cyber-green\/15:hover,
+[data-theme='brown-cream'] button.hover\:bg-cyber-green\/20:hover,
+[data-theme='brown-cream'] a.hover\:bg-cyber-green\/20:hover {
+  background-color: #4a7d44 !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] button.hover\:border-cyber-pink:hover,
+[data-theme='brown-cream'] a.hover\:border-cyber-pink:hover {
+  border-color: #a64839 !important;
+}
+
+[data-theme='brown-cream'] button.hover\:text-white:hover,
+[data-theme='brown-cream'] a.hover\:text-white:hover,
+[data-theme='brown-cream'] button.hover\:text-cyber-cyan:hover,
+[data-theme='brown-cream'] a.hover\:text-cyber-cyan:hover {
+  color: #ffffff !important;
+}
+
+/* Video processing overlay action button */
+[data-theme='brown-cream'] .shadow-\[0_0_16px_rgba\(255\,0\,110\,0\.2\)\] {
+  box-shadow: 0 4px 16px rgba(166, 72, 57, 0.22) !important;
+}
+
+/* Login portal */
+[data-theme='brown-cream'] .anpr-access-portal__button {
+  background: var(--cream-btn-solid) !important;
+  border-color: var(--cream-btn-solid-hover) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(74, 43, 18, 0.28) !important;
+}
+
+[data-theme='brown-cream'] .anpr-access-portal__button:hover:not(:disabled) {
+  background: var(--cream-btn-solid-hover) !important;
+  border-color: var(--cream-btn-solid-active) !important;
+  box-shadow: 0 6px 22px rgba(74, 43, 18, 0.34) !important;
+}
+
+/* Vehicle modal actions */
+[data-theme='brown-cream'] .vehicle-modal-action {
+  border-color: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+  background: var(--cream-btn-solid) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action:hover:not(:disabled) {
+  border-color: var(--cream-btn-solid-hover) !important;
+  background: var(--cream-btn-solid-hover) !important;
+  box-shadow: var(--cream-shadow-sm) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .vehicle-modal-action-history-active {
+  border-color: var(--cream-btn-solid) !important;
+  background: var(--cream-btn-solid-mid) !important;
+  color: #ffffff !important;
+}
+
+/* Tab switcher active pill — darker brown */
+[data-theme='brown-cream'] .tab-switcher-active-bg {
+  background: linear-gradient(to right, rgba(98, 59, 26, 0.22), rgba(92, 59, 26, 0.14)) !important;
+}
+
+[data-theme='brown-cream'] .tab-switcher-shell {
+  border-color: rgba(98, 59, 26, 0.35) !important;
+  background-color: #f1e3d3 !important;
+}
+
+[data-theme='brown-cream'] .tab-switcher-indicator {
+  background: linear-gradient(to right, transparent, var(--cream-btn-solid), transparent) !important;
+}
+
+/* Mobile nav trigger */
+[data-theme='brown-cream'] .mobile-nav__trigger {
+  border-color: var(--cream-btn-solid) !important;
+  background: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .mobile-nav__link--active {
+  background: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+}
+
+/* Nav active pill — darker brown solid */
+[data-theme='brown-cream'] nav a.bg-cyber-cyan\/15 {
+  background-color: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+  box-shadow: var(--cream-shadow-sm) !important;
+}
+
+[data-theme='brown-cream'] nav a.bg-cyber-cyan\/15 .text-white,
+[data-theme='brown-cream'] nav a.bg-cyber-cyan\/15 svg {
+  color: #ffffff !important;
+}
+
+/* Live page dropdown options */
+[data-theme='brown-cream'] a.bg-cyber-cyan\/15,
+[data-theme='brown-cream'] button.bg-cyber-cyan\/15 {
+  background-color: var(--cream-btn-solid-mid) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] a.hover\:bg-cyber-cyan\/10:hover,
+[data-theme='brown-cream'] button.hover\:bg-cyber-cyan\/10:hover {
+  background-color: var(--cream-btn-outline-hover) !important;
+  color: #ffffff !important;
+}
+
+/* Filter bar trigger — dark brown */
+[data-theme='brown-cream'] .detection-filter-bar button.border-cyber-cyan\/40 {
+  border-color: var(--cream-btn-solid) !important;
+  background: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar button.border-cyber-cyan\/40 svg,
+[data-theme='brown-cream'] .detection-filter-bar button.border-cyber-cyan\/40 .text-slate-400 {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+[data-theme='brown-cream'] .detection-filter-bar button.border-cyber-cyan\/40.hover\:bg-cyber-cyan\/10:hover,
+[data-theme='brown-cream'] .detection-filter-bar button.border-cyber-cyan\/40:hover {
+  background: var(--cream-btn-solid-hover) !important;
+  border-color: var(--cream-btn-solid-hover) !important;
+  color: #ffffff !important;
+}
+
+/* Video processing overlay buttons */
+[data-theme='brown-cream'] .rounded-full.border-cyber-cyan\/70.bg-cyber-cyan\/10 {
+  border-color: var(--cream-btn-solid) !important;
+  background: var(--cream-btn-solid) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .rounded-full.border-cyber-cyan\/70.bg-cyber-cyan\/10:hover {
+  background: var(--cream-btn-solid-hover) !important;
+  border-color: var(--cream-btn-solid-hover) !important;
+}

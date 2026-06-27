@@ -3,6 +3,8 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { VehicleSpeedReading } from '@/utils/speedEstimation';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
+import { useThemeStore } from '@/store/themeStore';
+import { BROWN_CREAM, isCreamTheme } from '@/theme/themeColors';
 import { formatDateTimeShort } from '@/utils/dateFormat';
 
 const VIEW_W = 800;
@@ -218,7 +220,10 @@ function resolveTooltipPosition(
 }
 
 export default function VehicleSpeedPeaksChart({ readings }: { readings: VehicleSpeedReading[] }) {
-  const animationKey = useChartAnimationKey('vehicle-speed-peaks');
+  const theme = useThemeStore((state) => state.theme);
+  const cream = isCreamTheme(theme);
+  const colors = cream ? BROWN_CREAM : null;
+  const animationKey = useChartAnimationKey(`vehicle-speed-peaks-${cream ? 'cream' : 'cyber'}`);
   const points = useMemo(() => buildChartPoints(readings), [readings]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ left: number; top: number } | null>(null);
@@ -273,10 +278,10 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
               y2={CHART_BASE_Y}
               gradientUnits="userSpaceOnUse"
             >
-              <stop offset="0%" stopColor="rgba(0, 245, 212, 0.82)" />
-              <stop offset="38%" stopColor="rgba(0, 245, 212, 0.58)" />
-              <stop offset="72%" stopColor="rgba(0, 245, 212, 0.26)" />
-              <stop offset="100%" stopColor="rgba(0, 245, 212, 0.04)" />
+              <stop offset="0%" stopColor={colors?.speedMountainTop ?? 'rgba(0, 245, 212, 0.82)'} />
+              <stop offset="38%" stopColor={colors?.speedMountainMid ?? 'rgba(0, 245, 212, 0.58)'} />
+              <stop offset="72%" stopColor={colors?.speedMountainLow ?? 'rgba(0, 245, 212, 0.26)'} />
+              <stop offset="100%" stopColor={colors?.speedMountainFade ?? 'rgba(0, 245, 212, 0.04)'} />
             </linearGradient>
             <linearGradient
               id={`vsp-mountain-glow-${chartId}`}
@@ -286,14 +291,14 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
               y2={CHART_BASE_Y}
               gradientUnits="userSpaceOnUse"
             >
-              <stop offset="0%" stopColor="rgba(110, 255, 238, 0.72)" />
-              <stop offset="45%" stopColor="rgba(0, 245, 212, 0.42)" />
-              <stop offset="100%" stopColor="rgba(0, 245, 212, 0.02)" />
+              <stop offset="0%" stopColor={colors?.speedGlowTop ?? 'rgba(110, 255, 238, 0.72)'} />
+              <stop offset="45%" stopColor={colors?.speedGlowMid ?? 'rgba(0, 245, 212, 0.42)'} />
+              <stop offset="100%" stopColor={colors?.speedGlowFade ?? 'rgba(0, 245, 212, 0.02)'} />
             </linearGradient>
             <linearGradient id={`vsp-sweep-${chartId}`} x1="0" y1="1" x2="0" y2="0">
               <stop offset="0%" stopColor="rgba(0, 245, 212, 0)" />
-              <stop offset="50%" stopColor="rgba(77, 248, 229, 0.38)" />
-              <stop offset="100%" stopColor="rgba(255, 255, 255, 0.22)" />
+              <stop offset="50%" stopColor={cream ? 'rgba(185, 128, 79, 0.28)' : 'rgba(77, 248, 229, 0.38)'} />
+              <stop offset="100%" stopColor={cream ? 'rgba(255, 253, 249, 0.35)' : 'rgba(255, 255, 255, 0.22)'} />
             </linearGradient>
             <filter
               id={`vsp-glow-${chartId}`}
@@ -322,7 +327,7 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
                 className="vehicle-speed-peaks__line-glow"
                 points={polyline}
                 fill="none"
-                stroke="#4df8e5"
+                stroke={colors?.speedStrokeGlow ?? '#4df8e5'}
                 strokeWidth="4.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -340,7 +345,7 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
               className="vehicle-speed-peaks__line"
               points={polyline}
               fill="none"
-              stroke="#00F5D4"
+              stroke={colors?.speedStroke ?? '#00F5D4'}
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -430,8 +435,8 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
                     cx={point.x}
                     cy={point.y}
                     r="6.5"
-                    fill="#FFD700"
-                    stroke="#FFFFFF"
+                    fill={colors?.speedPeakFill ?? '#FFD700'}
+                    stroke={colors?.speedPeakStroke ?? '#FFFFFF'}
                     strokeWidth="2"
                   />
                 </g>

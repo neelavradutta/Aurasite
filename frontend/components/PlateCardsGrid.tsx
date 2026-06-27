@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { Detection } from '@/types/detection';
 import { Vehicle, VehicleStatus } from '@/types/vehicle';
 import { useDashboardStore } from '@/store/dashboardStore';
-import { PANEL_ICON_CLASS, VehiclesPanelIcon } from '@/components/NavIcons';
+import { LicensePlatePanelIcon } from '@/components/NavIcons';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import {
   fetchVehicleById,
@@ -334,7 +334,7 @@ export default function PlateCardsGrid({
 
           <div className="mb-5 flex items-center justify-between gap-3">
             <PanelIconHeader
-              icon={<VehiclesPanelIcon className={PANEL_ICON_CLASS} />}
+              icon={<LicensePlatePanelIcon />}
               title="Detected License Plates"
               subtitle={
                 !selectToPreview

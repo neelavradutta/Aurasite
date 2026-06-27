@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion';
+import { useThemeStore } from '@/store/themeStore';
+import { getUiPalette } from '@/theme/themeColors';
 
 interface StatusBadgeProps {
   isScanning: boolean;
@@ -6,9 +8,13 @@ interface StatusBadgeProps {
 }
 
 export default function StatusBadge({ isScanning, className = '' }: StatusBadgeProps) {
+  const theme = useThemeStore((state) => state.theme);
+  const ui = getUiPalette(theme);
+  const isCream = theme === 'brown-cream';
+
   return (
     <motion.div
-      className={`relative overflow-hidden rounded-full border border-cyan-500/20 bg-slate-900/40 px-7 py-3 shadow-2xl backdrop-blur-2xl ${className}`}
+      className={`status-badge-shell relative overflow-hidden rounded-full border border-cyan-500/20 bg-slate-900/40 px-7 py-3 shadow-2xl backdrop-blur-2xl ${className}`}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, type: 'spring' }}
@@ -25,11 +31,9 @@ export default function StatusBadge({ isScanning, className = '' }: StatusBadgeP
         }}
         style={{
           background: `linear-gradient(45deg, ${
-            isScanning ? 'rgba(34, 197, 94, 0.3)' : 'rgba(0, 255, 255, 0.2)'
+            isScanning ? ui.statusScanningBg : ui.statusStandbyBg
           }, transparent)`,
-          boxShadow: isScanning
-            ? '0 0 30px rgba(34, 197, 94, 0.4)'
-            : '0 0 20px rgba(0, 255, 255, 0.2)',
+          boxShadow: isScanning ? ui.statusScanningGlow : ui.statusStandbyGlow,
         }}
       />
 
@@ -51,10 +55,13 @@ export default function StatusBadge({ isScanning, className = '' }: StatusBadgeP
           <motion.span
             className="font-mono text-sm uppercase tracking-widest"
             animate={{
-              color: isScanning ? '#22c55e' : '#64748b',
-              textShadow: isScanning
-                ? '0 0 10px rgba(34, 197, 94, 0.5)'
-                : '0 0 5px rgba(100, 116, 139, 0.3)',
+              color: isScanning ? ui.statusScanning : ui.statusStandby,
+              textShadow:
+                isScanning && !isCream
+                  ? ui.statusScanningShadow
+                  : isCream
+                    ? 'none'
+                    : ui.statusStandbyShadow,
             }}
             transition={{ duration: 0.5 }}
           >
@@ -83,12 +90,11 @@ export default function StatusBadge({ isScanning, className = '' }: StatusBadgeP
         }}
         style={{
           border: '1px solid',
-          borderColor: isScanning ? 'rgba(34, 197, 94, 0.4)' : 'rgba(0, 255, 255, 0.2)',
-          boxShadow: isScanning
-            ? '0 0 14px rgba(34, 197, 94, 0.35)'
-            : '0 0 12px rgba(0, 255, 255, 0.2)',
+          borderColor: isScanning ? ui.statusScanningBorder : ui.statusStandbyBorder,
+          boxShadow: isScanning ? ui.statusScanningRing : ui.statusStandbyRing,
         }}
       />
     </motion.div>
   );
 }
+
