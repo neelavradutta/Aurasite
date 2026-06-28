@@ -187,9 +187,7 @@ export default function PeakTrafficChart({
           )}
         </div>
       ) : data.length === 0 || !peak ? (
-        <div className="mt-3 flex min-h-36 flex-1 items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20">
-          <p className="text-sm text-slate-500">No traffic data in the last 24h</p>
-        </div>
+        <PanelEmptyState message="No traffic data in the last 24h" fill className="mt-3" />
       ) : centered ? (
         <div className="mt-2 grid min-h-0 w-full flex-1 place-items-center overflow-visible">
           <PeakDonutChartSlot

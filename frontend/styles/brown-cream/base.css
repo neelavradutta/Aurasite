@@ -21,6 +21,40 @@
   text-shadow: none;
 }
 
+[data-theme='brown-cream'] .cream-panel-icons .section-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+[data-theme='brown-cream'] .cream-panel-icons .video-input-cyberpunk__title {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+[data-theme='brown-cream'] .cream-panel-icons .kpi-card-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cream-brown-primary);
+}
+
+[data-theme='brown-cream'] .cream-panel-icons .kpi-card-label + p {
+  color: var(--cream-brown-primary) !important;
+  text-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__header {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+[data-theme='brown-cream'] .panel-subtitle {
+  color: var(--cream-text-muted);
+  font-weight: 400;
+}
+
 [data-theme='brown-cream'] .page-title {
   color: var(--cream-text-heading);
   text-shadow: none;

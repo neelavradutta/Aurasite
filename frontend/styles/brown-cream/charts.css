@@ -225,52 +225,190 @@
 }
 
 [data-theme='brown-cream'] .parking-capacity-control {
-  border-color: #ddc8b4;
-  background: #fffdf9;
+  background: var(--cream-brown-primary) !important;
+  background-image: none !important;
+  border: 1px solid rgba(248, 243, 235, 0.22) !important;
+  box-shadow: none !important;
 }
 
 [data-theme='brown-cream'] .parking-capacity-control:focus-within {
-  border-color: #a36834;
-  box-shadow: 0 0 0 2px rgba(185, 128, 79, 0.3);
+  border-color: rgba(248, 243, 235, 0.35) !important;
+  box-shadow: none !important;
 }
 
 [data-theme='brown-cream'] .parking-capacity-control__label {
-  color: #8e7868;
+  color: #ffffff !important;
+  text-shadow: none !important;
 }
 
 [data-theme='brown-cream'] .parking-capacity-control__input {
-  color: #4a2b12;
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(248, 243, 235, 0.45) !important;
+  text-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .parking-capacity-control__input:focus {
+  caret-color: #ffffff;
+  border-bottom-color: rgba(248, 243, 235, 0.75) !important;
+  text-shadow: none !important;
 }
 
 [data-theme='brown-cream'] .parking-capacity-control__unit {
-  color: #8e7868;
+  color: #ffffff !important;
 }
 
-[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain-glow'] stop,
-[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain'] stop,
-[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-sweep'] stop {
-  stop-color: rgba(185, 128, 79, 0.5);
+[data-theme='brown-cream'] .parking-stat-card {
+  background-color: var(--cream-brown-primary) !important;
+  border-color: rgba(248, 243, 235, 0.22) !important;
+}
+
+[data-theme='brown-cream'] .parking-stat-card .text-slate-400,
+[data-theme='brown-cream'] .parking-stat-card .text-slate-100,
+[data-theme='brown-cream'] .parking-stat-card .text-\[\#7ED321\],
+[data-theme='brown-cream'] .parking-stat-card .parking-usage-full {
+  color: #ffffff !important;
+  text-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__mountain {
+  animation:
+    vehicle-speed-peaks-mountain-glow-once-cream 1.1s ease-out 4.5s forwards,
+    vehicle-speed-peaks-mountain-glow-pulse-cream 2.4s ease-in-out 5.6s infinite;
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__line {
+  stroke: var(--cream-brown-primary) !important;
+  animation:
+    vehicle-speed-peaks-draw-line 2.5s ease-out forwards,
+    vehicle-speed-peaks-line-glow-once-cream 1.1s ease-out 4.5s forwards,
+    vehicle-speed-peaks-line-glow-pulse-cream 2.4s ease-in-out 5.6s infinite;
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__line-glow {
+  stroke: var(--cream-brown-secondary) !important;
 }
 
 [data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain-glow'] stop[offset='0%'] {
-  stop-color: rgba(185, 128, 79, 0.55);
+  stop-color: rgba(185, 128, 79, 0.5);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain-glow'] stop[offset='45%'] {
+  stop-color: rgba(185, 128, 79, 0.28);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain-glow'] stop[offset='100%'] {
+  stop-color: rgba(122, 75, 34, 0.02);
 }
 
 [data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain'] stop[offset='0%'] {
-  stop-color: rgba(122, 75, 34, 0.65);
+  stop-color: rgba(122, 75, 34, 0.72);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain'] stop[offset='38%'] {
+  stop-color: rgba(185, 128, 79, 0.48);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain'] stop[offset='72%'] {
+  stop-color: rgba(185, 128, 79, 0.22);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-mountain'] stop[offset='100%'] {
+  stop-color: rgba(122, 75, 34, 0.04);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-sweep'] stop[offset='50%'] {
+  stop-color: rgba(185, 128, 79, 0.32);
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks [id^='vsp-sweep'] stop[offset='100%'] {
+  stop-color: rgba(122, 75, 34, 0.18);
 }
 
 [data-theme='brown-cream'] .vehicle-speed-peaks__dot {
-  fill: #d8b07a;
-  stroke: #fffdf9;
+  fill: var(--cream-brown-secondary) !important;
+  stroke: #ffffff !important;
+  filter: drop-shadow(0 0 8px rgba(122, 75, 34, 0.5));
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__point--hover .vehicle-speed-peaks__dot {
+  filter: drop-shadow(0 0 12px rgba(185, 128, 79, 0.6))
+    drop-shadow(0 0 4px rgba(122, 75, 34, 0.35));
 }
 
 [data-theme='brown-cream'] .vehicle-speed-peaks__label {
-  fill: #5c4433;
+  fill: #ffffff !important;
 }
 
 [data-theme='brown-cream'] .vehicle-speed-peaks__label-box {
-  fill: #fffdf9;
-  stroke: #e8d8c5;
+  fill: var(--cream-brown-primary) !important;
+  stroke: rgba(248, 243, 235, 0.22) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__point--hover .vehicle-speed-peaks__label-box {
+  fill: var(--cream-brown-primary) !important;
+  stroke: rgba(248, 243, 235, 0.4) !important;
+  filter: drop-shadow(0 0 8px rgba(122, 75, 34, 0.35));
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip {
+  background: var(--cream-brown-primary) !important;
+  border-color: rgba(248, 243, 235, 0.22) !important;
+  box-shadow: 0 8px 24px rgba(74, 43, 18, 0.28) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip-plate,
+[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip-speed,
+[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip-source,
+[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip-time {
+  color: #ffffff !important;
+}
+
+@keyframes vehicle-speed-peaks-mountain-glow-once-cream {
+  0% {
+    filter: drop-shadow(0 0 0 rgba(122, 75, 34, 0));
+  }
+  40% {
+    filter: drop-shadow(0 0 10px rgba(122, 75, 34, 0.42))
+      drop-shadow(0 0 20px rgba(185, 128, 79, 0.22));
+  }
+  100% {
+    filter: drop-shadow(0 0 4px rgba(122, 75, 34, 0.18));
+  }
+}
+
+@keyframes vehicle-speed-peaks-mountain-glow-pulse-cream {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px rgba(122, 75, 34, 0.2))
+      drop-shadow(0 0 8px rgba(185, 128, 79, 0.1));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(122, 75, 34, 0.4))
+      drop-shadow(0 0 14px rgba(185, 128, 79, 0.18));
+  }
+}
+
+@keyframes vehicle-speed-peaks-line-glow-once-cream {
+  0%,
+  100% {
+    stroke: #7a4b22;
+    stroke-width: 2.5;
+  }
+  45% {
+    stroke: #b9804f;
+    stroke-width: 2.8;
+  }
+}
+
+@keyframes vehicle-speed-peaks-line-glow-pulse-cream {
+  0%,
+  100% {
+    stroke: #7a4b22;
+    stroke-width: 2.5;
+  }
+  50% {
+    stroke: #b9804f;
+    stroke-width: 2.7;
+  }
 }
 

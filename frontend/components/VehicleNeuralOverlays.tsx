@@ -151,7 +151,7 @@ function OwnerProfileEmailRow({
 
   return (
     <div className="flex items-start justify-between gap-3 text-sm leading-snug">
-      <span className="max-w-[42%] shrink-0 uppercase tracking-[0.12em] text-[#6B7A8F]">Email Address</span>
+      <span className="vehicle-neural-info-card__label max-w-[42%] shrink-0 uppercase tracking-[0.12em] text-[#6B7A8F]">Email Address</span>
       {editing ? (
         <EditableValue
           editing
@@ -198,7 +198,7 @@ function OwnerProfileRow({
 
   return (
     <div className="flex items-start justify-between gap-3 text-sm leading-snug">
-      <span className="max-w-[42%] shrink-0 uppercase tracking-[0.12em] text-[#6B7A8F]">{label}</span>
+      <span className="vehicle-neural-info-card__label max-w-[42%] shrink-0 uppercase tracking-[0.12em] text-[#6B7A8F]">{label}</span>
       {editing && onSave ? (
         <EditableValue
           editing
@@ -232,8 +232,8 @@ function OwnerProfilePanel({
       onFieldSave(field, raw);
 
   return (
-    <div className="rounded-xl border border-[#00D9FF]/25 bg-[#0a1028]/95 p-5 shadow-[0_0_28px_rgba(0,217,255,0.14)] backdrop-blur-md">
-      <p className="mb-4 flex items-center justify-center gap-2 text-sm uppercase tracking-[0.16em] text-[#00D9FF]">
+    <div className="vehicle-neural-info-card rounded-xl border border-[#00D9FF]/25 bg-[#0a1028]/95 p-5 shadow-[0_0_28px_rgba(0,217,255,0.14)] backdrop-blur-md">
+      <p className="vehicle-neural-info-card__title mb-4 flex items-center justify-center gap-2 text-sm uppercase tracking-[0.16em] text-[#00D9FF]">
         <span className="text-base" aria-hidden>
           👤
         </span>
@@ -292,8 +292,8 @@ function VehicleInformationPanel({
       onFieldSave(field, raw);
 
   return (
-    <div className="rounded-xl border border-[#00D9FF]/25 bg-[#0a1028]/95 p-5 shadow-[0_0_28px_rgba(0,217,255,0.14)] backdrop-blur-md">
-      <p className="mb-4 flex items-center justify-center gap-2 text-sm uppercase tracking-[0.16em] text-[#00D9FF]">
+    <div className="vehicle-neural-info-card rounded-xl border border-[#00D9FF]/25 bg-[#0a1028]/95 p-5 shadow-[0_0_28px_rgba(0,217,255,0.14)] backdrop-blur-md">
+      <p className="vehicle-neural-info-card__title mb-4 flex items-center justify-center gap-2 text-sm uppercase tracking-[0.16em] text-[#00D9FF]">
         <span className="text-base" aria-hidden>
           🚗
         </span>

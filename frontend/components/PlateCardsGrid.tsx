@@ -354,7 +354,7 @@ export default function PlateCardsGrid({
       ) : null}
 
       {visibleDetections.length === 0 ? (
-        <div className="flex min-h-0 flex-1 items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-4">
+        <div className="panel-empty-state flex min-h-0 flex-1 items-center justify-center rounded-xl border border-dashed border-white/10 bg-black/20 px-4">
           <p className="text-center text-sm text-slate-500">{emptyMessage}</p>
         </div>
       ) : (

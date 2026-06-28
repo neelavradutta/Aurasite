@@ -1,7 +1,10 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
 import { useThemeStore } from '@/store/themeStore';
-import { BROWN_CREAM, isCreamTheme } from '@/theme/themeColors';
+import { isCreamTheme } from '@/theme/themeColors';
 
+const LOGO_VIDEO_SRC = '/aurasite-logo.mp4';
 const CANVAS_SIZE = 512;
 
 type Circuit = {
@@ -22,6 +25,18 @@ type Particle = {
   reset: (cx: number, cy: number) => void;
   update: () => void;
   draw: (ctx: CanvasRenderingContext2D) => void;
+};
+
+const CYBERPUNK_PALETTE = {
+  iconBgInner: '#0d1330',
+  iconBgMid: '#070814',
+  iconBgOuter: '#11051c',
+  iconParticleA: '#00f3ff',
+  iconParticleB: '#00ffaa',
+  iconRingStart: '#00ffaa',
+  iconRingMid: '#00f3ff',
+  iconRingEnd: '#0044ff',
+  iconShadow: '#00f3ff',
 };
 
 function createCircuits(): Circuit[] {
@@ -112,29 +127,9 @@ function drawA(
   ctx.stroke();
 }
 
-interface Props {
-  size?: number;
-  className?: string;
-}
-
-export default function AurasiteIcon({ size = 44, className = '' }: Props) {
+function AurasiteCanvasIcon({ size, className }: { size: number; className: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const theme = useThemeStore((state) => state.theme);
-  const cream = isCreamTheme(theme);
-  const palette = cream
-    ? BROWN_CREAM
-    : {
-        iconBgInner: '#0d1330',
-        iconBgMid: '#070814',
-        iconBgOuter: '#11051c',
-        iconCircuit: 'rgba(0, 180, 255',
-        iconParticleA: '#00f3ff',
-        iconParticleB: '#00ffaa',
-        iconRingStart: '#00ffaa',
-        iconRingMid: '#00f3ff',
-        iconRingEnd: '#0044ff',
-        iconShadow: '#00f3ff',
-      };
+  const palette = CYBERPUNK_PALETTE;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -172,11 +167,8 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
 
       context.lineWidth = 1.5;
       circuits.forEach((circuit) => {
-        const baseAlpha = cream ? circuit.alpha * 2.5 : circuit.alpha;
-        const pulseAlpha = baseAlpha * (1 + 0.4 * Math.sin(time * 2 + circuit.phase));
-        context.strokeStyle = cream
-          ? `rgba(74, 43, 18, ${Math.min(pulseAlpha, 0.45)})`
-          : `rgba(0, 180, 255, ${pulseAlpha})`;
+        const pulseAlpha = circuit.alpha * (1 + 0.4 * Math.sin(time * 2 + circuit.phase));
+        context.strokeStyle = `rgba(0, 180, 255, ${pulseAlpha})`;
         context.beginPath();
         context.moveTo(circuit.points[0].x, circuit.points[0].y);
         for (let i = 1; i < circuit.points.length; i++) {
@@ -185,7 +177,7 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
         context.stroke();
       });
 
-      context.globalCompositeOperation = cream ? 'source-over' : 'screen';
+      context.globalCompositeOperation = 'screen';
       particles.forEach((particle) => {
         particle.update();
         particle.draw(context);
@@ -197,25 +189,20 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
       grad.addColorStop(0.4, palette.iconRingMid);
       grad.addColorStop(1, palette.iconRingEnd);
 
-      const passes = cream
-        ? [
-            { blur: 8, opacity: 0.35, width: 8 },
-            { blur: 0, opacity: 1, width: 3.5 },
-          ]
-        : [
-            { blur: 45, opacity: 0.25, width: 14 },
-            { blur: 20, opacity: 0.45, width: 8 },
-            { blur: 8, opacity: 0.75, width: 4 },
-            { blur: 2, opacity: 1.0, width: 2 },
-          ];
+      const passes = [
+        { blur: 45, opacity: 0.25, width: 14 },
+        { blur: 20, opacity: 0.45, width: 8 },
+        { blur: 8, opacity: 0.75, width: 4 },
+        { blur: 2, opacity: 1.0, width: 2 },
+      ];
       const pulseIntensity = 1 + 0.05 * Math.sin(time * 2.5);
 
       passes.forEach((pass) => {
         context.save();
         context.strokeStyle = grad;
         context.globalAlpha = pass.opacity;
-        context.shadowColor = cream ? 'transparent' : palette.iconShadow;
-        context.shadowBlur = cream ? 0 : pass.blur * pulseIntensity;
+        context.shadowColor = palette.iconShadow;
+        context.shadowBlur = pass.blur * pulseIntensity;
         context.lineWidth = (pass.width + 2) * 1.1;
         context.beginPath();
         context.arc(cx, cy, 125, 0, Math.PI * 2);
@@ -238,7 +225,7 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
     frameId = window.requestAnimationFrame(renderFrame);
 
     return () => window.cancelAnimationFrame(frameId);
-  }, [size, theme]);
+  }, [size]);
 
   return (
     <canvas
@@ -250,4 +237,57 @@ export default function AurasiteIcon({ size = 44, className = '' }: Props) {
       style={{ width: size, height: size }}
     />
   );
+}
+
+function AurasiteVideoIcon({ size, className }: { size: number; className: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.defaultMuted = true;
+    video.muted = true;
+
+    const play = () => {
+      void video.play().catch(() => {});
+    };
+
+    play();
+    video.addEventListener('loadeddata', play);
+
+    return () => video.removeEventListener('loadeddata', play);
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      src={LOGO_VIDEO_SRC}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      disablePictureInPicture
+      aria-hidden
+      className={`aurasite-logo-video block aspect-square shrink-0 object-cover ${className}`.trim()}
+      style={{ width: size, height: size }}
+    />
+  );
+}
+
+interface Props {
+  size?: number;
+  className?: string;
+}
+
+export default function AurasiteIcon({ size = 44, className = '' }: Props) {
+  const theme = useThemeStore((state) => state.theme);
+  const cream = isCreamTheme(theme);
+
+  if (cream) {
+    return <AurasiteVideoIcon size={size} className={className} />;
+  }
+
+  return <AurasiteCanvasIcon size={size} className={className} />;
 }

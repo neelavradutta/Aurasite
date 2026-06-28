@@ -35,7 +35,7 @@ export default function AnalyticsPage() {
   }, [loading]);
 
   return (
-    <div className="min-h-screen">
+    <div className="analytics-page cream-panel-icons min-h-screen">
       <Header />
       <main className="mobile-page-main mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         {loading ? (

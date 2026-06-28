@@ -235,7 +235,7 @@ function StatCard({
   valueClassName?: string;
 }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-black/25 px-4 py-3">
+    <div className="parking-stat-card rounded-lg border border-white/10 bg-black/25 px-4 py-3">
       <p className="text-[11px] text-slate-400">{label}</p>
       <p className={`mt-1 font-orbitron text-2xl font-semibold leading-none ${valueClassName}`}>
         {value}

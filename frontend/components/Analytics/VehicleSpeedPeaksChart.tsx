@@ -300,9 +300,15 @@ export default function VehicleSpeedPeaksChart({ readings }: { readings: Vehicle
               <stop offset="100%" stopColor={colors?.speedGlowFade ?? 'rgba(0, 245, 212, 0.02)'} />
             </linearGradient>
             <linearGradient id={`vsp-sweep-${chartId}`} x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stopColor="rgba(0, 245, 212, 0)" />
-              <stop offset="50%" stopColor={cream ? 'rgba(185, 128, 79, 0.28)' : 'rgba(77, 248, 229, 0.38)'} />
-              <stop offset="100%" stopColor={cream ? 'rgba(255, 253, 249, 0.35)' : 'rgba(255, 255, 255, 0.22)'} />
+              <stop offset="0%" stopColor="rgba(122, 75, 34, 0)" />
+              <stop
+                offset="50%"
+                stopColor={cream ? 'rgba(185, 128, 79, 0.32)' : 'rgba(77, 248, 229, 0.38)'}
+              />
+              <stop
+                offset="100%"
+                stopColor={cream ? 'rgba(122, 75, 34, 0.18)' : 'rgba(255, 255, 255, 0.22)'}
+              />
             </linearGradient>
             <filter
               id={`vsp-glow-${chartId}`}

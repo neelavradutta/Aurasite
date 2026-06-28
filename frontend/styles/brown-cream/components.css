@@ -116,6 +116,16 @@
   background: radial-gradient(circle, rgba(185, 128, 79, 0.22) 0%, rgba(216, 176, 122, 0.08) 45%, transparent 72%);
 }
 
+[data-theme='brown-cream'] .fiery-speed-card--plain {
+  animation: none;
+  box-shadow: none;
+  border-color: rgba(122, 75, 34, 0.45);
+}
+
+[data-theme='brown-cream'] .fiery-speed-card--plain::before {
+  background: none;
+}
+
 [data-theme='brown-cream'] .fiery-speed-text,
 [data-theme='brown-cream'] .fiery-speed-value {
   color: var(--cream-brown-primary);
@@ -137,32 +147,6 @@
     0 0 28px rgba(185, 128, 79, 0.22),
     inset 0 0 16px rgba(122, 75, 34, 0.12) !important;
   transform: scale(1.015);
-}
-
-[data-theme='brown-cream'] .vehicle-speed-peaks__line {
-  stroke: var(--cream-brown-primary);
-}
-
-[data-theme='brown-cream'] .vehicle-speed-peaks__fill {
-  fill: rgba(185, 128, 79, 0.2);
-}
-
-[data-theme='brown-cream'] .vehicle-speed-peaks__glow,
-[data-theme='brown-cream'] .vehicle-speed-peaks__fill-glow,
-[data-theme='brown-cream'] .vehicle-speed-peaks__line-glow {
-  stop-color: var(--cream-brown-secondary);
-}
-
-[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip {
-  background: var(--cream-bg-card);
-  border-color: var(--cream-border);
-  color: var(--cream-text-body);
-  box-shadow: var(--cream-shadow-md);
-}
-
-[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip-plate,
-[data-theme='brown-cream'] .vehicle-speed-peaks__tooltip-speed {
-  color: var(--cream-text-heading);
 }
 
 [data-theme='brown-cream'] .processing-loader__ring--outer {
@@ -244,6 +228,15 @@
 
 [data-theme='brown-cream'] .detection-log-body-scroll {
   scrollbar-color: rgba(122, 75, 34, 0.45) transparent !important;
+}
+
+[data-theme='brown-cream'] .detection-log-footer-bar {
+  background-image: linear-gradient(
+    to right,
+    transparent,
+    rgba(122, 75, 34, 0.55),
+    transparent
+  ) !important;
 }
 
 [data-theme='brown-cream'] .text-\[\#00D9FF\],
@@ -331,9 +324,17 @@
   color: #7a4b22 !important;
 }
 
-[data-theme='brown-cream'] .panel-empty-state {
-  border-color: rgba(122, 75, 34, 0.22);
-  background: rgba(122, 75, 34, 0.06);
+[data-theme='brown-cream'] .cream-panel-icons .panel-empty-state {
+  border-style: solid !important;
+  border-color: rgba(122, 75, 34, 0.2) !important;
+  background: #f5eee3 !important;
+  background-image: none !important;
+}
+
+[data-theme='brown-cream'] .cream-panel-icons .panel-empty-state p {
+  color: #7a4b22 !important;
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 /* Detection log */
@@ -434,7 +435,35 @@
 }
 
 [data-theme='brown-cream'] .owner-profile-editable:focus {
-  outline-color: rgba(185, 128, 79, 0.55) !important;
+  outline-color: rgba(248, 243, 235, 0.55) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-neural-info-card {
+  background-color: var(--cream-brown-primary) !important;
+  border-color: rgba(248, 243, 235, 0.22) !important;
+  box-shadow: 0 10px 28px rgba(74, 43, 18, 0.28) !important;
+  backdrop-filter: none;
+}
+
+[data-theme='brown-cream'] .vehicle-neural-info-card__title,
+[data-theme='brown-cream'] .vehicle-neural-info-card__label,
+[data-theme='brown-cream'] .vehicle-neural-info-card .text-slate-200,
+[data-theme='brown-cream'] .vehicle-neural-info-card .owner-profile-value,
+[data-theme='brown-cream'] .vehicle-neural-info-card .owner-profile-email-value,
+[data-theme='brown-cream'] .vehicle-neural-info-card .owner-profile-address-value,
+[data-theme='brown-cream'] .vehicle-neural-info-card .text-cyber-green,
+[data-theme='brown-cream'] .vehicle-neural-info-card .text-red-500,
+[data-theme='brown-cream'] .vehicle-neural-info-card .text-yellow-400,
+[data-theme='brown-cream'] .vehicle-neural-info-card .text-white {
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .vehicle-neural-info-card__label {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+[data-theme='brown-cream'] .vehicle-neural-info-card .owner-profile-editable:empty::before {
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* Processing progress */
@@ -652,6 +681,40 @@
     0 2px 8px rgba(122, 75, 34, 0.18);
 }
 
+[data-theme='brown-cream'] .aurasite-brand-overlay {
+  background: rgba(248, 243, 235, 0.94) !important;
+}
+
+[data-theme='brown-cream'] .aurasite-brand-overlay__portal {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(185, 128, 79, 0.2) 0%, transparent 42%),
+    radial-gradient(circle at 50% 50%, rgba(122, 75, 34, 0.1) 0%, transparent 55%) !important;
+}
+
+[data-theme='brown-cream'] .aurasite-brand-overlay__icon-ring {
+  border-color: rgba(122, 75, 34, 0.35) !important;
+  box-shadow:
+    0 0 24px rgba(122, 75, 34, 0.18),
+    inset 0 0 20px rgba(185, 128, 79, 0.1) !important;
+}
+
+[data-theme='brown-cream'] .aurasite-brand-overlay__icon {
+  box-shadow:
+    0 0 32px rgba(122, 75, 34, 0.22),
+    0 0 64px rgba(185, 128, 79, 0.12) !important;
+}
+
+[data-theme='brown-cream'] .aurasite-brand-overlay__title {
+  color: var(--cream-brown-primary) !important;
+  text-shadow: none !important;
+  animation: anpr-access-fade-in-up 0.55s ease-out 0.2s forwards !important;
+}
+
+[data-theme='brown-cream'] .aurasite-brand-overlay__tagline,
+[data-theme='brown-cream'] .aurasite-brand-overlay__tagline-word {
+  color: #5c4433 !important;
+}
+
 [data-theme='brown-cream'] .plate-card-ring::before {
   background: conic-gradient(from 0deg, #7a4b22, #b9804f, #d8b07a, #7a4b22);
   opacity: 0.35;
@@ -693,6 +756,16 @@
 
 [data-theme='brown-cream'] .glass-panel .bg-white\/10.text-white svg,
 [data-theme='brown-cream'] .bg-white\/10.text-white svg {
+  color: #ffffff !important;
+}
+
+/* Dashboard & analytics panel/KPI icons — solid brown box, white glyph (navbar unchanged) */
+[data-theme='brown-cream'] .cream-panel-icons .bg-white\/10.text-white {
+  background-color: var(--cream-brown-primary) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='brown-cream'] .cream-panel-icons .bg-white\/10.text-white svg {
   color: #ffffff !important;
 }
 

@@ -83,8 +83,8 @@ export const BROWN_CREAM = {
   speedGlowFade: 'rgba(216, 176, 122, 0.02)',
   speedStroke: '#7a4b22',
   speedStrokeGlow: '#b9804f',
-  speedPeakFill: '#d8b07a',
-  speedPeakStroke: '#fffdf9',
+  speedPeakFill: '#b9804f',
+  speedPeakStroke: '#ffffff',
   parkingStatGreen: '#5c9d55',
 } as const;
 

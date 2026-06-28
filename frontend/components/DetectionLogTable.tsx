@@ -279,7 +279,7 @@ export default function DetectionLogTable({
           </table>
         </div>
       </div>
-      <div className="h-1.5 bg-gradient-to-r from-transparent via-cyber-cyan/70 to-transparent" />
+      <div className="detection-log-footer-bar h-1.5 bg-gradient-to-r from-transparent via-cyber-cyan/70 to-transparent" />
     </div>
   );
 }

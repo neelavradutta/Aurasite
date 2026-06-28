@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useState } from 'react';
 import Card from '@/components/shared/Card';
 import PanelEmptyState from '@/components/shared/PanelEmptyState';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
@@ -23,28 +22,24 @@ function SpeedCard({
   compact = false,
   fillRow = false,
   barHeightClass = '',
-  interactive = false,
+  plain = false,
 }: {
   reading: VehicleSpeedReading;
   compact?: boolean;
   fillRow?: boolean;
   barHeightClass?: string;
-  interactive?: boolean;
+  /** Dashboard preview: no glow, embers, or hover effects. */
+  plain?: boolean;
 }) {
-  const [hovered, setHovered] = useState(false);
-
   return (
     <div
       className={`fiery-speed-card flex min-w-0 items-center justify-between gap-2 rounded-xl ${
-        interactive ? 'fiery-speed-card-interactive' : ''
+        plain ? 'fiery-speed-card--plain' : ''
       } ${compact ? 'px-2.5 py-2' : 'px-3 py-2.5'} ${
         fillRow
           ? 'h-full min-h-0'
           : barHeightClass || (compact ? 'h-[2.125rem] shrink-0' : '')
       }`}
-      data-hovered={interactive && hovered ? 'true' : undefined}
-      onMouseEnter={() => interactive && setHovered(true)}
-      onMouseLeave={() => interactive && setHovered(false)}
     >
       <p
         className={`fiery-speed-text min-w-0 flex-1 truncate font-orbitron font-bold leading-none ${
@@ -54,11 +49,13 @@ function SpeedCard({
         {reading.plate_number}
       </p>
       <p className={`fiery-speed-value shrink-0 font-orbitron font-bold leading-none ${compact ? 'text-xs' : 'text-sm'}`}>
-        <span className="fiery-speed-embers" aria-hidden>
-          {Array.from({ length: 4 }, (_, i) => (
-            <span key={i} className="fiery-speed-ember" />
-          ))}
-        </span>
+        {!plain ? (
+          <span className="fiery-speed-embers" aria-hidden>
+            {Array.from({ length: 4 }, (_, i) => (
+              <span key={i} className="fiery-speed-ember" />
+            ))}
+          </span>
+        ) : null}
         <span className="fiery-speed-number">{reading.speed_kmh}</span>
         <span className="fiery-speed-unit ml-1.5 text-[10px] font-bold uppercase">km/h</span>
       </p>
@@ -79,7 +76,7 @@ function DashboardSpeedList({ readings }: { readings: VehicleSpeedReading[] }) {
             reading={reading}
             compact
             fillRow
-            interactive
+            plain
           />
         ))}
       </div>
@@ -97,7 +94,7 @@ function DashboardSpeedList({ readings }: { readings: VehicleSpeedReading[] }) {
           reading={reading}
           compact
           barHeightClass={barHeightClass}
-          interactive
+          plain
         />
       ))}
     </div>

@@ -297,7 +297,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen pb-10">
+    <div className="dashboard-page cream-panel-icons min-h-screen pb-10">
       {processingOverlay && (
         <VideoProcessingOverlay
           state={processingOverlay}

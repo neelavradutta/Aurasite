@@ -47,7 +47,7 @@ export default function KPICards({ summary }: Props) {
               />
             </div>
             <div className="min-w-0">
-              <p className="text-xs uppercase tracking-widest text-slate-400">{card.label}</p>
+              <p className="kpi-card-label text-[10px] uppercase tracking-widest text-slate-400">{card.label}</p>
               <p className={`mt-0.5 font-orbitron text-2xl font-bold ${card.color}`}>
                 {summary != null ? summary[card.key] : '—'}
               </p>

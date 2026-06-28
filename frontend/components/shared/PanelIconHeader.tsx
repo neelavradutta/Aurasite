@@ -40,7 +40,7 @@ export default function PanelIconHeader({
   iconBg = 'bg-white/10',
   iconColor = 'text-white',
   iconBoxClassName,
-  subtitleClassName = 'mt-0.5 text-[10px] leading-snug text-slate-500',
+  subtitleClassName = 'panel-subtitle mt-0.5 text-[10px] leading-snug text-slate-500',
   titleClassName = '',
   className = '',
   useSectionTitle = true,
