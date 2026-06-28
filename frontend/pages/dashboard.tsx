@@ -130,7 +130,6 @@ export default function DashboardPage() {
     setUploadError('');
     processingCancelledRef.current = false;
     uploadAbortRef.current = new AbortController();
-    startNewAnalysisSession(file.name);
     setProcessingOverlay({
       fileName: file.name,
       phase: 'uploading',
@@ -213,6 +212,7 @@ export default function DashboardPage() {
         res = await fetchDetections({ limit: 200, video_source: file.name });
         rows = res.data || [];
       }
+      startNewAnalysisSession(file.name);
       setDetections(rows);
       appendPeakTrafficDetections(rows);
       useDashboardStore.getState().bumpDetectionsVersion();

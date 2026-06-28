@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/router';
 
-import { useDashboardStore } from '@/store/dashboardStore';
-
 import { UploadedVideoRecord, useVideoUploadStore } from '@/store/videoUploadStore';
 
 import { getMediaKind, isImageFile, isImageFileName, MEDIA_FILE_ACCEPT } from '@/utils/mediaFile';
@@ -58,8 +56,6 @@ export default function VideoInputPanel({
   const router = useRouter();
   const activeTheme = useActiveTheme();
 
-  const sessionVersion = useDashboardStore((s) => s.sessionVersion);
-
   const {
     uploadedVideos,
     pendingFile,
@@ -69,12 +65,9 @@ export default function VideoInputPanel({
     removeUploadedVideo,
     setPendingSelection,
     clearPendingSelection,
-    clearUploadedVideos,
   } = useVideoUploadStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const prevSessionVersion = useRef(sessionVersion);
 
   const [overlayVideo, setOverlayVideo] = useState<UploadedVideoRecord | null>(null);
   const [selectedUploadedVideo, setSelectedUploadedVideo] = useState<UploadedVideoRecord | null>(
@@ -83,21 +76,6 @@ export default function VideoInputPanel({
 
   const selectedFile = selectedUploadedVideo?.file ?? pendingFile;
   const previewUrl = selectedUploadedVideo?.previewUrl ?? pendingPreviewUrl;
-
-  useEffect(() => {
-
-    if (prevSessionVersion.current !== sessionVersion) {
-
-      clearUploadedVideos();
-
-      setOverlayVideo(null);
-      setSelectedUploadedVideo(null);
-
-      prevSessionVersion.current = sessionVersion;
-
-    }
-
-  }, [sessionVersion, clearUploadedVideos]);
 
   function findUploadedMatch(file: File): UploadedVideoRecord | undefined {
     return uploadedVideos.find((video) => video.name === file.name && video.size === file.size);
