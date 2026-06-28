@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useThemeStore } from '@/store/themeStore';
+import { useActiveTheme } from '@/hooks/useTheme';
 import { getUiPalette, isCreamTheme } from '@/theme/themeColors';
 
 type OverlayPhase = 'loading' | 'result' | 'complete';
@@ -423,7 +423,7 @@ function createParticles(): Particle[] {
 }
 
 export default function PremiumLoginOverlay({ outcome, onComplete }: Props) {
-  const theme = useThemeStore((state) => state.theme);
+  const theme = useActiveTheme();
   const ui = getUiPalette(theme);
   const cream = isCreamTheme(theme);
   const [phase, setPhase] = useState<OverlayPhase>('loading');

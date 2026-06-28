@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useThemeStore } from '@/store/themeStore';
+import { useActiveTheme } from '@/hooks/useTheme';
 import { isCreamTheme } from '@/theme/themeColors';
 
 const LOGO_VIDEO_SRC = '/aurasite-logo.mp4';
@@ -282,7 +282,7 @@ interface Props {
 }
 
 export default function AurasiteIcon({ size = 44, className = '' }: Props) {
-  const theme = useThemeStore((state) => state.theme);
+  const theme = useActiveTheme();
   const cream = isCreamTheme(theme);
 
   if (cream) {

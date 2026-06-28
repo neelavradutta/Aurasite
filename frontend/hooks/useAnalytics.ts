@@ -130,15 +130,15 @@ export function useAnalytics(maxCapacity = 400) {
 
       unique_plates: cumulative.unique_plates,
 
-      avg_confidence: computed.summary.avg_confidence,
+      avg_confidence: detections.length === 0 ? 0 : computed.summary.avg_confidence,
 
-      unresolved_alerts: computed.summary.unresolved_alerts,
+      unresolved_alerts: detections.length === 0 ? 0 : computed.summary.unresolved_alerts,
 
     });
 
     setTraffic(computePeakTraffic(peakTrafficDetections));
 
-    // Session-scoped — reset on each upload/live analysis.
+    // Session-scoped — restored after login; reset only on new upload.
     setConfidence(computeConfidenceBands(detections));
     setFrequent(computeFrequentVehicles(detections));
 
@@ -146,7 +146,9 @@ export function useAnalytics(maxCapacity = 400) {
     setRepeat(computeRepeatAnalysis(peakTrafficDetections));
     setSuspicious(computeSuspiciousVehicles(peakTrafficDetections));
 
-    setParking(computeParkingOccupancy(detections, maxCapacity));
+    setParking((prev) =>
+      detections.length === 0 ? prev : computeParkingOccupancy(detections, maxCapacity)
+    );
 
     setLoading(false);
 
@@ -155,22 +157,36 @@ export function useAnalytics(maxCapacity = 400) {
   useEffect(() => {
     let cancelled = false;
 
+    const persistedReadings = useDashboardStore.getState().vehicleSpeedReadings;
     const primed = computeSpeedReadings(
       detections,
       peakTrafficDetections,
       sessionVideoSource,
       cameraLocations
     );
+
     if (primed.length > 0) {
       setVehicleSpeedReadings(primed);
+    } else if (
+      persistedReadings.length > 0 &&
+      sessionVideoSource &&
+      cameraLocations.length === 0
+    ) {
+      return () => {
+        cancelled = true;
+      };
     }
 
     async function loadSpeeds() {
       if (detections.length === 0) {
         if (!sessionVideoSource) {
-          if (primed.length === 0) {
+          if (primed.length === 0 && persistedReadings.length === 0) {
             setVehicleSpeedReadings([]);
           }
+          return;
+        }
+
+        if (persistedReadings.length > 0 && cameraLocations.length === 0) {
           return;
         }
 
@@ -185,7 +201,9 @@ export function useAnalytics(maxCapacity = 400) {
           );
           setVehicleSpeedReadings(computeVehicleSpeeds(apiRows, cameraLocations));
         } catch {
-          if (!cancelled && primed.length === 0) setVehicleSpeedReadings([]);
+          if (!cancelled && primed.length === 0 && persistedReadings.length === 0) {
+            setVehicleSpeedReadings([]);
+          }
         }
         return;
       }

@@ -66,6 +66,7 @@ export default function TabSwitcher({ value, onChange, disabled = false, classNa
           </Fragment>
         ))}
       </div>
+      {!isCream ? (
       <motion.div
         className="tab-switcher-indicator absolute bottom-0 h-0.5 bg-gradient-to-r from-cyan-500/0 via-cyan-500 to-cyan-500/0"
         animate={{
@@ -73,8 +74,9 @@ export default function TabSwitcher({ value, onChange, disabled = false, classNa
           left: value === 'camera' ? '4px' : 'calc(50% + 4px)',
         }}
         transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-        style={{ boxShadow: isCream ? ui.tabBarShadow : ui.tabBarShadow }}
+        style={{ boxShadow: ui.tabBarShadow }}
       />
+      ) : null}
     </div>
   );
 }

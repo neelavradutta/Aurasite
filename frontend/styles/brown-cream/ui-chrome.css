@@ -2,21 +2,21 @@
 
 /* Tab switcher shell */
 [data-theme='brown-cream'] .tab-switcher-shell {
-  border-color: rgba(122, 75, 34, 0.22) !important;
-  background-color: #fcf7f1 !important;
+  border-color: var(--cream-border) !important;
+  background-color: var(--cream-bg-nested) !important;
 }
 
 [data-theme='brown-cream'] .tab-switcher-divider {
-  background: linear-gradient(to bottom, transparent, rgba(185, 128, 79, 0.35), transparent) !important;
+  display: none;
 }
 
 [data-theme='brown-cream'] .tab-switcher-active-bg {
-  background: linear-gradient(to right, rgba(122, 75, 34, 0.12), rgba(185, 128, 79, 0.08)) !important;
+  background: var(--cream-brown-primary) !important;
+  box-shadow: none !important;
 }
 
 [data-theme='brown-cream'] .tab-switcher-indicator {
-  background: linear-gradient(to right, transparent, #b9804f, transparent) !important;
-  box-shadow: 0 2px 8px rgba(122, 75, 34, 0.2) !important;
+  display: none !important;
 }
 
 /* Status badge */

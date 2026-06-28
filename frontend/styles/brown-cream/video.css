@@ -36,14 +36,20 @@
 }
 
 [data-theme='brown-cream'] .video-results-cyberpunk__header {
-  background: linear-gradient(90deg, #7a4b22 0%, #b9804f 45%, #7a4b22 90%);
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  color: var(--cream-brown-primary);
   filter: none;
+  animation: none;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-family: inherit;
+  font-weight: 600;
 }
 
 [data-theme='brown-cream'] .video-results-cyberpunk__header-badge {
-  border-color: #7a4b22;
-  background: rgba(122, 75, 34, 0.1);
-  color: #7a4b22;
+  display: none;
 }
 
 [data-theme='brown-cream'] .video-results-cyberpunk__stat-box {
@@ -68,6 +74,10 @@
 
 [data-theme='brown-cream'] .video-results-cyberpunk__video-name {
   color: #4a2b12;
+}
+
+[data-theme='brown-cream'] .video-results-cyberpunk__video-info {
+  background: transparent;
 }
 
 [data-theme='brown-cream'] .video-results-cyberpunk__video-size {

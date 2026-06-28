@@ -88,6 +88,8 @@ interface DashboardState {
 
   hydrateFromSession: (snapshot: DashboardSessionSnapshot) => void;
 
+  resetForUserPersistence: () => void;
+
   clearDashboard: () => Promise<void>;
 
 }
@@ -242,36 +244,53 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     }),
 
   startNewAnalysisSession: (videoSource) =>
-
     set((state) => ({
-
       detections: [],
-
       vehicleSpeedReadings: [],
-
       selectedPlate: null,
-
       sessionVideoSource: videoSource,
-
-      peakTrafficDetections: videoSource
-
-        ? state.peakTrafficDetections.filter(
-
-            (detection) => detection.video_source !== videoSource
-
-          )
-
-        : state.peakTrafficDetections,
+      sessionVersion: state.sessionVersion + 1,
+      summary: state.summary
+        ? { ...state.summary, avg_confidence: 0, unresolved_alerts: 0 }
+        : {
+            total_detections: 0,
+            unique_plates: 0,
+            avg_confidence: 0,
+            unresolved_alerts: 0,
+          },
 
     })),
 
-  hydrateFromSession: (snapshot) =>
+  resetForUserPersistence: () =>
     set({
-      detections: snapshot.detections,
-      peakTrafficDetections: snapshot.peakTrafficDetections,
-      sessionVideoSource: snapshot.sessionVideoSource,
-      sessionVersion: snapshot.sessionVersion,
-      detectionsVersion: snapshot.detectionsVersion,
+      summary: null,
+      detections: [],
+      peakTrafficDetections: [],
+      vehicles: [],
+      alerts: [],
+      selectedPlate: null,
+      sessionVideoSource: null,
+      vehicleSpeedReadings: [],
+      detectionsVersion: 1,
+    }),
+
+  hydrateFromSession: (snapshot) =>
+    set(() => {
+      const merged = [...snapshot.detections, ...snapshot.peakTrafficDetections];
+      const selectedPlate =
+        snapshot.selectedPlateId != null
+          ? merged.find((row) => row.id === snapshot.selectedPlateId) ?? null
+          : null;
+
+      return {
+        detections: snapshot.detections,
+        peakTrafficDetections: snapshot.peakTrafficDetections,
+        sessionVideoSource: snapshot.sessionVideoSource,
+        sessionVersion: snapshot.sessionVersion,
+        detectionsVersion: snapshot.detectionsVersion,
+        vehicleSpeedReadings: snapshot.vehicleSpeedReadings ?? [],
+        selectedPlate,
+      };
     }),
 
   clearDashboard: async () => {

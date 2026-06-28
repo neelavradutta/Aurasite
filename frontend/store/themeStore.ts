@@ -12,6 +12,10 @@ interface ThemeState {
   toggleTheme: () => void;
 }
 
+export function isAuthEntryRoute(pathname: string): boolean {
+  return pathname === '/login' || pathname === '/';
+}
+
 export function applyDocumentTheme(theme: AppTheme) {
   if (typeof document === 'undefined') return;
   if (theme === 'brown-cream') {
@@ -19,6 +23,15 @@ export function applyDocumentTheme(theme: AppTheme) {
   } else {
     document.documentElement.removeAttribute('data-theme');
   }
+}
+
+/** Login always renders cyberpunk; elsewhere use the saved preference. */
+export function syncDocumentThemeForRoute(pathname: string) {
+  if (isAuthEntryRoute(pathname)) {
+    applyDocumentTheme('dark');
+    return;
+  }
+  applyDocumentTheme(useThemeStore.getState().theme);
 }
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
@@ -32,7 +45,6 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
       saved = null;
     }
     const theme: AppTheme = saved === 'brown-cream' ? 'brown-cream' : 'dark';
-    applyDocumentTheme(theme);
     if (saved === 'dark') {
       try {
         localStorage.removeItem(THEME_STORAGE_KEY);

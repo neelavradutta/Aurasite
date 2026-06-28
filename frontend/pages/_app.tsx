@@ -11,14 +11,28 @@ import { bumpChartAnimationEpoch } from '@/hooks/useChartAnimationKey';
 import { usePeakTrafficBootstrap } from '@/hooks/usePeakTrafficBootstrap';
 import { useSessionPersistence } from '@/hooks/useSessionPersistence';
 import { useLiveSessionKeepAlive } from '@/hooks/useLiveDetection';
-import { useThemeStore } from '@/store/themeStore';
+import { syncDocumentThemeForRoute, useThemeStore } from '@/store/themeStore';
 
 function ThemeBootstrap() {
+  const router = useRouter();
   const hydrate = useThemeStore((state) => state.hydrate);
+  const theme = useThemeStore((state) => state.theme);
 
   useEffect(() => {
     hydrate();
   }, [hydrate]);
+
+  useEffect(() => {
+    syncDocumentThemeForRoute(router.pathname);
+  }, [router.pathname, theme]);
+
+  useEffect(() => {
+    const onRouteChange = (url: string) => {
+      syncDocumentThemeForRoute(url.split('?')[0] || '/');
+    };
+    router.events.on('routeChangeComplete', onRouteChange);
+    return () => router.events.off('routeChangeComplete', onRouteChange);
+  }, [router.events, theme]);
 
   return null;
 }
@@ -48,7 +62,7 @@ export default function App(props: AppProps) {
   return (
     <div className="min-h-screen">
       <Script id="apnr-theme-init" strategy="beforeInteractive">
-        {`(function(){try{var t=localStorage.getItem('apnr_theme');if(t==='brown-cream'){document.documentElement.setAttribute('data-theme','brown-cream');}else{document.documentElement.removeAttribute('data-theme');}}catch(e){document.documentElement.removeAttribute('data-theme');}})();`}
+        {`(function(){try{var p=window.location.pathname;if(p==='/login'||p==='/'){document.documentElement.removeAttribute('data-theme');return;}var t=localStorage.getItem('apnr_theme');if(t==='brown-cream'){document.documentElement.setAttribute('data-theme','brown-cream');}else{document.documentElement.removeAttribute('data-theme');}}catch(e){document.documentElement.removeAttribute('data-theme');}})();`}
       </Script>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

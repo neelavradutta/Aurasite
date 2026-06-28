@@ -371,12 +371,6 @@ body {
     transform 0.3s ease;
 }
 
-.fiery-speed-card--plain {
-  animation: none;
-  box-shadow: none;
-  border-color: rgba(255, 140, 0, 0.55);
-}
-
 .fiery-speed-card-interactive {
   cursor: default;
 }

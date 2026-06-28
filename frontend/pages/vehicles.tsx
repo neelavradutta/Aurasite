@@ -19,6 +19,7 @@ import { downloadVehicleReportPdf } from '@/utils/vehicleReportPdf';
 import { getHistoryPlate } from '@/utils/vehicleCardDisplay';
 import { getStatusReason } from '@/utils/vehicleStatus';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useAuthStore } from '@/store/authStore';
 import { normalizePlateKey } from '@/utils/dashboardDetections';
 import { getSocket } from '@/services/socket';
 import { VehicleRealtimeUpdate } from '@/utils/violationUpdates';
@@ -34,6 +35,7 @@ import {
 
 export default function VehiclesPage() {
   const router = useRouter();
+  const userId = useAuthStore((state) => state.user?.id ?? null);
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);
   const syncVehicleUpdate = useDashboardStore((state) => state.patchVehicleUpdates);
   const [pageHydrated, setPageHydrated] = useState(false);
@@ -52,16 +54,19 @@ export default function VehiclesPage() {
     const res = await fetchVehicles({ limit: 100 });
     const rows = res.data || [];
     setVehicles(rows);
-    persistVehiclesPageCache(rows);
+    if (userId != null) {
+      persistVehiclesPageCache(rows, userId);
+    }
   }
 
   useEffect(() => {
-    const cache = loadVehiclesPageCache<Vehicle>();
+    if (!userId) return;
+    const cache = loadVehiclesPageCache<Vehicle>(userId);
     if (cache) {
       setVehicles(cache);
     }
     setPageHydrated(true);
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (!pageHydrated) return;

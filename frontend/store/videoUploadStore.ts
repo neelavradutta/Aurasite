@@ -6,7 +6,7 @@ export type UploadedVideoRecord = {
   name: string;
   size: number;
   previewUrl: string;
-  file: File;
+  file?: File;
   platesDetected: number;
   mediaType: MediaKind;
 };
@@ -21,6 +21,15 @@ interface VideoUploadState {
   setPendingSelection: (file: File, previewUrl: string) => void;
   clearPendingSelection: () => void;
   clearUploadedVideos: () => void;
+  hydrateUploadedVideosFromMeta: (
+    videos: Array<{
+      id: string;
+      name: string;
+      size: number;
+      platesDetected: number;
+      mediaType: MediaKind;
+    }>
+  ) => void;
 }
 
 export const useVideoUploadStore = create<VideoUploadState>((set, get) => ({
@@ -85,16 +94,26 @@ export const useVideoUploadStore = create<VideoUploadState>((set, get) => ({
   clearUploadedVideos: () => {
     const { pendingPreviewUrl, uploadedVideos } = get();
     for (const video of uploadedVideos) {
-      if (video.previewUrl !== pendingPreviewUrl) {
+      if (video.previewUrl && video.previewUrl !== pendingPreviewUrl) {
         URL.revokeObjectURL(video.previewUrl);
       }
     }
     const isSharedWithUploads = uploadedVideos.some(
-      (video) => video.previewUrl === pendingPreviewUrl
+      (video) => video.previewUrl && video.previewUrl === pendingPreviewUrl
     );
     if (pendingPreviewUrl && !isSharedWithUploads) {
       URL.revokeObjectURL(pendingPreviewUrl);
     }
     set({ uploadedVideos: [], pendingFile: null, pendingPreviewUrl: null });
   },
+
+  hydrateUploadedVideosFromMeta: (videos) =>
+    set({
+      uploadedVideos: videos.map((video) => ({
+        ...video,
+        previewUrl: '',
+      })),
+      pendingFile: null,
+      pendingPreviewUrl: null,
+    }),
 }));

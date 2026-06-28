@@ -12,7 +12,8 @@ import VideoPreviewOverlay from '@/components/RightPanel/VideoPreviewOverlay';
 import ImageIcon from '@/components/ImageIcon';
 import VideoIcon from '@/components/VideoIcon';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
-import { VideoInputPanelIcon } from '@/components/NavIcons';
+import { VideoInputPanelIcon, PANEL_ICON_CLASS } from '@/components/NavIcons';
+import { useActiveTheme } from '@/hooks/useTheme';
 
 
 
@@ -55,6 +56,7 @@ export default function VideoInputPanel({
 }: Props) {
 
   const router = useRouter();
+  const activeTheme = useActiveTheme();
 
   const sessionVersion = useDashboardStore((s) => s.sessionVersion);
 
@@ -288,14 +290,22 @@ export default function VideoInputPanel({
       <div className="video-panel__header">
 
         {isResults ? (
-
-          <h3 className="video-results-cyberpunk__header">
-            <span className="video-results-cyberpunk__header-badge" aria-hidden>
-              ✓
-            </span>
-            Processing Completed
-          </h3>
-
+          activeTheme === 'brown-cream' ? (
+            <PanelIconHeader
+              icon={<VideoInputPanelIcon className={PANEL_ICON_CLASS} />}
+              title="Processing Completed"
+              iconBg="bg-white/10"
+              iconColor="text-white"
+              className="!mb-0"
+            />
+          ) : (
+            <h3 className="video-results-cyberpunk__header">
+              <span className="video-results-cyberpunk__header-badge" aria-hidden>
+                ✓
+              </span>
+              Processing Completed
+            </h3>
+          )
         ) : (
 
           <PanelIconHeader

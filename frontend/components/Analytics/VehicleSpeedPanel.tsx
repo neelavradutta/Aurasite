@@ -5,6 +5,7 @@ import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import { SpeedometerPanelIcon } from '@/components/NavIcons';
 import VehicleSpeedPeaksChart from '@/components/Analytics/VehicleSpeedPeaksChart';
 import { VehicleSpeedReading } from '@/utils/speedEstimation';
+import { useActiveTheme } from '@/hooks/useTheme';
 export const VEHICLE_SPEED_ANCHOR = 'vehicle-speed';
 
 interface Props {
@@ -63,7 +64,13 @@ function SpeedCard({
   );
 }
 
-function DashboardSpeedList({ readings }: { readings: VehicleSpeedReading[] }) {
+function DashboardSpeedList({
+  readings,
+  plain,
+}: {
+  readings: VehicleSpeedReading[];
+  plain: boolean;
+}) {
   const visible = readings.slice(0, 3);
   const count = visible.length;
 
@@ -109,7 +116,9 @@ export default function VehicleSpeedPanel({
   sectionId,
   fillHeight = false,
 }: Props) {
+  const activeTheme = useActiveTheme();
   const isDashboard = Boolean(limit && href);
+  const plainDashboardCards = isDashboard && activeTheme === 'brown-cream';
   const visible = limit ? readings.slice(0, Math.min(limit, 3)) : readings;
 
   const panel = (
@@ -137,7 +146,7 @@ export default function VehicleSpeedPanel({
           className={isDashboard ? 'mt-1' : 'min-h-[19.5rem]'}
         />
       ) : isDashboard ? (
-        <DashboardSpeedList readings={visible} />
+        <DashboardSpeedList readings={visible} plain={plainDashboardCards} />
       ) : (
         <div className="min-h-[19.5rem] flex-1 overflow-hidden">
           <VehicleSpeedPeaksChart readings={visible} />

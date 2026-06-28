@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { isImageFileName } from '@/utils/mediaFile';
+import { useActiveTheme } from '@/hooks/useTheme';
 
 export type ProcessingPhase = 'uploading' | 'processing' | 'saving' | 'complete' | 'error';
 
@@ -38,8 +39,10 @@ function formatProcessingFileName(fileName: string): string {
 
 export default function VideoProcessingOverlay({ state, onClose, onStop, onRetry }: Props) {
   const { fileName, phase, progress, statusMessage, error } = state;
+  const activeTheme = useActiveTheme();
   const isError = phase === 'error';
   const isComplete = phase === 'complete';
+  const isBrownCreamComplete = isComplete && activeTheme === 'brown-cream';
   const showStop = isActivePhase(phase) && Boolean(onStop);
   const showRetry = isError && Boolean(onRetry);
   const showClose = isError && Boolean(onClose);
@@ -56,13 +59,21 @@ export default function VideoProcessingOverlay({ state, onClose, onStop, onRetry
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-[#050816]/80 px-6 backdrop-blur-md"
+      className={`video-processing-overlay fixed inset-0 z-[200] flex items-center justify-center bg-[#050816]/80 px-6 backdrop-blur-md${
+        isComplete ? ' video-processing-overlay--complete' : ''
+      }${isBrownCreamComplete ? ' video-processing-overlay--complete-cream' : ''}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="video-processing-title"
     >
       <div className="w-full max-w-3xl text-center">
-        <div className="mx-auto mb-8 flex h-40 w-40 items-center justify-center md:h-44 md:w-44">
+        {isBrownCreamComplete ? (
+          <p id="video-processing-title" className="video-processing-overlay__complete-text">
+            Processing complete
+          </p>
+        ) : (
+          <>
+        <div className="video-processing-overlay__icon-area mx-auto mb-8 flex h-40 w-40 items-center justify-center md:h-44 md:w-44">
           {!isError && !isComplete && (
             <div className="processing-loader" aria-hidden>
               <div className="processing-loader__halo" />
@@ -106,7 +117,7 @@ export default function VideoProcessingOverlay({ state, onClose, onStop, onRetry
           {error || statusMessage}
         </p>
 
-        <div className="mx-auto mt-10 max-w-2xl rounded-full border-2 border-cyber-cyan/70 bg-black/40 p-1 shadow-[0_0_24px_rgba(0,247,255,0.25)]">
+        <div className="video-processing-overlay__progress-section mx-auto mt-10 max-w-2xl rounded-full border-2 border-cyber-cyan/70 bg-black/40 p-1 shadow-[0_0_24px_rgba(0,247,255,0.25)]">
           <div className="processing-progress-bar-container">
             {!isError && !isComplete ? <div className="processing-progress-grid-bg" /> : null}
             <div
@@ -118,7 +129,7 @@ export default function VideoProcessingOverlay({ state, onClose, onStop, onRetry
           </div>
         </div>
 
-        <div className="mx-auto mt-3 flex max-w-2xl items-center justify-between gap-4 font-orbitron uppercase tracking-[0.18em]">
+        <div className="video-processing-overlay__footer mx-auto mt-3 flex max-w-2xl items-center justify-between gap-4 font-orbitron uppercase tracking-[0.18em]">
           {showRetry ? (
             <button
               type="button"
@@ -153,6 +164,8 @@ export default function VideoProcessingOverlay({ state, onClose, onStop, onRetry
             </span>
           )}
         </div>
+          </>
+        )}
       </div>
     </div>
   );

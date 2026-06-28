@@ -310,11 +310,11 @@ export default function DashboardPage() {
       <main className="mobile-page-main mx-auto max-w-[1920px] space-y-6 px-6 py-6">
         <PageTitle title="Operations Dashboard" />
 
-        <KPICards summary={summary} />
+        {/* Analytics row — KPIs share column widths with panels below */}
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,3.35fr)_minmax(0,4.65fr)_minmax(0,4fr)] xl:grid-rows-[auto_27.5rem_27.5rem] xl:items-stretch">
+          <KPICards summary={summary} aligned />
 
-        {/* Analytics row — shared column widths so row 1/2 panels align vertically */}
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,3.35fr)_minmax(0,4.65fr)_minmax(0,4fr)] xl:grid-rows-[27.5rem_27.5rem] xl:items-stretch">
-          <div className="dashboard-panel-slot flex shrink-0 flex-col overflow-hidden xl:row-start-1 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
+          <div className="dashboard-panel-slot flex shrink-0 flex-col overflow-hidden xl:col-start-1 xl:row-start-2 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
             <MostFrequentVehicles
               vehicles={frequent}
               size="lg"
@@ -326,7 +326,7 @@ export default function DashboardPage() {
             />
           </div>
 
-          <div className="dashboard-panel-slot flex shrink-0 flex-col overflow-hidden xl:row-start-1 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
+          <div className="dashboard-panel-slot flex shrink-0 flex-col overflow-hidden xl:col-start-2 xl:row-start-2 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
             <ConfidenceHeatmap
               key={confidenceHeatmapKey}
               data={confidence}
@@ -335,7 +335,7 @@ export default function DashboardPage() {
             />
           </div>
 
-          <div className="dashboard-panel-slot flex shrink-0 flex-col overflow-hidden xl:row-start-1 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
+          <div className="dashboard-panel-slot flex shrink-0 flex-col overflow-hidden xl:col-start-3 xl:row-start-2 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
             <VideoInputPanel
               uploading={uploading}
               uploadError={uploadError}
@@ -344,7 +344,7 @@ export default function DashboardPage() {
             />
           </div>
 
-          <div className="dashboard-panel-slot h-auto min-h-0 shrink-0 overflow-hidden xl:row-start-2 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
+          <div className="dashboard-panel-slot h-auto min-h-0 shrink-0 overflow-hidden xl:col-start-1 xl:row-start-3 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
             <PeakTrafficChart
               key={peakTrafficKey}
               data={traffic}
@@ -356,11 +356,11 @@ export default function DashboardPage() {
             />
           </div>
 
-          <div className="dashboard-panel-slot h-auto min-h-0 shrink-0 overflow-hidden xl:row-start-2 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
+          <div className="dashboard-panel-slot h-auto min-h-0 shrink-0 overflow-hidden xl:col-start-2 xl:row-start-3 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
             <SuspiciousVehiclesSection vehicles={suspicious} fillHeight className="h-full min-h-0 max-h-full" />
           </div>
 
-          <div className="dashboard-panel-slot dashboard-speed-repeat grid shrink-0 gap-3 overflow-hidden xl:row-start-2 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem] xl:grid-rows-[13rem_minmax(0,1fr)]">
+          <div className="dashboard-panel-slot dashboard-speed-repeat grid shrink-0 gap-3 overflow-hidden xl:col-start-3 xl:row-start-3 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem] xl:grid-rows-[13rem_minmax(0,1fr)]">
             <VehicleSpeedPanel
               readings={speeds}
               limit={3}

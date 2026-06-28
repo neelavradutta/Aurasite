@@ -348,20 +348,6 @@
   color: #ffffff !important;
 }
 
-/* Tab switcher active pill — darker brown */
-[data-theme='brown-cream'] .tab-switcher-active-bg {
-  background: linear-gradient(to right, rgba(98, 59, 26, 0.22), rgba(92, 59, 26, 0.14)) !important;
-}
-
-[data-theme='brown-cream'] .tab-switcher-shell {
-  border-color: rgba(98, 59, 26, 0.35) !important;
-  background-color: #f1e3d3 !important;
-}
-
-[data-theme='brown-cream'] .tab-switcher-indicator {
-  background: linear-gradient(to right, transparent, var(--cream-btn-solid), transparent) !important;
-}
-
 /* Mobile nav trigger */
 [data-theme='brown-cream'] .mobile-nav__trigger {
   border-color: var(--cream-btn-solid) !important;

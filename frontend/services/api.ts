@@ -3,7 +3,6 @@ import { Detection } from '@/types/detection';
 import { Vehicle } from '@/types/vehicle';
 import { API_BASE_URL } from '@/config/backend';
 import { getSessionItem } from './storage';
-import { clearAllSessionPersistence } from './sessionPersistence';
 
 const API_URL = API_BASE_URL;
 
@@ -43,12 +42,7 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      clearAllSessionPersistence();
-    }
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export async function login(email: string, password: string) {

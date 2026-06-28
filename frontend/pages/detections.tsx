@@ -25,6 +25,7 @@ import {
   ViolationUpdate,
 } from '@/utils/violationUpdates';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useAuthStore } from '@/store/authStore';
 import {
   loadDetectionsPageCache,
   persistDetectionsPageCache,
@@ -32,6 +33,7 @@ import {
 
 export default function DetectionsPage() {
   const router = useRouter();
+  const userId = useAuthStore((state) => state.user?.id ?? null);
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);
   const detectionsVersion = useDashboardStore((state) => state.detectionsVersion);
   const bumpDetectionsVersion = useDashboardStore((state) => state.bumpDetectionsVersion);
@@ -74,7 +76,8 @@ export default function DetectionsPage() {
   const filterPlate = highlightFromQuery ? '' : plateFromQuery;
 
   useEffect(() => {
-    const cache = loadDetectionsPageCache();
+    if (!userId) return;
+    const cache = loadDetectionsPageCache(userId);
     if (cache) {
       setDetections(cache.detections);
       setTotalCount(cache.totalCount);
@@ -84,16 +87,16 @@ export default function DetectionsPage() {
       setLoading(false);
     }
     setPageHydrated(true);
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     setSearchQuery(filterPlate);
   }, [filterPlate]);
 
   useEffect(() => {
-    if (!pageHydrated || loading) return;
-    persistDetectionsPageCache({ detections, totalCount, searchQuery, sortOption, listFilters });
-  }, [detections, totalCount, searchQuery, sortOption, listFilters, loading, pageHydrated]);
+    if (!pageHydrated || loading || !userId) return;
+    persistDetectionsPageCache({ detections, totalCount, searchQuery, sortOption, listFilters }, userId);
+  }, [detections, totalCount, searchQuery, sortOption, listFilters, loading, pageHydrated, userId]);
 
   useEffect(() => {
     if (!pageHydrated || !router.isReady) return;

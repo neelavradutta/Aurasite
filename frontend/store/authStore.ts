@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { flushSessionPersistence } from '@/services/dashboardSessionFlush';
 import {
   getSessionItem,
   removeItem,
@@ -30,7 +31,7 @@ function clearLegacyAuthStorage(): void {
   removeItem(AUTH_USER_KEY);
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   token: null,
   user: null,
   setAuth: (token, user) => {
@@ -39,6 +40,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ token, user });
   },
   logout: () => {
+    const userId = get().user?.id;
+    if (userId != null) {
+      flushSessionPersistence(userId);
+    }
     removeSessionItem(AUTH_TOKEN_KEY);
     removeSessionItem(AUTH_USER_KEY);
     set({ token: null, user: null });
