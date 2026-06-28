@@ -15,7 +15,7 @@ import { formatHourSlot } from '@/utils/timeFormat';
 import { selectTopTrafficIntervals } from '@/utils/sessionAnalytics';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import PanelEmptyState from '@/components/shared/PanelEmptyState';
-import { PeakTrafficPanelIcon } from '@/components/NavIcons';
+import PeakTrafficHoursLogo from '@/components/PeakTrafficHoursLogo';
 
 export const PEAK_TRAFFIC_HOURS_ANCHOR = 'peak-traffic-hours';
 
@@ -142,11 +142,12 @@ export default function PeakTrafficChart({
       } ${href ? '' : className}`}
     >
       <PanelIconHeader
-        icon={<PeakTrafficPanelIcon />}
+        icon={<PeakTrafficHoursLogo className="h-full w-full" />}
         title="Peak Traffic Hours"
         subtitle="Grouped by hour for the busiest time slots."
-        iconBg="bg-white/10"
-        iconColor="text-white"
+        iconBg="peak-traffic-hours-logo-box"
+        iconColor=""
+        iconBoxClassName="h-8 w-8 overflow-hidden"
       />
 
       {variant === 'table' ? (

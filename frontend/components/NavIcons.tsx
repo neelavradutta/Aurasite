@@ -50,26 +50,8 @@ function VehicleFrontCarGraphic({ strokeWidth = 1.5 }: { strokeWidth?: number })
   );
 }
 
-export function VehiclesNavIcon({ className = 'h-4 w-4 shrink-0' }: IconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <g transform="translate(12 12) scale(2.22) translate(-12 -12)">
-        <path d="M3.5 14.25V11.85L4.35 9.35L5 8.85C6.95 7.35 9.35 6.75 12 6.75C14.65 6.75 17.05 7.35 19 8.85L19.65 9.35L20.35 11.85V14.25" />
-        <path d="M20 13.75H18.25M5.75 13.75H3.5" />
-        <circle cx="8" cy="14.25" r="1.45" />
-        <circle cx="16" cy="14.25" r="1.45" />
-      </g>
-    </svg>
-  );
+export function VehiclesNavIcon({ className = 'shrink-0' }: IconProps) {
+  return <span className={`nav-vehicles-logo ${className}`} aria-hidden />;
 }
 
 export function VehiclesPanelIcon({ className = PANEL_ICON_CLASS }: IconProps) {
