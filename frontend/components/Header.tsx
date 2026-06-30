@@ -7,16 +7,9 @@ import { useSocket } from '@/hooks/useSocket';
 import AurasiteBrandOverlay from '@/components/AurasiteBrandOverlay';
 import AurasiteIconTrigger from '@/components/AurasiteIconTrigger';
 import MobileNav from '@/components/MobileNav';
-import { ClearNavIcon, DayModeNavIcon, LogoutNavIcon, NightModeNavIcon, navItemIcons } from '@/components/NavIcons';
+import HeaderNav from '@/components/HeaderNav';
+import { ClearNavIcon, DayModeNavIcon, LogoutNavIcon, NightModeNavIcon } from '@/components/NavIcons';
 import { useTheme } from '@/hooks/useTheme';
-
-const navItems = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/detections', label: 'Detections' },
-  { href: '/vehicles', label: 'Vehicles' },
-  { href: '/analytics', label: 'Analytics' },
-  { href: '/live', label: 'Live' },
-] as const;
 
 interface HeaderProps {
   detectionToolbar?: ReactNode;
@@ -77,25 +70,7 @@ export default function Header({ detectionToolbar, analyticsToolbar, vehiclesToo
         </div>
 
         <div className="flex items-center justify-center">
-          <nav className="hidden items-center gap-1 lg:flex">
-            {navItems.map((item) => {
-              const Icon = navItemIcons[item.href];
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm transition ${
-                    router.pathname === item.href
-                      ? 'bg-cyber-cyan/15 text-cyber-cyan shadow-neon'
-                      : 'text-slate-300 hover:bg-white/5 hover:text-cyber-cyan'
-                  }`}
-                >
-                  <Icon className="h-4 w-4 shrink-0 text-white" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+          <HeaderNav />
           <MobileNav />
         </div>
 

@@ -99,8 +99,12 @@
 
 /* Header nav active pill */
 [data-theme='brown-cream'] .header-nav-link--active {
-  background-color: #f1e3d3 !important;
   color: #7a4b22 !important;
+  box-shadow: none !important;
+}
+
+[data-theme='brown-cream'] .header-nav-lens {
+  background-color: #f1e3d3 !important;
   box-shadow: none !important;
 }
 
