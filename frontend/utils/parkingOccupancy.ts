@@ -16,6 +16,16 @@ function isAcceptedDetection(detection: Detection): boolean {
   return Boolean(normalizePlateKey(detection.plate_number));
 }
 
+function countTotalOccupied(detections: Detection[]): number {
+  const keys = new Set<string>();
+  for (const detection of detections) {
+    if (!isAcceptedDetection(detection)) continue;
+    const key = normalizePlateKey(detection.plate_number);
+    if (key) keys.add(key);
+  }
+  return keys.size;
+}
+
 function buildOccupancyEvents(detections: Detection[]): OccupancyEvent[] {
   const sorted = [...detections]
     .filter(isAcceptedDetection)
@@ -131,15 +141,10 @@ export function computeParkingOccupancy(
   const referenceDay = getReferenceDay(detections);
   const hourly = buildHourlySeries(events, capacity, referenceDay);
 
-  const now = Date.now();
-  const currentHour = new Date(now).getHours();
-  const currentHourPoint =
-    hourly.find((point) => point.hour === currentHour) ??
-    [...hourly]
-      .filter((point) => point.hour < 24 && point.hour <= currentHour)
-      .sort((a, b) => b.hour - a.hour)[0];
-  const currentOccupied = currentHourPoint?.occupied ?? occupancyAtTime(events, now);
+  const totalOccupied = countTotalOccupied(detections);
+  const currentOccupied = totalOccupied;
   const currentPct = Math.min(100, Math.round((currentOccupied / capacity) * 100));
+  const available = Math.max(0, capacity - totalOccupied);
 
   let peakHour = 0;
   let peakPct = 0;
@@ -155,7 +160,6 @@ export function computeParkingOccupancy(
   }
 
   const peakLabel = formatHourLabel(peakHour);
-  const available = Math.max(0, capacity - currentOccupied);
 
   return {
     hourly,

@@ -146,9 +146,8 @@ export function useAnalytics(maxCapacity = 400) {
     setRepeat(computeRepeatAnalysis(peakTrafficDetections));
     setSuspicious(computeSuspiciousVehicles(peakTrafficDetections));
 
-    setParking((prev) =>
-      detections.length === 0 ? prev : computeParkingOccupancy(detections, maxCapacity)
-    );
+    const parkingSource = peakTrafficDetections.length > 0 ? peakTrafficDetections : detections;
+    setParking(computeParkingOccupancy(parkingSource, maxCapacity));
 
     setLoading(false);
 

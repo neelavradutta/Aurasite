@@ -56,7 +56,8 @@ export default function ParkingOccupancyPanel({
     }, null);
   }, [data.hourly]);
 
-  const isParkingFull = data.currentOccupied >= data.maxCapacity || data.available <= 0;
+  const freeSpaces = Math.max(0, maxCapacity - data.currentOccupied);
+  const isParkingFull = data.currentOccupied >= maxCapacity || freeSpaces <= 0;
 
   const handleCapacityChange = (raw: string) => {
     const digitsOnly = raw.replace(/\D/g, '').slice(0, 4);
@@ -200,7 +201,7 @@ export default function ParkingOccupancyPanel({
         <StatCard
           label="Current Usage"
           value={isParkingFull ? 'FULL' : `${data.currentPct}%`}
-          detail={`${data.currentOccupied}/${data.maxCapacity} spaces`}
+          detail={`${data.currentOccupied}/${maxCapacity} spaces`}
           valueClassName={isParkingFull ? 'parking-usage-full' : 'text-slate-100'}
         />
         <StatCard
@@ -214,7 +215,7 @@ export default function ParkingOccupancyPanel({
         />
         <StatCard
           label="Available Now"
-          value={String(data.available)}
+          value={String(freeSpaces)}
           detail="spaces free"
           valueClassName="text-[#7ED321]"
         />
