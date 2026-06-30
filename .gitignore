@@ -49,3 +49,7 @@ htmlcov/
 # Misc
 *.pem
 .cache/
+
+# Local agent memory (not for GitHub)
+AGENTS.md
+scripts/seed-agent-memory.ps1
