@@ -30,7 +30,7 @@ export default function SelectedPlatePanel() {
   const challanPaid = plate ? getChallanPaid(plate) : '--';
 
   return (
-    <section className="glass-panel shrink-0 rounded-xl border border-white/5 p-5">
+    <section className="glass-panel shrink-0 rounded-xl border border-white/5 p-4">
       <PanelIconHeader
         icon={<SelectedPlatePanelIcon />}
         title="Selected Plate"

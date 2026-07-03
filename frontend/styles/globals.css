@@ -339,6 +339,10 @@ body {
   border-radius: 0.375rem;
 }
 
+.peak-traffic-hours-logo--cream {
+  object-fit: contain;
+}
+
 .nav-vehicles-logo {
   display: inline-block;
   flex-shrink: 0;

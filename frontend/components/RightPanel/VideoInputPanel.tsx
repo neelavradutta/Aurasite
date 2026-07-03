@@ -263,7 +263,7 @@ export default function VideoInputPanel({
 
   return (
 
-    <section className="glass-panel video-input-cyberpunk h-auto min-h-0 max-h-none shrink-0 rounded-xl border border-white/5 p-5 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
+    <section className="glass-panel video-input-cyberpunk h-auto min-h-0 max-h-none shrink-0 rounded-xl border border-white/5 p-4 xl:h-[27.5rem] xl:min-h-[27.5rem] xl:max-h-[27.5rem]">
 
       <div className="video-panel__header">
 

@@ -19,6 +19,14 @@
   display: none !important;
 }
 
+[data-theme='brown-cream'] .peak-traffic-hours-logo-box {
+  background: var(--cream-brown-primary) !important;
+}
+
+[data-theme='brown-cream'] .most-frequent-vehicles-logo-box {
+  background: var(--cream-brown-primary) !important;
+}
+
 /* Status badge */
 [data-theme='brown-cream'] .status-badge-shell {
   border-color: rgba(122, 75, 34, 0.22) !important;

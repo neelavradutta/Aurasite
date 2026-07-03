@@ -21,6 +21,16 @@ export const PEAK_TRAFFIC_HOURS_ANCHOR = 'peak-traffic-hours';
 
 const INTERVAL_COLORS_CYBER = [...CYBERPUNK_PEAK_TRAFFIC_COLORS];
 const INTERVAL_COLORS_CREAM = [...BROWN_CREAM_PEAK_TRAFFIC_COLORS];
+const INTERVAL_COLORS_CREAM_ANALYTICS = [
+  '#7a4b22',
+  '#5c9d55',
+  '#c35a45',
+  '#d29a35',
+  '#6f8f6b',
+  '#b9804f',
+  '#8f6a4d',
+  '#d8b07a',
+] as const;
 
 function buildIntervalColorByHour(
   intervals: TrafficHour[],
@@ -76,7 +86,12 @@ export default function PeakTrafficChart({
   sectionId,
 }: Props) {
   const theme = useThemeStore((state) => state.theme);
-  const intervalColors = theme === 'brown-cream' ? INTERVAL_COLORS_CREAM : INTERVAL_COLORS_CYBER;
+  const intervalColors =
+    theme === 'brown-cream'
+      ? variant === 'chart'
+        ? INTERVAL_COLORS_CREAM_ANALYTICS
+        : INTERVAL_COLORS_CREAM
+      : INTERVAL_COLORS_CYBER;
   const trackColor =
     theme === 'brown-cream' ? BROWN_CREAM_PEAK_TRAFFIC_TRACK : CYBERPUNK_PEAK_TRAFFIC_TRACK;
   const themeKey = theme === 'brown-cream' ? 'cream' : 'cyber';
@@ -133,9 +148,9 @@ export default function PeakTrafficChart({
       id={sectionId}
       className={`glass-panel flex flex-col rounded-xl border border-white/5 ${
         isDashboardTable
-          ? 'flex h-[27.5rem] min-h-[27.5rem] max-h-[27.5rem] shrink-0 flex-col px-5 pt-5 !pb-2.5'
+          ? 'flex h-[27.5rem] min-h-[27.5rem] max-h-[27.5rem] shrink-0 flex-col px-4 pt-4 !pb-2.5'
           : isLarge
-            ? 'min-h-[17.5rem] p-5'
+            ? 'min-h-[17.5rem] p-4'
             : 'min-h-[14.5rem] p-4'
       } ${sectionId ? 'scroll-mt-24' : ''} ${
         href ? 'transition hover:border-cyber-cyan/30 hover:bg-white/[0.03]' : ''

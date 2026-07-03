@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Vehicle } from '@/types/vehicle';
 import { getVehicleTypeIcon, resolveVehicleType } from '@/utils/vehicleCardDisplay';
-import { MostFrequentVehiclesPanelIcon, PANEL_ICON_CLASS } from '@/components/NavIcons';
+import MostFrequentVehiclesLogo from '@/components/MostFrequentVehiclesLogo';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
 import PanelEmptyState from '@/components/shared/PanelEmptyState';
 import Card from '../shared/Card';
@@ -53,11 +53,12 @@ export default function MostFrequentVehicles({
         } ${className}`}
       >
         <PanelIconHeader
-          icon={<MostFrequentVehiclesPanelIcon className={PANEL_ICON_CLASS} />}
+          icon={<MostFrequentVehiclesLogo />}
           title="Most Frequent Vehicles"
           subtitle="Plates seen most often in recent detections."
-          iconBg="bg-white/10"
-          iconColor="text-white"
+          iconBg="bg-white/10 most-frequent-vehicles-logo-box"
+          iconColor=""
+          iconBoxClassName="h-8 w-8 overflow-hidden"
           titleClassName="!tracking-[0.02em]"
         />
 
@@ -93,16 +94,17 @@ export default function MostFrequentVehicles({
           : href
             ? 'h-auto shrink-0 overflow-hidden !pb-2.5'
             : 'h-full'
-      } ${isLarge ? (href ? 'px-5 pt-5' : 'p-5') : ''} ${
+      } ${isLarge ? (href ? 'px-4 pt-4' : 'p-4') : ''} ${
         href ? 'transition hover:border-cyber-cyan/30 hover:bg-white/[0.03]' : ''
       } ${className}`.trim()}
     >
       <PanelIconHeader
-        icon={<MostFrequentVehiclesPanelIcon className={PANEL_ICON_CLASS} />}
+        icon={<MostFrequentVehiclesLogo />}
         title="Most Frequent Vehicles"
         subtitle="Plates seen most often in recent detections."
-        iconBg="bg-white/10"
-        iconColor="text-white"
+        iconBg="bg-white/10 most-frequent-vehicles-logo-box"
+        iconColor=""
+        iconBoxClassName="h-8 w-8 overflow-hidden"
         titleClassName="!tracking-[0.02em]"
       />
       <div

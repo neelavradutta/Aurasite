@@ -12,7 +12,7 @@ export default function LiveFeedLaunchCard() {
   return (
     <Link
       href="/live"
-      className="glass-panel group relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/5 p-5 transition hover:border-cyber-cyan/30 hover:bg-white/[0.03]"
+      className="glass-panel group relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/5 p-4 transition hover:border-cyber-cyan/30 hover:bg-white/[0.03]"
     >
       <div className="relative flex items-center justify-between gap-3">
         <PanelIconHeader

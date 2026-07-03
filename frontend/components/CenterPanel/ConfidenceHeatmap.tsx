@@ -98,7 +98,7 @@ export default function ConfidenceHeatmap({
 
   return (
     <Card
-      className={`confidence-heatmap-panel flex h-full min-h-0 max-h-full flex-col ${compact ? '!p-5' : '!p-3'} overflow-hidden ${className}`.trim()}
+      className={`confidence-heatmap-panel flex h-full min-h-0 max-h-full flex-col ${compact ? '!p-4' : '!p-3'} overflow-hidden ${className}`.trim()}
     >
       <PanelIconHeader
         icon={<AnalyticsNavIcon className={PANEL_ICON_CLASS} />}

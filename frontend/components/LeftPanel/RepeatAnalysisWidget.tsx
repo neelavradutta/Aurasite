@@ -50,7 +50,7 @@ export default function RepeatAnalysisWidget({
     <section
       id={sectionId}
       className={`glass-panel flex h-full min-h-0 max-h-full flex-col overflow-hidden rounded-xl border border-white/5 ${
-        compact ? 'p-3' : 'p-4'
+        compact ? 'p-4' : 'p-4'
       } ${variant === 'bars' ? 'relative' : ''} ${sectionId ? 'scroll-mt-24' : ''} ${
         href ? 'transition hover:border-cyber-cyan/30 hover:bg-white/[0.03]' : ''
       } ${href ? '' : className}`}
