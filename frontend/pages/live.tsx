@@ -283,7 +283,7 @@ export default function LivePage() {
                       disabled={running}
                       onClick={() => setDeviceMenuOpen((open) => !open)}
                       title={selectedDeviceLabel}
-                      className="relative flex w-full min-w-0 items-center rounded-md border border-white/40 bg-transparent px-4 py-2 text-sm font-normal text-white outline-none transition hover:border-white focus:border-white disabled:cursor-not-allowed disabled:opacity-60"
+                      className="relative flex w-full min-w-0 items-center rounded-md border border-white/40 bg-black/30 px-4 py-2 text-sm font-normal text-white outline-none transition hover:border-white focus:border-white disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <span
                         className={`w-full truncate px-5 text-center ${
@@ -331,7 +331,7 @@ export default function LivePage() {
                       onChange={(event) => setSource(event.target.value)}
                       placeholder="YouTube, Facebook, RTSP, or direct URL"
                       title={source.trim() || 'Public video link or stream URL'}
-                      className="w-full rounded-md border border-white/40 bg-transparent px-4 py-2 text-center text-sm font-normal text-white placeholder:text-white/70 outline-none transition hover:border-white focus:border-white disabled:cursor-not-allowed disabled:opacity-60"
+                      className="w-full rounded-md border border-white/40 bg-black/30 px-4 py-2 text-center text-sm font-normal text-white placeholder:text-white/70 outline-none transition hover:border-white focus:border-white disabled:cursor-not-allowed disabled:opacity-60"
                     />
                   </div>
                 )}

@@ -26,7 +26,7 @@ const INTERVAL_COLORS_CREAM_ANALYTICS = [
   '#5c9d55',
   '#c35a45',
   '#d29a35',
-  '#6f8f6b',
+  '#8c6f8f',
   '#b9804f',
   '#8f6a4d',
   '#d8b07a',

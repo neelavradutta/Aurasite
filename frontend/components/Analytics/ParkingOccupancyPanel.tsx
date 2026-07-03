@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Area,
   AreaChart,
-  CartesianGrid,
   Line,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import { ParkingOccupancyResult } from '@/types/analytics';
 import PanelIconHeader from '@/components/shared/PanelIconHeader';
-import { ParkingOccupancyPanelIcon } from '@/components/NavIcons';
+import ParkingOccupancyLogo from '@/components/ParkingOccupancyLogo';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
 import { useThemeStore } from '@/store/themeStore';
 import {
@@ -81,11 +81,12 @@ export default function ParkingOccupancyPanel({
     >
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <PanelIconHeader
-          icon={<ParkingOccupancyPanelIcon />}
+          icon={<ParkingOccupancyLogo />}
           title="Parking Occupancy"
           subtitle="Real-time lot utilization - capacity management"
-          iconBg="bg-white/10"
-          iconColor="text-white"
+          iconBg="bg-white/10 parking-occupancy-logo-box"
+          iconColor=""
+          iconBoxClassName="h-8 w-8 overflow-hidden"
           className="!mb-0 min-w-0 flex-1"
         />
 
@@ -117,10 +118,18 @@ export default function ParkingOccupancyPanel({
         </label>
       </header>
 
-      <div key={animationKey} className="parking-occupancy-chart h-48 w-full sm:h-52">
+      <div key={animationKey} className="parking-occupancy-chart h-52 w-full sm:h-56">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data.hourly} margin={{ top: 18, right: 12, left: 0, bottom: 4 }}>
-            <CartesianGrid stroke="rgba(222, 220, 209, 0.08)" strokeDasharray="0" vertical={false} />
+          <AreaChart data={data.hourly} margin={{ top: 4, right: 4, left: 10, bottom: 0 }}>
+            {[0, 25, 50, 75].map((value) => (
+              <ReferenceLine
+                key={value}
+                y={value}
+                stroke="rgba(222, 220, 209, 0.08)"
+                strokeDasharray="0"
+                ifOverflow="visible"
+              />
+            ))}
             <XAxis
               dataKey="label"
               ticks={data.axisLabels}
@@ -131,12 +140,12 @@ export default function ParkingOccupancyPanel({
             />
             <YAxis
               domain={[0, 100]}
-              ticks={[0, 30, 60, 90]}
+              ticks={[0, 25, 50, 75]}
               tickFormatter={(value) => `${value}%`}
               tick={{ fill: '#c2c0b6', fontSize: 11 }}
               axisLine={false}
               tickLine={false}
-              width={36}
+              width={44}
             />
             <Tooltip
               contentStyle={{

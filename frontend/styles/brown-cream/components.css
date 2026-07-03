@@ -738,13 +738,13 @@
 }
 
 [data-theme='brown-cream'] .detected-plates-section [data-plate-card] {
-  background-color: var(--cream-brown-primary) !important;
+  background-color: #b2743f !important;
   box-shadow: 0 4px 14px rgba(74, 43, 18, 0.14);
 }
 
 [data-theme='brown-cream'] .detected-plates-section [data-plate-card]:hover {
   filter: none !important;
-  background-color: var(--cream-brown-hover) !important;
+  background-color: #c2824c !important;
 }
 
 [data-theme='brown-cream'] .detected-plates-section [data-plate-card] .text-white {
@@ -762,7 +762,7 @@
 [data-theme='brown-cream'] .detected-plates-section [data-plate-card] .bg-teal-900\/35,
 [data-theme='brown-cream'] .detected-plates-section [data-plate-card] .bg-teal-900\/50,
 [data-theme='brown-cream'] .detected-plates-section [data-plate-card] .bg-teal-800\/55 {
-  background-color: rgba(74, 43, 18, 0.24) !important;
+  background-color: #8a562d !important;
 }
 
 [data-theme='brown-cream'] .video-uploads-scroll {

@@ -1,3 +1,5 @@
+import { useActiveTheme } from '@/hooks/useTheme';
+
 interface IconProps {
   className?: string;
 }
@@ -19,12 +21,18 @@ export function DashboardNavIcon({ className = 'h-4 w-4 shrink-0' }: IconProps) 
 }
 
 export function DetectionsNavIcon({ className = 'h-4 w-4 shrink-0' }: IconProps) {
+  const isCream = useActiveTheme() === 'brown-cream';
+
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 2v4M12 18v4M2 12h4M18 12h4" strokeLinecap="round" />
-    </svg>
+    <span className={`flex items-center justify-center ${className}`.trim()} aria-hidden>
+      <img
+        src={isCream ? '/detections-tab-logo-exact-brown.png' : '/detections-tab-logo-exact.png'}
+        alt=""
+        aria-hidden
+        draggable={false}
+        className="h-[1.18rem] w-[1.18rem] object-contain"
+      />
+    </span>
   );
 }
 
@@ -339,46 +347,14 @@ export function UsersKpiIcon({ className = 'h-5 w-5 shrink-0' }: IconProps) {
 }
 
 export function AvgConfidenceKpiIcon({ className = 'h-5 w-5 shrink-0' }: IconProps) {
-  const ringStroke = 1.25;
-  const innerStroke = 1.3;
-
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden>
-      <g stroke="currentColor" strokeWidth={ringStroke} strokeLinecap="round" fill="none">
-        <path d="M12 2A10 10 0 0 1 21.76 9.24" />
-        <path d="M21.76 9.24A10 10 0 0 1 12 22" opacity="0.3" />
-        <path d="M12 22A10 10 0 0 1 2.24 14.76" opacity="0.3" />
-        <path d="M2.24 14.76A10 10 0 0 1 12 2" opacity="0.3" />
-      </g>
-      <g transform="translate(12 12) scale(1.12) translate(-12 -11)">
-        <path
-          d="M12 6.35l4.35 0.9v3.45c0 0-1.5 3.75-4.35 4.95-2.85-1.2-4.35-4.95-4.35-4.95V7.25L12 6.35z"
-          stroke="currentColor"
-          strokeWidth={innerStroke}
-          strokeLinejoin="round"
-          fill="none"
-        />
-        <path
-          d="M9.65 11.65l1.4 1.4 3.05-3.05"
-          stroke="currentColor"
-          strokeWidth={innerStroke}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </g>
-      <text
-        x="19.55"
-        y="22.75"
-        textAnchor="start"
-        dominantBaseline="middle"
-        fill="currentColor"
-        fontSize="4.35"
-        fontWeight="700"
-        fontFamily="system-ui, sans-serif"
-      >
-        %
-      </text>
-    </svg>
+    <img
+      src="/avg-confidence-logo-v2.png"
+      alt=""
+      aria-hidden
+      draggable={false}
+      className={`${className} object-contain`.trim()}
+    />
   );
 }
 
