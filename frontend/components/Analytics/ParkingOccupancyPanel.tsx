@@ -77,7 +77,7 @@ export default function ParkingOccupancyPanel({
 
   return (
     <section
-      className={`glass-panel flex min-h-[22rem] flex-col rounded-xl border border-white/5 p-4 sm:p-5 ${className}`}
+      className={`glass-panel flex min-h-[22rem] flex-col rounded-xl border border-white/5 p-4 ${className}`}
     >
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <PanelIconHeader

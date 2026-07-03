@@ -128,7 +128,7 @@ export default function VehicleSpeedPanel({
         fillHeight || isDashboard
           ? 'flex h-full min-h-0 max-h-full flex-col overflow-hidden !pb-2'
           : 'flex h-full min-h-[22rem] flex-col overflow-hidden'
-      } ${isDashboard ? 'px-4 pt-4' : '!p-3'} h-full min-h-0 ${
+      } ${isDashboard ? 'px-4 pt-4' : '!p-4'} h-full min-h-0 ${
         href ? 'transition hover:border-cyber-cyan/30 hover:bg-white/[0.03]' : ''
       } ${sectionId ? 'scroll-mt-24' : ''} ${href ? '' : className}`.trim()}
     >
