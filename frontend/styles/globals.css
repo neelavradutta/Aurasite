@@ -2974,14 +2974,14 @@ body {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.35rem;
+  height: 1.35rem;
   margin-left: 0.05rem;
   border-radius: 50%;
   border: 1.5px solid #84ff00;
   background: rgba(132, 255, 0, 0.12);
   color: #84ff00;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1;
   -webkit-background-clip: border-box;
