@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/router';
 
-import { UploadedVideoRecord, useVideoUploadStore } from '@/store/videoUploadStore';
+import { UploadedVideoRecord, useVideoUploadStore, getRecordFile } from '@/store/videoUploadStore';
 
 import { getMediaKind, isImageFile, isImageFileName, MEDIA_FILE_ACCEPT } from '@/utils/mediaFile';
 
@@ -74,7 +74,8 @@ export default function VideoInputPanel({
     null
   );
 
-  const selectedFile = selectedUploadedVideo?.file ?? pendingFile;
+  const selectedFile =
+    (selectedUploadedVideo ? getRecordFile(selectedUploadedVideo) : undefined) ?? pendingFile;
   const previewUrl = selectedUploadedVideo?.previewUrl ?? pendingPreviewUrl;
 
   function findUploadedMatch(file: File): UploadedVideoRecord | undefined {
@@ -90,7 +91,6 @@ export default function VideoInputPanel({
     const result = await onLoadVideo(file);
     if (!result.success) return;
 
-    const existing = findUploadedMatch(file);
     const record = {
       name: file.name,
       size: file.size,
@@ -100,13 +100,18 @@ export default function VideoInputPanel({
       mediaType: getMediaKind(file),
     };
 
+    const existing = findUploadedMatch(file);
     if (existing) {
       updateUploadedVideo(existing.id, record);
+      setSelectedUploadedVideo({ ...existing, ...record });
     } else {
       addUploadedVideo(record);
+      const added = useVideoUploadStore
+        .getState()
+        .uploadedVideos.find((video) => video.name === file.name && video.size === file.size);
+      if (added) setSelectedUploadedVideo(added);
     }
 
-    setSelectedUploadedVideo(null);
     clearPendingSelection();
   }
 
@@ -116,8 +121,23 @@ export default function VideoInputPanel({
   }, [clearPendingSelection]);
 
   function handleSelectUploadedVideo(video: UploadedVideoRecord) {
-    setSelectedUploadedVideo(video);
+    const fresh = uploadedVideos.find((item) => item.id === video.id) ?? video;
+    setSelectedUploadedVideo({ ...fresh, file: getRecordFile(fresh) });
   }
+
+  async function handleProcessAgain() {
+    if (uploading || !selectedUploadedVideo) return;
+
+    const file = getRecordFile(selectedUploadedVideo);
+    if (!file) return;
+
+    const preview =
+      selectedUploadedVideo.previewUrl || URL.createObjectURL(file);
+
+    await processSelectedFile(file, preview);
+  }
+
+  const latestVideo = uploadedVideos[uploadedVideos.length - 1];
 
   function handleRemoveUploadedVideo(
     event: React.MouseEvent<HTMLButtonElement>,
@@ -136,6 +156,22 @@ export default function VideoInputPanel({
       setOverlayVideo(null);
     }
   }
+
+  useEffect(() => {
+    if (uploadedVideos.length === 0) {
+      setSelectedUploadedVideo(null);
+      return;
+    }
+
+    setSelectedUploadedVideo((current) => {
+      if (!current) return null;
+      if (uploadedVideos.some((video) => video.id === current.id)) {
+        return current;
+      }
+      const latest = uploadedVideos[uploadedVideos.length - 1];
+      return { ...latest, file: getRecordFile(latest) };
+    });
+  }, [uploadedVideos]);
 
   useEffect(() => {
     if (!selectedUploadedVideo) return;
@@ -169,7 +205,7 @@ export default function VideoInputPanel({
     const existing = findUploadedMatch(file);
     if (existing) {
       URL.revokeObjectURL(nextPreview);
-      setSelectedUploadedVideo(existing);
+      handleSelectUploadedVideo(existing);
       clearPendingSelection();
       return;
     }
@@ -224,34 +260,29 @@ export default function VideoInputPanel({
     }
   }
 
-  async function handlePrimaryResultsAction() {
-    if (uploading) return;
-
-    if (selectedUploadedVideo && selectedFile && previewUrl) {
-      await processSelectedFile(selectedFile, previewUrl);
-      return;
-    }
-
-    handleNewUpload();
-  }
-
-
-
   const previewStatus = uploading ? 'PROCESSING' : selectedFile ? 'READY' : 'IDLE';
 
   const totalSize = uploadedVideos.reduce((sum, video) => sum + video.size, 0);
 
-  const latestVideo = uploadedVideos[uploadedVideos.length - 1];
   const recentFileSize = latestVideo ? formatFileSize(latestVideo.size) : '—';
+  const canProcessAgain = Boolean(selectedUploadedVideo && getRecordFile(selectedUploadedVideo));
 
   const isResults = uploadedVideos.length > 0;
-  const isReuploadSelected = Boolean(selectedUploadedVideo);
   const showSplitInputActions = !isResults && Boolean(selectedFile && previewUrl);
   const primaryResultsLabel = uploading
     ? 'Processing...'
-    : isReuploadSelected
+    : canProcessAgain
       ? 'Process Again'
       : 'New Upload';
+
+  async function handlePrimaryResultsAction() {
+    if (uploading) return;
+    if (canProcessAgain) {
+      await handleProcessAgain();
+      return;
+    }
+    handleNewUpload();
+  }
 
   const loadButtonLabel = uploading
     ? 'Processing...'
@@ -546,28 +577,24 @@ export default function VideoInputPanel({
 
             <button
               type="button"
-              onClick={handlePrimaryResultsAction}
+              onClick={(event) => {
+                event.stopPropagation();
+                void handlePrimaryResultsAction();
+              }}
               disabled={uploading}
-              data-preserve-upload-selection={isReuploadSelected ? true : undefined}
+              data-preserve-upload-selection={canProcessAgain ? true : undefined}
               className="video-results-cyberpunk__btn-primary"
             >
               {primaryResultsLabel}
             </button>
 
             <button
-
               type="button"
-
               onClick={() => latestVideo && setOverlayVideo(latestVideo)}
-
               disabled={!latestVideo}
-
               className="video-results-cyberpunk__btn-secondary"
-
             >
-
               Preview
-
             </button>
 
           </div>

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { flushSessionPersistence } from '@/services/dashboardSessionFlush';
+import { logoutSession } from '@/services/api';
 import {
   getSessionItem,
   removeItem,
@@ -41,6 +42,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
   logout: () => {
     const userId = get().user?.id;
+    void logoutSession().catch(() => undefined);
     if (userId != null) {
       flushSessionPersistence(userId);
     }

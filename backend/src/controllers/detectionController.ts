@@ -7,6 +7,7 @@ import { detectionService, resolveSnapshotPath } from '../services/detectionServ
 import { enqueueVideoJob, getJobStatus } from '../services/jobQueue';
 import { AppError } from '../middleware/errorHandler';
 import { emitDetectionsChanged } from '../utils/realtimeEvents';
+import { boundPlateInput } from '../utils/plateInput';
 
 const uploadDir = path.resolve(env.uploadDir);
 if (!fs.existsSync(uploadDir)) {
@@ -55,7 +56,7 @@ export const detectionController = {
       const result = await detectionService.listDetections({
         page: Number(req.query.page) || 1,
         limit: Number(req.query.limit) || 20,
-        plate: req.query.plate as string,
+        plate: boundPlateInput(req.query.plate),
         minConfidence: req.query.minConfidence ? Number(req.query.minConfidence) : undefined,
         videoSource: req.query.video_source as string,
       });
@@ -77,7 +78,10 @@ export const detectionController = {
 
   async verifyDetection(req: Request, res: Response, next: NextFunction) {
     try {
-      const detection = await detectionService.verifyDetection(Number(req.params.id), req.body.plate_number);
+      const detection = await detectionService.verifyDetection(
+        Number(req.params.id),
+        boundPlateInput(req.body.plate_number)
+      );
       if (!detection) throw new AppError('Detection not found', 404, 'not_found');
       res.json({ success: true, data: detection, message: 'Detection verified' });
     } catch (error) {

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { analyticsService } from '../services/analyticsService';
+import { boundPlateInput } from '../utils/plateInput';
 
 export const analyticsController = {
   async summary(_req: Request, res: Response, next: NextFunction) {
@@ -61,7 +62,7 @@ export const analyticsController = {
   async exportDetections(req: Request, res: Response, next: NextFunction) {
     try {
       const csv = await analyticsService.exportDetectionsCsv({
-        plate: req.query.plate as string,
+        plate: boundPlateInput(req.query.plate),
         days: req.query.days ? Number(req.query.days) : undefined,
       });
       res.setHeader('Content-Type', 'text/csv');

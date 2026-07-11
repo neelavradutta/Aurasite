@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { vehicleService } from '../services/vehicleService';
 import { AppError } from '../middleware/errorHandler';
+import { boundPlateInput } from '../utils/plateInput';
 
 export const vehicleController = {
   async list(req: Request, res: Response, next: NextFunction) {
@@ -28,7 +29,7 @@ export const vehicleController = {
 
   async search(req: Request, res: Response, next: NextFunction) {
     try {
-      const plate = (req.query.plate as string) || '';
+      const plate = boundPlateInput(req.query.plate);
       const vehicles = await vehicleService.searchByPlate(plate);
       res.json({ success: true, data: vehicles });
     } catch (error) {

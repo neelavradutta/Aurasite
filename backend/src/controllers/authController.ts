@@ -33,4 +33,16 @@ export const authController = {
       next(error);
     }
   },
+
+  async logout(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const header = req.headers.authorization;
+      if (header?.startsWith('Bearer ')) {
+        await authService.logout(header.slice(7));
+      }
+      res.json({ success: true, message: 'Logged out' });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

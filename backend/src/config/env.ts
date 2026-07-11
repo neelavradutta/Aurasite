@@ -20,10 +20,13 @@ export const env = {
   corsOrigin: parseCorsOrigin(),
   uploadDir: process.env.UPLOAD_DIR || './uploads',
   maxFileSizeMb: parseInt(process.env.MAX_FILE_SIZE_MB || '500', 10),
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  jwtExpiresIn:
+    process.env.JWT_EXPIRES_IN || ((process.env.NODE_ENV || 'development') === 'production' ? '2h' : '7d'),
   defaultAdminEmail: process.env.DEFAULT_ADMIN_EMAIL || 'admin@gmail.com',
   defaultAdminPassword: process.env.DEFAULT_ADMIN_PASSWORD || 'admin123',
   authEnabled: process.env.AUTH_ENABLED !== 'false',
+  allowPublicRegister: process.env.ALLOW_PUBLIC_REGISTER !== 'false',
+  isProduction: (process.env.NODE_ENV || 'development') === 'production',
 };
 
 /** ngrok free tier returns an HTML warning unless this header is sent. */

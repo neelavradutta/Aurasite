@@ -10,6 +10,7 @@ import {
   resetLiveSaveSession,
   resolveLiveVideoSource,
 } from '../utils/liveDetectionPersistence';
+import { boundPlateInput } from '../utils/plateInput';
 
 const router = Router();
 
@@ -114,7 +115,7 @@ router.post('/session/reset', requireAuth, async (req, res) => {
 
 router.post('/record', requireAuth, async (req, res, next) => {
   try {
-    const plateNumber = String(req.body.plate_number || '').trim();
+    const plateNumber = boundPlateInput(req.body.plate_number);
     if (!plateNumber) {
       throw new AppError('Plate number is required', 400, 'missing_plate');
     }

@@ -1,6 +1,32 @@
 import { create } from 'zustand';
 import { MediaKind } from '@/utils/mediaFile';
 
+const fileCache = new Map<string, File>();
+
+function cacheFile(id: string, name: string, size: number, file?: File) {
+  if (file) {
+    fileCache.set(id, file);
+    fileCache.set(`meta:${name}:${size}`, file);
+    return;
+  }
+  fileCache.delete(id);
+  fileCache.delete(`meta:${name}:${size}`);
+}
+
+function resolveCachedFile(
+  record: Pick<UploadedVideoRecord, 'id' | 'name' | 'size' | 'file'>
+): File | undefined {
+  if (record.file) return record.file;
+  return fileCache.get(record.id) ?? fileCache.get(`meta:${record.name}:${record.size}`);
+}
+
+export function getRecordFile(
+  record: Pick<UploadedVideoRecord, 'id' | 'name' | 'size' | 'file'> | null | undefined
+): File | undefined {
+  if (!record) return undefined;
+  return resolveCachedFile(record);
+}
+
 export type UploadedVideoRecord = {
   id: string;
   name: string;
@@ -38,24 +64,32 @@ export const useVideoUploadStore = create<VideoUploadState>((set, get) => ({
   pendingPreviewUrl: null,
 
   addUploadedVideo: (video) =>
-    set((state) => ({
-      uploadedVideos: [
-        ...state.uploadedVideos,
-        { ...video, id: `${video.name}-${video.size}-${Date.now()}` },
-      ],
-    })),
+    set((state) => {
+      const id = `${video.name}-${video.size}-${Date.now()}`;
+      cacheFile(id, video.name, video.size, video.file);
+      return {
+        uploadedVideos: [...state.uploadedVideos, { ...video, id }],
+      };
+    }),
 
   updateUploadedVideo: (id, updates) =>
     set((state) => ({
-      uploadedVideos: state.uploadedVideos.map((video) =>
-        video.id === id ? { ...video, ...updates } : video
-      ),
+      uploadedVideos: state.uploadedVideos.map((video) => {
+        if (video.id !== id) return video;
+        const next = { ...video, ...updates };
+        if ('file' in updates) {
+          cacheFile(id, next.name, next.size, updates.file);
+        }
+        return { ...next, file: resolveCachedFile(next) };
+      }),
     })),
 
   removeUploadedVideo: (id) => {
     const { uploadedVideos, pendingPreviewUrl } = get();
     const video = uploadedVideos.find((item) => item.id === id);
     if (!video) return;
+
+    cacheFile(id, video.name, video.size);
 
     const remaining = uploadedVideos.filter((item) => item.id !== id);
     const previewStillUsed =
@@ -112,6 +146,7 @@ export const useVideoUploadStore = create<VideoUploadState>((set, get) => ({
       uploadedVideos: videos.map((video) => ({
         ...video,
         previewUrl: '',
+        file: resolveCachedFile({ ...video, file: undefined }),
       })),
       pendingFile: null,
       pendingPreviewUrl: null,

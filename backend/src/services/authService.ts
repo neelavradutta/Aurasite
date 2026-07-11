@@ -1,8 +1,10 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 import User from '../models/User';
 import { env } from '../config/env';
 import { AppError } from '../middleware/errorHandler';
+import { revokeToken } from '../utils/tokenBlacklist';
 
 const SALT_ROUNDS = 10;
 
@@ -47,10 +49,11 @@ export const authService = {
   },
 
   issueToken(user: User) {
+    const jti = uuidv4();
     const token = jwt.sign(
       { id: String(user.id), role: user.role, email: user.email },
       env.jwtSecret,
-      { expiresIn: env.jwtExpiresIn as jwt.SignOptions['expiresIn'] }
+      { expiresIn: env.jwtExpiresIn as jwt.SignOptions['expiresIn'], jwtid: jti }
     );
 
     return {
@@ -62,6 +65,10 @@ export const authService = {
         role: user.role,
       },
     };
+  },
+
+  async logout(token: string) {
+    await revokeToken(token);
   },
 
   async ensureDefaultAdmin() {

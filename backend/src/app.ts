@@ -11,6 +11,7 @@ import { logger } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { registerSocketEvents } from './events/socketEvents';
 import { setSocketServer, initJobQueue } from './services/jobQueue';
+import { isTokenRevoked } from './utils/tokenBlacklist';
 import detectRoutes from './routes/detectRoutes';
 import detectionRoutes from './routes/detectionRoutes';
 import vehicleRoutes from './routes/vehicleRoutes';
@@ -22,10 +23,17 @@ import cameraRoutes from './routes/cameraRoutes';
 import liveRoutes from './routes/liveRoutes';
 import { alertController } from './controllers/alertController';
 import { requireAuth } from './middleware/auth';
+import {
+  apiRateLimiter,
+  assertProductionSecurityConfig,
+  authRateLimiter,
+  securityHeaders,
+} from './middleware/security';
 import { authService } from './services/authService';
 import './models';
 
 const app = express();
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 server.requestTimeout = 600_000;
 server.headersTimeout = 610_000;
@@ -42,22 +50,29 @@ setSocketServer(io);
 
 if (env.authEnabled) {
   io.use((socket, next) => {
-    const token = socket.handshake.auth?.token;
-    if (!token || typeof token !== 'string') {
-      next(new Error('Authentication required'));
-      return;
-    }
-    try {
-      jwt.verify(token, env.jwtSecret);
-      next();
-    } catch {
-      next(new Error('Invalid or expired token'));
-    }
+    void (async () => {
+      const token = socket.handshake.auth?.token;
+      if (!token || typeof token !== 'string') {
+        next(new Error('Authentication required'));
+        return;
+      }
+      try {
+        const payload = jwt.verify(token, env.jwtSecret) as { jti?: string };
+        if (await isTokenRevoked(payload.jti)) {
+          next(new Error('Token revoked'));
+          return;
+        }
+        next();
+      } catch {
+        next(new Error('Invalid or expired token'));
+      }
+    })();
   });
 }
 
 registerSocketEvents(io);
 
+app.use(securityHeaders);
 app.use(cors({ origin: env.corsOrigin }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -75,13 +90,16 @@ const swaggerSpec = swaggerJsdoc({
   apis: ['./src/routes/*.ts'],
 });
 
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
 app.get('/health', (_req, res) => {
   res.json({ status: 'healthy', service: 'anpr-backend' });
 });
 
-app.use('/api/v1/auth', authRoutes);
+if (!env.isProduction) {
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
+
+app.use('/api/', apiRateLimiter);
+app.use('/api/v1/auth', authRateLimiter, authRoutes);
 
 app.use('/api/v1/detect', detectRoutes);
 app.use('/api/v1/detections', detectionRoutes);
@@ -98,6 +116,7 @@ app.use(errorHandler);
 
 async function bootstrap() {
   try {
+    assertProductionSecurityConfig();
     await connectDatabase();
     await initJobQueue();
     await authService.ensureDefaultAdmin();

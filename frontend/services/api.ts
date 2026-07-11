@@ -72,6 +72,10 @@ export async function fetchMe() {
   return data.data;
 }
 
+export async function logoutSession() {
+  await api.post('/auth/logout');
+}
+
 export async function fetchSummary() {
   const { data } = await api.get('/analytics/summary');
   return data.data;
