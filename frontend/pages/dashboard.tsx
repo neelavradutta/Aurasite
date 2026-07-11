@@ -25,6 +25,7 @@ import { useRouter } from 'next/router';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useSocket } from '@/hooks/useSocket';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useAuthStore } from '@/store/authStore';
 import VideoProcessingOverlay, { ProcessingOverlayState, ProcessingPhase } from '@/components/VideoProcessingOverlay';
 import {
@@ -81,6 +82,7 @@ export default function DashboardPage() {
   const peakTrafficKey = useChartAnimationKey('peak-traffic');
   const confidenceHeatmapKey = useChartAnimationKey('confidence-heatmap');
   const { token, hydrate } = useAuthStore();
+  useRequireAuth();
   useSocket();
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');

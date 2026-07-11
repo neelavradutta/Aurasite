@@ -1,7 +1,13 @@
 import { io, Socket } from 'socket.io-client';
 import { WS_BASE_URL } from '@/config/backend';
+import { getSessionItem } from './storage';
 
 let socket: Socket | null = null;
+
+function socketAuthPayload() {
+  const token = getSessionItem<string | null>('auth_token', null);
+  return token ? { token } : {};
+}
 
 export function getSocket(): Socket {
   if (!socket) {
@@ -9,7 +15,10 @@ export function getSocket(): Socket {
     socket = io(url, {
       transports: ['websocket', 'polling'],
       autoConnect: true,
+      auth: socketAuthPayload(),
     });
+  } else {
+    socket.auth = socketAuthPayload();
   }
   return socket;
 }

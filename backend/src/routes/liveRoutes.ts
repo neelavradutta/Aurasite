@@ -12,6 +12,9 @@ import {
 } from '../utils/liveDetectionPersistence';
 
 const router = Router();
+
+router.use(requireAuth);
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024 },

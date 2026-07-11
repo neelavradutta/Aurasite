@@ -25,6 +25,7 @@ import {
   ViolationUpdate,
 } from '@/utils/violationUpdates';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useAuthStore } from '@/store/authStore';
 import {
   loadDetectionsPageCache,
@@ -32,6 +33,7 @@ import {
 } from '@/services/sessionPersistence';
 
 export default function DetectionsPage() {
+  useRequireAuth();
   const router = useRouter();
   const userId = useAuthStore((state) => state.user?.id ?? null);
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);

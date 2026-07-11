@@ -3,6 +3,7 @@ import { Detection } from '@/types/detection';
 import { Vehicle } from '@/types/vehicle';
 import { API_BASE_URL } from '@/config/backend';
 import { getSessionItem } from './storage';
+import { useAuthStore } from '@/store/authStore';
 
 const API_URL = API_BASE_URL;
 
@@ -42,7 +43,18 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(error)
+  (error) => {
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      typeof window !== 'undefined' &&
+      !window.location.pathname.startsWith('/login')
+    ) {
+      useAuthStore.getState().logout();
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
 );
 
 export async function login(email: string, password: string) {

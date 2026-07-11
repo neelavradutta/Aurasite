@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import Camera from '../models/Camera';
+import { requireAuth } from '../middleware/auth';
 
 const router = Router();
+
+router.use(requireAuth);
 
 router.get('/locations', async (_req, res, next) => {
   try {

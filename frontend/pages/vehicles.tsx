@@ -19,6 +19,7 @@ import { downloadVehicleReportPdf } from '@/utils/vehicleReportPdf';
 import { getHistoryPlate } from '@/utils/vehicleCardDisplay';
 import { getStatusReason } from '@/utils/vehicleStatus';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useAuthStore } from '@/store/authStore';
 import { normalizePlateKey } from '@/utils/dashboardDetections';
 import { getSocket } from '@/services/socket';
@@ -34,6 +35,7 @@ import {
 } from '@/utils/vehicleModalReturn';
 
 export default function VehiclesPage() {
+  useRequireAuth();
   const router = useRouter();
   const userId = useAuthStore((state) => state.user?.id ?? null);
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);

@@ -4,6 +4,8 @@ import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
+router.use(requireAuth);
+
 router.get('/', detectionController.listDetections);
 router.post('/clear', requireAuth, detectionController.clearAll);
 router.get('/:id/snapshot', detectionController.getSnapshot);

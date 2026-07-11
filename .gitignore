@@ -54,3 +54,4 @@ htmlcov/
 AGENTS.md
 scripts/seed-agent-memory.ps1
 animations
+testsprite_tests

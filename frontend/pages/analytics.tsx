@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import Header from '@/components/Header';
 import PageTitle from '@/components/shared/PageTitle';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import PeakTrafficChart, {
   PEAK_TRAFFIC_HOURS_ANCHOR,
 } from '@/components/LeftPanel/PeakTrafficChart';
@@ -16,6 +17,7 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 import { useChartAnimationKey } from '@/hooks/useChartAnimationKey';
 import { useParkingCapacity } from '@/hooks/useParkingCapacity';
 export default function AnalyticsPage() {
+  useRequireAuth();
   const { maxCapacity, setMaxCapacity } = useParkingCapacity();
   const { traffic, repeat, frequent, speeds, parking, loading } = useAnalytics(maxCapacity);
   const peakTrafficKey = useChartAnimationKey('peak-traffic');

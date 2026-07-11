@@ -4,6 +4,8 @@ import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
+router.use(requireAuth);
+
 router.get('/summary', analyticsController.summary);
 router.get('/traffic', analyticsController.traffic);
 router.get('/repeat', analyticsController.repeat);

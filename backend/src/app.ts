@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
+import jwt from 'jsonwebtoken';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import { env } from './config/env';
@@ -20,6 +21,7 @@ import authRoutes from './routes/authRoutes';
 import cameraRoutes from './routes/cameraRoutes';
 import liveRoutes from './routes/liveRoutes';
 import { alertController } from './controllers/alertController';
+import { requireAuth } from './middleware/auth';
 import { authService } from './services/authService';
 import './models';
 
@@ -37,6 +39,23 @@ const io = new Server(server, {
 });
 
 setSocketServer(io);
+
+if (env.authEnabled) {
+  io.use((socket, next) => {
+    const token = socket.handshake.auth?.token;
+    if (!token || typeof token !== 'string') {
+      next(new Error('Authentication required'));
+      return;
+    }
+    try {
+      jwt.verify(token, env.jwtSecret);
+      next();
+    } catch {
+      next(new Error('Invalid or expired token'));
+    }
+  });
+}
+
 registerSocketEvents(io);
 
 app.use(cors({ origin: env.corsOrigin }));
@@ -69,7 +88,7 @@ app.use('/api/v1/detections', detectionRoutes);
 app.use('/api/v1/vehicles', vehicleRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/alerts', alertRoutes);
-app.use('/api/v1/suspicious', alertController.suspicious);
+app.get('/api/v1/suspicious', requireAuth, alertController.suspicious);
 app.use('/api/v1/jobs', jobRoutes);
 app.use('/api/v1/cameras', cameraRoutes);
 app.use('/api/v1/live', liveRoutes);

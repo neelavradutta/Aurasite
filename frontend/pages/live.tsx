@@ -10,6 +10,7 @@ import TabSwitcher from '@/components/shared/TabSwitcher';
 import StatusBadge from '@/components/shared/StatusBadge';
 import DetectionSnapshotImage from '@/components/DetectionSnapshotImage';
 import { LiveDetectionFrame, downloadLiveReport, fetchDetectionSnapshotBlob } from '@/services/api';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useAuthStore } from '@/store/authStore';
 import { useLiveDetection, useLiveCameraVideo } from '@/hooks/useLiveDetection';
 import { getLiveSnapshotInlineSrc, hasLiveSnapshot } from '@/utils/liveVideoSource';
@@ -55,6 +56,7 @@ async function downloadLiveSnapshot(item: LiveDetectionFrame): Promise<void> {
 }
 
 export default function LivePage() {
+  useRequireAuth();
   const router = useRouter();
   const { hydrate } = useAuthStore();
   const deviceMenuRef = useRef<HTMLDivElement | null>(null);

@@ -4,6 +4,8 @@ import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
+router.use(requireAuth);
+
 router.get('/', alertController.list);
 router.get('/unresolved', alertController.unresolved);
 router.post('/:id/resolve', requireAuth, alertController.resolve);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import PageTitle from '@/components/shared/PageTitle';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import Badge from '@/components/shared/Badge';
 import Button from '@/components/shared/Button';
 import { fetchAlerts, resolveAlert } from '@/services/api';
@@ -9,6 +10,7 @@ import { useDashboardStore } from '@/store/dashboardStore';
 import { formatDateTime } from '@/utils/dateFormat';
 
 export default function AlertsPage() {
+  useRequireAuth();
   const sessionVersion = useDashboardStore((state) => state.sessionVersion);
   const [alerts, setAlerts] = useState<Alert[]>([]);
 
