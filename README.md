@@ -11,7 +11,7 @@ Next-generation Automatic Number Plate Recognition (ANPR) platform with a hybrid
 
 | Service | Stack | Port |
 |---------|-------|------|
-| Frontend | React + Next.js (cyberpunk UI) | 3001 |
+| Frontend | React + Next.js | 3001 |
 | Backend API | Node.js + Express + MySQL | 8000 |
 | AI Pipeline | Python FastAPI + YOLO + PaddleOCR + ByteTrack | 5000 |
 
