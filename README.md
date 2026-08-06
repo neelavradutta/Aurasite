@@ -4,6 +4,7 @@ HI GUYS I MADE THIS HAVE A LOOK
 https://github.com/user-attachments/assets/57409248-c884-4aa5-b8a5-8d99afaeb69f
 
 LINK - https://aurasitee.vercel.app/
+
 Note - u cannot process the video from the website as i didnt deployed the ai services on cloud being it too large... 
 
 # ANPR Intelligence Dashboard
